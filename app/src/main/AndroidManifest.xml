@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StudentHousing">
 
-        <!-- Màn hình đăng nhập (mở app là vào đây) -->
+        <!-- Login = màn hình mở đầu -->
         <activity
             android:name=".LoginActivity"
             android:exported="true">
@@ -22,32 +22,41 @@
             </intent-filter>
         </activity>
 
-        <!-- Màn hình Hồ sơ (chính sau khi login) -->
+        <!-- Hồ sơ -->
         <activity
             android:name=".MainActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
-        <!-- Màn hình Đăng ký Step 1 -->
         <activity
             android:name=".RegisterActivity"
             android:exported="false" />
 
-        <!-- Màn hình Đăng ký Step 2 -->
         <activity
             android:name=".RegisterStep2Activity"
             android:exported="false" />
 
-        <!-- Màn hình Review -->
         <activity
             android:name=".ReviewActivity"
             android:exported="false" />
 
-        <!-- Màn hình Chat/KYC -->
         <activity
             android:name=".ChatActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
+        <!-- TV3 — homeexchange (dùng tên đầy đủ vì khác package) -->
+        <activity
+            android:name="com.example.homeexchange.HomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name="com.example.homeexchange.DetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name="com.example.homeexchange.ProposalActivity"
+            android:exported="false" />
 
     </application>
 

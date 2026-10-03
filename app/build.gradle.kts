@@ -8,6 +8,10 @@ android {
         version = release(37)
     }
 
+    buildFeatures {
+        viewBinding = true
+    }
+
     defaultConfig {
         applicationId = "com.example.studenthousing"
         minSdk = 24
@@ -36,8 +40,9 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)
     implementation(libs.material)
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 }

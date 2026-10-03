@@ -33,4 +33,48 @@
     <string name="kyc_doc2_status">Đã thêm mặt trước</string>
     <string name="kyc_checkbox_terms">Tôi xác nhận thông tin trên là chính xác và đồng ý quy trình xác minh.</string>
     <string name="kyc_btn_submit">Gửi duyệt Tích xanh</string>
+
+    <!-- TV3 - Detail -->
+    <string name="detail_title">Căn hộ ấm áp gần ĐHQG</string>
+    <string name="detail_location">P. Linh Trung, TP. Thủ Đức</string>
+    <string name="detail_host_initial">M</string>
+    <string name="detail_host_name">Gia đình Cô Mai</string>
+    <string name="detail_host_verified">Đã xác minh</string>
+    <string name="detail_host_meta">Chủ nhà · phản hồi trong 1 giờ</string>
+    <string name="detail_host_rating">4.9</string>
+    <string name="detail_distance_label">Khoảng cách đến trường</string>
+    <string name="detail_distance_value">1,2 km · 6 phút đi xe</string>
+    <string name="detail_amenities">Tiện nghi</string>
+    <string name="amenity_wifi">Wifi</string>
+    <string name="amenity_air_conditioner">Điều hòa</string>
+    <string name="amenity_kitchen">Bếp</string>
+    <string name="amenity_parking">Chỗ đậu xe</string>
+    <string name="action_chat">Chat</string>
+    <string name="action_propose_swap">Đề xuất đổi nhà</string>
+    <string name="detail_chat_with">Mở chat với %1$s</string>
+
+    <!-- TV3 - Proposal -->
+    <string name="proposal_title">Tạo đề xuất đổi nhà</string>
+    <string name="proposal_my_home_label">NHÀ BẠN</string>
+    <string name="proposal_my_home_name">Căn hộ Bình Thạnh</string>
+    <string name="proposal_my_home_area">Gần ĐH HUTECH</string>
+    <string name="proposal_partner_label">NHÀ ĐỐI TÁC</string>
+    <string name="proposal_partner_name">Căn hộ Linh Trung</string>
+    <string name="proposal_partner_area">Gần ĐHQG TP.HCM</string>
+    <string name="proposal_period_title">Thời gian đổi</string>
+    <string name="proposal_period_semester_1">Học kỳ 1</string>
+    <string name="proposal_period_semester_2">Học kỳ 2</string>
+    <string name="proposal_period_full_year">Cả năm</string>
+    <string name="proposal_message_title">Lời nhắn cho %1$s</string>
+    <string name="proposal_message_hint">Giới thiệu ngắn về gia đình và thời gian bạn mong muốn đổi nhà...</string>
+    <string name="proposal_privacy_note">Thông tin chỉ được chia sẻ sau khi hai bên đồng ý.</string>
+    <string name="proposal_send">Gửi đề xuất</string>
+    <string name="proposal_message_required">Vui lòng nhập lời nhắn</string>
+    <string name="proposal_sent">Đã gửi đề xuất cho %1$s (%2$s)</string>
+
+    <!-- TV3 - Accessibility -->
+    <string name="cd_back">Quay lại</string>
+    <string name="cd_favorite">Yêu thích</string>
+    <string name="cd_photo">Ảnh căn hộ</string>
+    <string name="cd_swap">Đổi nhà</string>
 </resources>

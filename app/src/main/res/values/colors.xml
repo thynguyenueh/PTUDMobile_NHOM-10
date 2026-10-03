@@ -10,12 +10,12 @@
     <color name="dusty_olive">#E1E9E2</color>
     <color name="cloud_olive">#F7F7F7</color>
 
-    <!-- Neutral Colors -->
+    <!-- Neutral -->
     <color name="text_main">#1C2415</color>
     <color name="text_sub">#5C6555</color>
     <color name="card_bg">#FFFFFF</color>
 
-    <!-- Semantic Aliases (từ chat-kyc) -->
+    <!-- chat-kyc -->
     <color name="primary">#76962D</color>
     <color name="bg_app">#F7F7F7</color>
     <color name="bg_input">#E1E9E2</color>
@@ -23,9 +23,14 @@
     <color name="badge_soft_bg">#D7E4D1</color>
     <color name="divider_line">#E2E7E0</color>
 
-    <!-- Aliases (từ login-registration) -->
+    <!-- login-registration -->
     <color name="text_dark">#0F172A</color>
     <color name="text_muted">#64748B</color>
     <color name="input_bg">@color/light_moss</color>
     <color name="border_light">@color/pale_olive</color>
+
+    <!-- TV3 (homeexchange) -->
+    <color name="overlay_white">#E6FFFFFF</color>
+    <color name="dot_inactive">#80FFFFFF</color>
+    <color name="on_olive_sub">#CCFFFFFF</color>
 </resources>
