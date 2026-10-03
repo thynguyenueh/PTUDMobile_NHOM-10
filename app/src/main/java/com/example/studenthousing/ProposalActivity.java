@@ -1,13 +1,11 @@
-package com.example.homeexchange;
-
-import com.example.studenthousing.R;
+package com.example.studenthousing;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
-import androidx.annotation.DrawableRes;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;

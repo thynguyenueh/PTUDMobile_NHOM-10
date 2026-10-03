@@ -200,8 +200,11 @@
             <!-- KYC -->
 
             <LinearLayout
+                android:id="@+id/btnKyc"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
+                android:clickable="true"
+                android:focusable="true"
                 android:gravity="center_vertical"
                 android:padding="12dp">
 
@@ -251,8 +254,11 @@
             <!-- BÀI ĐĂNG -->
 
             <LinearLayout
+                android:id="@+id/btnMyPosts"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
+                android:clickable="true"
+                android:focusable="true"
                 android:gravity="center_vertical"
                 android:padding="12dp">
 
@@ -302,8 +308,11 @@
             <!-- LỊCH SỬ -->
 
             <LinearLayout
+                android:id="@+id/btnHistory"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
+                android:clickable="true"
+                android:focusable="true"
                 android:gravity="center_vertical"
                 android:padding="12dp">
 
@@ -353,8 +362,11 @@
             <!-- ĐĂNG XUẤT -->
 
             <LinearLayout
+                android:id="@+id/btnLogout"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
+                android:clickable="true"
+                android:focusable="true"
                 android:gravity="center_vertical"
                 android:padding="12dp">
 
@@ -400,36 +412,48 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/btnNavHome"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
                 android:gravity="center"
                 android:text="⌂&#10;Trang chủ"
                 android:textColor="#172033"
                 android:textSize="11sp" />
 
             <TextView
+                android:id="@+id/btnNavSaved"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
                 android:gravity="center"
                 android:text="♡&#10;Đã lưu"
                 android:textColor="#172033"
                 android:textSize="11sp" />
 
             <TextView
+                android:id="@+id/btnNavMessages"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
                 android:gravity="center"
                 android:text="◯&#10;Tin nhắn"
                 android:textColor="#172033"
                 android:textSize="11sp" />
 
             <TextView
+                android:id="@+id/btnNavProfile"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
                 android:gravity="center"
                 android:text="♙&#10;Hồ sơ"
                 android:textColor="#719B28"
@@ -441,38 +465,3 @@
     </LinearLayout>
 
 </ScrollView>
-=======
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".MainActivity">
-
-    <!-- Top Tab Selector styled with Olive Theme -->
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        app:tabIndicatorColor="@color/olive_green"
-        app:tabIndicatorHeight="3dp"
-        app:tabMode="fixed"
-        app:tabSelectedTextColor="@color/olive_green"
-        app:tabTextColor="@color/text_sub" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/divider_line" />
-
-    <!-- ViewPager2 for seamless swiping and viewing -->
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-</LinearLayout>

@@ -1,69 +1,34 @@
 package com.example.studenthousing;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.widget.ViewPager2;
-
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
 
 public class ChatActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_chat);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-
-        TabLayout tabLayout = findViewById(R.id.tabLayout);
-        ViewPager2 viewPager = findViewById(R.id.viewPager);
-
-        ViewPagerAdapter adapter = new ViewPagerAdapter(this);
-        viewPager.setAdapter(adapter);
-
-        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-            if (position == 0) {
-                tab.setText(R.string.tab_chat);
-            } else {
-                tab.setText(R.string.tab_kyc);
-            }
-        }).attach();
-    }
-
-    private static class ViewPagerAdapter extends FragmentStateAdapter {
-
-        public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
-            super(fragmentActivity);
+        if (findViewById(R.id.btnBack) != null) {
+            findViewById(R.id.btnBack).setOnClickListener(v -> finish());
         }
 
-        @NonNull
-        @Override
-        public Fragment createFragment(int position) {
-            if (position == 0) {
-                return ChatFragment.newInstance();
-            } else {
-                return KycFragment.newInstance();
-            }
+        if (findViewById(R.id.btnCall) != null) {
+            findViewById(R.id.btnCall).setOnClickListener(v ->
+                    Toast.makeText(this, "Gọi điện cho đối tác", Toast.LENGTH_SHORT).show());
         }
 
-        @Override
-        public int getItemCount() {
-            return 2;
+        if (findViewById(R.id.btnSend) != null) {
+            findViewById(R.id.btnSend).setOnClickListener(v ->
+                    Toast.makeText(this, "Đã gửi tin nhắn!", Toast.LENGTH_SHORT).show());
+        }
+
+        if (findViewById(R.id.btnCardAction) != null) {
+            findViewById(R.id.btnCardAction).setOnClickListener(v ->
+                    Toast.makeText(this, "Đã xác nhận thỏa thuận!", Toast.LENGTH_SHORT).show());
         }
     }
 }

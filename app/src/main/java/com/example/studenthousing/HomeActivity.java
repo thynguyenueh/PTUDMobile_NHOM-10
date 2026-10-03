@@ -1,6 +1,4 @@
-package com.example.homeexchange;
-
-import com.example.studenthousing.R;
+package com.example.studenthousing;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -87,11 +85,19 @@ public class HomeActivity extends AppCompatActivity {
     private void setupBottomNavigation() {
         binding.bottomNav.setSelectedItemId(R.id.nav_home);
         binding.bottomNav.setOnItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.nav_home) {
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_home) {
+                return true;
+            } else if (itemId == R.id.nav_saved) {
+                Toast.makeText(this, "Danh sách nhà đã lưu", Toast.LENGTH_SHORT).show();
+                return true;
+            } else if (itemId == R.id.nav_messages) {
+                startActivity(new Intent(this, ChatActivity.class));
+                return true;
+            } else if (itemId == R.id.nav_profile) {
+                startActivity(new Intent(this, MainActivity.class));
                 return true;
             }
-            // TODO: điều hướng sang các màn Đã lưu / Tin nhắn / Hồ sơ khi merge.
-            showComingSoon();
             return false;
         });
     }

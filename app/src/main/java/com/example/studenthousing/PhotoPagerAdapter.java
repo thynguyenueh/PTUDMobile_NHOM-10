@@ -1,4 +1,4 @@
-package com.example.homeexchange;
+package com.example.studenthousing;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;

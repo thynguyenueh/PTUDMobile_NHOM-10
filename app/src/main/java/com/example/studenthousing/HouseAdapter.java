@@ -1,6 +1,4 @@
-package com.example.homeexchange;
-
-import com.example.studenthousing.R;
+package com.example.studenthousing;
 
 import android.content.Context;
 import android.view.LayoutInflater;

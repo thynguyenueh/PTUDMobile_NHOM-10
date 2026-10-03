@@ -1,9 +1,7 @@
-package com.example.homeexchange;
+package com.example.studenthousing;
 
-import com.example.studenthousing.R;
-
+import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -74,9 +72,6 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void openChat() {
-        // TODO: điều hướng sang màn chat khi merge.
-        Toast.makeText(this,
-                getString(R.string.detail_chat_with, getString(R.string.detail_host_name)),
-                Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(this, ChatActivity.class));
     }
 }

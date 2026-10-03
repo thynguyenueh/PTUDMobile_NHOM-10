@@ -45,17 +45,21 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
-        <!-- TV3 — homeexchange (dùng tên đầy đủ vì khác package) -->
         <activity
-            android:name="com.example.homeexchange.HomeActivity"
+            android:name=".KycActivity"
+            android:exported="false" />
+
+        <!-- TV3 — studenthousing -->
+        <activity
+            android:name=".HomeActivity"
             android:exported="false" />
 
         <activity
-            android:name="com.example.homeexchange.DetailActivity"
+            android:name=".DetailActivity"
             android:exported="false" />
 
         <activity
-            android:name="com.example.homeexchange.ProposalActivity"
+            android:name=".ProposalActivity"
             android:exported="false" />
 
     </application>

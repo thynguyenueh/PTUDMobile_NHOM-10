@@ -1,4 +1,4 @@
-package com.example.homeexchange;
+package com.example.studenthousing;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
