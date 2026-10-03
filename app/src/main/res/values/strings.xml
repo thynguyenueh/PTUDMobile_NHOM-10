@@ -1,3 +1,36 @@
 <resources>
-    <string name="app_name">StudentHousing</string>
+    <string name="app_name">Student Housing</string>
+
+    <!-- Tab Titles -->
+    <string name="tab_chat">05 · Trò chuyện</string>
+    <string name="tab_kyc">06 · Xác minh KYC</string>
+
+    <!-- Screen 05: Chat -->
+    <string name="chat_header_name">Gia đình Cô Mai</string>
+    <string name="chat_verified_badge">Đã xác minh</string>
+    <string name="chat_active_status">Đang hoạt động</string>
+    <string name="chat_date_today">HÔM NAY, 09:24</string>
+    <string name="chat_received_msg">Chào gia đình chú A, nhà mình rất phù hợp với lịch học của hai cháu.</string>
+    <string name="chat_sent_msg">Cảm ơn cô. Gia đình mình đồng ý đổi trong Học kỳ 1 ạ.</string>
+    <string name="chat_seen_status">Đã xem · 09:31</string>
+    <string name="chat_card_title">Thỏa thuận đổi nhà</string>
+    <string name="chat_card_semester">Học kỳ 1 - 08/2026 — 01/2027</string>
+    <string name="chat_loc_binh_thanh">Bình Thạnh</string>
+    <string name="chat_loc_linh_trung">Linh Trung</string>
+    <string name="chat_card_btn_confirm">Xem &amp; Xác nhận</string>
+    <string name="chat_input_hint">Nhập tin nhắn...</string>
+
+    <!-- Screen 06: KYC -->
+    <string name="kyc_header_title">Xác minh Hộ gia đình</string>
+    <string name="kyc_banner_title">Hồ sơ được bảo mật</string>
+    <string name="kyc_banner_subtitle">Giấy tờ chỉ dùng để xác minh và không hiển thị công khai.</string>
+    <string name="kyc_section_title">Giấy tờ cần thiết</string>
+    <string name="kyc_section_subtitle">Ảnh rõ nét, đủ bốn góc và còn hiệu lực.</string>
+    <string name="kyc_doc1_title">CCCD Phụ huynh</string>
+    <string name="kyc_doc1_desc">Mặt trước và mặt sau · JPG, PNG</string>
+    <string name="kyc_doc2_title">Thẻ Sinh viên</string>
+    <string name="kyc_doc2_desc">Thẻ của sinh viên nhập học năm 2026</string>
+    <string name="kyc_doc2_status">Đã thêm mặt trước</string>
+    <string name="kyc_checkbox_terms">Tôi xác nhận thông tin trên là chính xác và đồng ý quy trình xác minh.</string>
+    <string name="kyc_btn_submit">Gửi duyệt Tích xanh</string>
 </resources>
