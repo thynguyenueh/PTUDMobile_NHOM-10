@@ -11,22 +11,44 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.StudentHousing">
+
+        <!-- Màn hình đăng nhập (mở app là vào đây) -->
         <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:windowSoftInputMode="adjustResize">
+            android:name=".LoginActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Màn hình Hồ sơ (chính sau khi login) -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Màn hình Đăng ký Step 1 -->
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="false" />
+
+        <!-- Màn hình Đăng ký Step 2 -->
+        <activity
+            android:name=".RegisterStep2Activity"
+            android:exported="false" />
+
+        <!-- Màn hình Review -->
         <activity
             android:name=".ReviewActivity"
             android:exported="false" />
+
+        <!-- Màn hình Chat/KYC -->
         <activity
             android:name=".ChatActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
     </application>
 
 </manifest>

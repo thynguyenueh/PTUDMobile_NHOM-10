@@ -3,23 +3,29 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- Color Palette - Olive Theme (From team common.css) -->
-    <color name="olive_green">#76962D</color> <!-- Nút chính, Icon active, Badge nổi bật -->
-    <color name="pale_olive">#C0C7A2</color>  <!-- Viền card, Tag phụ, State hover -->
-    <color name="light_moss">#D7E4D1</color>  <!-- Badge xanh nhẹ, Mức độ phù hợp -->
-    <color name="dusty_olive">#E1E9E2</color> <!-- Khung Input, Card nền phụ -->
-    <color name="cloud_olive">#F7F7F7</color> <!-- Nền chính (Background) toàn bộ app -->
+    <!-- Olive Palette -->
+    <color name="olive_green">#76962D</color>
+    <color name="pale_olive">#C0C7A2</color>
+    <color name="light_moss">#D7E4D1</color>
+    <color name="dusty_olive">#E1E9E2</color>
+    <color name="cloud_olive">#F7F7F7</color>
 
     <!-- Neutral Colors -->
-    <color name="text_main">#1C2415</color>  <!-- Màu chữ chính (Tối đậm dễ đọc) -->
-    <color name="text_sub">#5C6555</color>   <!-- Chữ phụ, caption -->
-    <color name="card_bg">#FFFFFF</color>    <!-- Nền trắng cho các Card chính -->
+    <color name="text_main">#1C2415</color>
+    <color name="text_sub">#5C6555</color>
+    <color name="card_bg">#FFFFFF</color>
 
-    <!-- Semantic Color Aliases for UI Layouts -->
+    <!-- Semantic Aliases (từ chat-kyc) -->
     <color name="primary">#76962D</color>
     <color name="bg_app">#F7F7F7</color>
     <color name="bg_input">#E1E9E2</color>
     <color name="border_card">#C0C7A2</color>
     <color name="badge_soft_bg">#D7E4D1</color>
     <color name="divider_line">#E2E7E0</color>
+
+    <!-- Aliases (từ login-registration) -->
+    <color name="text_dark">#0F172A</color>
+    <color name="text_muted">#64748B</color>
+    <color name="input_bg">@color/light_moss</color>
+    <color name="border_light">@color/pale_olive</color>
 </resources>

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Student Housing</string>
+    <string name="app_name">StudentHousing</string>
 
     <!-- Tab Titles -->
     <string name="tab_chat">05 · Trò chuyện</string>
