@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bảng màu Olive Palette -->
+    <color name="olive_green">#76962D</color>
+    <color name="pale_olive">#C0C7A2</color>
+    <color name="light_moss">#D7E4D1</color>
+    <color name="dusty_olive">#E1E9E2</color>
+    <color name="cloud_olive">#F0F4F1</color>
+
+    <!-- Màu ứng dụng cơ bản -->
+    <color name="bg_app">#F0F4F1</color>
+    <color name="text_dark">#0F172A</color>
+    <color name="text_muted">#64748B</color>
+    <color name="white">#FFFFFF</color>
+
+    <!-- Biến màu bổ trợ giao diện -->
+    <color name="input_bg">@color/light_moss</color>
+    <color name="border_light">@color/pale_olive</color>
+</resources>
