@@ -104,7 +104,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private void setupListeners() {
         binding.btnNotifications.setOnClickListener(v -> showComingSoon());
-        binding.btnFilter.setOnClickListener(v -> showComingSoon());
+        binding.btnFilter.setOnClickListener(v -> startActivity(new Intent(this, SearchFilterActivity.class)));
         binding.tvSeeAll.setOnClickListener(v -> showComingSoon());
         binding.etSearch.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {

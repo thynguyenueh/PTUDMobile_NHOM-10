@@ -62,6 +62,14 @@
             android:name=".ProposalActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ResidenceVerificationActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SearchFilterActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

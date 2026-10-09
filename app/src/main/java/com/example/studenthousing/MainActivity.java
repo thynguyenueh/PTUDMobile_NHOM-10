@@ -31,6 +31,14 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+        View btnResidenceAuth = findViewById(R.id.btnResidenceAuth);
+        if (btnResidenceAuth != null) {
+            btnResidenceAuth.setOnClickListener(v -> {
+                Intent intent = new Intent(MainActivity.this, ResidenceVerificationActivity.class);
+                startActivity(intent);
+            });
+        }
+
         View btnMyPosts = findViewById(R.id.btnMyPosts);
         if (btnMyPosts != null) {
             btnMyPosts.setOnClickListener(v -> {

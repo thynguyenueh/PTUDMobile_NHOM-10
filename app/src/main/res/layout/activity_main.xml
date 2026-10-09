@@ -251,6 +251,60 @@
             </LinearLayout>
 
 
+            <!-- XÁC THỰC CƯ TRÚ -->
+
+            <LinearLayout
+                android:id="@+id/btnResidenceAuth"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:background="@drawable/bg_green_icon"
+                    android:gravity="center"
+                    android:text="🛡"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Xác thực cư trú"
+                        android:textColor="#172033"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Công an Phường / VNeID"
+                        android:textColor="#719B28"
+                        android:textSize="11sp" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="›"
+                    android:textColor="#172033"
+                    android:textSize="28sp" />
+
+            </LinearLayout>
+
+
             <!-- BÀI ĐĂNG -->
 
             <LinearLayout

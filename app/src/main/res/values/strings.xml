@@ -77,4 +77,53 @@
     <string name="cd_favorite">Yêu thích</string>
     <string name="cd_photo">Ảnh căn hộ</string>
     <string name="cd_swap">Đổi nhà</string>
+
+    <!-- Màn hình Xác thực cư trú -->
+    <string name="residence_verification_title">Xác thực cư trú</string>
+    <string name="residence_verification_banner">Chưa xác thực - Tăng 90% độ tin cậy khi hoàn tất</string>
+    <string name="residence_verification_method_title">Chọn phương thức xác thực</string>
+    <string name="residence_verification_method_recommend">KHUYẾN NGHỊ</string>
+    <string name="residence_verification_option1_title">Tải lên Giấy xác nhận cư trú (Mẫu CT07 / VNeID)</string>
+    <string name="residence_verification_option1_desc">Chụp ảnh Mẫu CT07 hoặc mã QR VNeID có mộc đỏ Công an Phường</string>
+    <string name="residence_verification_option2_title">Mã số định danh / Giấy tạm trú Phường</string>
+    <string name="residence_verification_reg_number_label">Mã số đăng ký</string>
+    <string name="residence_verification_reg_number_hint">Nhập mã số</string>
+    <string name="residence_verification_ward_label">Phường / Xã</string>
+    <string name="residence_verification_ward_hint">Chọn Phường</string>
+    <string name="residence_verification_uploaded_title">Giấy tờ đã tải lên</string>
+    <string name="residence_verification_doc_filename">Giấy CT07_CongAnPhuong.pdf</string>
+    <string name="residence_verification_doc_status1">Đã tải lên • PDF • 1,2 MB</string>
+    <string name="residence_verification_doc_status2">Chưa đối soát • Chờ gửi hồ sơ</string>
+    <string name="residence_verification_btn_submit">Gửi hồ sơ xác thực</string>
+    <string name="residence_verification_footer_note">Hồ sơ sẽ được Quản trị viên &amp; dữ liệu Phường đối soát trong 24h</string>
+    <string name="residence_verification_doc_header">MẪU CT07</string>
+    <string name="residence_verification_doc_sample">BẢN MINH HỌA</string>
+
+    <!-- Màn hình Bộ lọc tìm kiếm chỗ ở -->
+    <string name="filter_title">Bộ lọc tìm kiếm chỗ ở</string>
+    <string name="filter_btn_reset">Thiết lập lại</string>
+    <string name="filter_section_location">Khu vực tìm kiếm</string>
+    <string name="filter_label_province">Tỉnh / Thành phố</string>
+    <string name="filter_label_district">Quận / Huyện</string>
+    <string name="filter_label_ward">Phường / Xã</string>
+    <string name="filter_ward_selected_count">Đã chọn %1$d</string>
+    <string name="filter_verified_toggle_text">Chỉ hiển thị Hộ gia đình đã xác thực Công an Phường / VNeID</string>
+    <string name="filter_section_price">Khoảng giá</string>
+    <string name="filter_price_unit">VNĐ / tháng</string>
+    <string name="filter_price_min_label">Tối thiểu</string>
+    <string name="filter_price_max_label">Tối đa</string>
+    <string name="filter_price_min_bound">0 đ</string>
+    <string name="filter_price_max_bound">10.000.000+ đ</string>
+    <string name="filter_section_housing_type">Loại chỗ ở</string>
+    <string name="filter_type_apartment">Căn hộ</string>
+    <string name="filter_type_whole_house">Nhà nguyên căn</string>
+    <string name="filter_type_shared_room">Phòng ở ghép</string>
+    <string name="filter_btn_apply">Áp dụng (%1$d Kết quả)</string>
+    <string name="city_hcm">TP. Hồ Chí Minh</string>
+    <string name="district_binh_thanh">Quận Bình Thạnh</string>
+    <string name="ward_25">Phường 25</string>
+    <string name="ward_26">Phường 26</string>
+    <string name="ward_27">Phường 27</string>
+    <string name="ward_15">Phường 15</string>
+    <string name="ward_17">Phường 17</string>
 </resources>
