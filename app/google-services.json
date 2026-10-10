@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "643135707324",
+    "project_id": "studenthousing-1aae6",
+    "storage_bucket": "studenthousing-1aae6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:643135707324:android:3b2e0c82950263ff7898b9",
+        "android_client_info": {
+          "package_name": "com.example.studenthousing"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "643135707324-e8u4rtg5t4ks64a3jdfvenrniqsbih8k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.studenthousing",
+            "certificate_hash": "7bc61c9aa899349da327d6166257ecf34d00b77b"
+          }
+        },
+        {
+          "client_id": "643135707324-45gf2nbr40nhaubqa9a1jm547j19fqtl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQCvjP2glHbMvsrwBYkt_7oF-zKTY0UjM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "643135707324-45gf2nbr40nhaubqa9a1jm547j19fqtl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
