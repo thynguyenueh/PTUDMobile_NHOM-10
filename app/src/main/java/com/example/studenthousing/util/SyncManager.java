@@ -35,13 +35,17 @@ public class SyncManager {
                 ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm == null) return;
 
-        cm.registerDefaultNetworkCallback(new ConnectivityManager.NetworkCallback() {
-            @Override
-            public void onAvailable(Network network) {
-                Log.d(TAG, "Có mạng — bắt đầu sync");
-                syncAll();
-            }
-        });
+        try {
+            cm.registerDefaultNetworkCallback(new ConnectivityManager.NetworkCallback() {
+                @Override
+                public void onAvailable(Network network) {
+                    Log.d(TAG, "Có mạng — bắt đầu tự động đồng bộ Firestore <-> SQLite");
+                    syncAll();
+                }
+            });
+        } catch (Exception e) {
+            Log.e(TAG, "Lỗi đăng ký NetworkCallback: " + e.getMessage());
+        }
     }
 
     public void syncAll() {
@@ -50,10 +54,45 @@ public class SyncManager {
     }
 
     private void syncExchanges() {
-        List<ExchangeRequest> senderList = exchangeDao.getBySender("temp");
+        List<ExchangeRequest> senderList = exchangeDao.getBySender("current_user");
+        if (senderList != null) {
+            for (ExchangeRequest r : senderList) {
+                if (r.getRequestId() != null && r.getRequestId().startsWith("temp_")) {
+                    syncExchange(r, new AppCallback<String>() {
+                        @Override
+                        public void onSuccess(String id) {
+                            Log.d(TAG, "Đã đồng bộ ExchangeRequest lên Firestore: " + id);
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.e(TAG, "Thất bại đồng bộ ExchangeRequest: " + e.getMessage());
+                        }
+                    });
+                }
+            }
+        }
     }
 
     private void syncReviews() {
+        List<Review> list = reviewDao.getByReviewee("current_user");
+        if (list != null) {
+            for (Review r : list) {
+                if (r.getReviewId() != null && r.getReviewId().startsWith("temp_")) {
+                    syncReview(r, new AppCallback<String>() {
+                        @Override
+                        public void onSuccess(String id) {
+                            Log.d(TAG, "Đã đồng bộ Review lên Firestore: " + id);
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.e(TAG, "Thất bại đồng bộ Review: " + e.getMessage());
+                        }
+                    });
+                }
+            }
+        }
     }
 
     // Sync 1 request cụ thể (dùng khi cần force sync)

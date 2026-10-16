@@ -11,6 +11,7 @@ public class Review {
     private String reviewerName;
     private int rating;
     private String comment;
+    private String imageUri;
     private long createdAt;
 
     public Review() {}
@@ -35,6 +36,9 @@ public class Review {
 
     public String getComment() { return comment; }
     public void setComment(String comment) { this.comment = comment; }
+
+    public String getImageUri() { return imageUri; }
+    public void setImageUri(String imageUri) { this.imageUri = imageUri; }
 
     public long getCreatedAt() { return createdAt; }
     public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }

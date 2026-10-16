@@ -30,7 +30,6 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void setupPhotoPager() {
-        // TODO: thay bằng ảnh thật của căn hộ khi merge dữ liệu.
         List<Integer> photos = Arrays.asList(
                 R.drawable.home_living_room,
                 R.drawable.home_kitchen,

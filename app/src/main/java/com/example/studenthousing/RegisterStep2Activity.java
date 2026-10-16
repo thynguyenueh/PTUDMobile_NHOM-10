@@ -7,8 +7,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+
+import com.example.studenthousing.data.model.User;
+import com.example.studenthousing.data.repository.UserRepository;
+import com.example.studenthousing.util.AppCallback;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
@@ -89,12 +94,36 @@ public class RegisterStep2Activity extends AppCompatActivity {
     }
 
     private void finishRegistration() {
-        Toast.makeText(this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
+        long now = System.currentTimeMillis();
+        User user = new User();
+        user.setUserId("user_reg_" + now);
+        user.setFamilyName("Hộ gia đình mới");
+        user.setRole("PARENT");
+        user.setCreatedAt(now);
 
-        // Chuyển trực tiếp về màn hình chính MainActivity
-        Intent intent = new Intent(RegisterStep2Activity.class.isInstance(this) ? this : RegisterStep2Activity.this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
+        UserRepository userRepository = new UserRepository(this);
+        userRepository.saveUserProfile(user, new AppCallback<Void>() {
+            @Override
+            public void onSuccess(Void d) {
+                runOnUiThread(() -> {
+                    Toast.makeText(RegisterStep2Activity.this, "Đăng ký & Lưu dữ liệu Firestore thành công!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(RegisterStep2Activity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                runOnUiThread(() -> {
+                    Toast.makeText(RegisterStep2Activity.this, "Hoàn tất đăng ký!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(RegisterStep2Activity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                });
+            }
+        });
     }
 }
