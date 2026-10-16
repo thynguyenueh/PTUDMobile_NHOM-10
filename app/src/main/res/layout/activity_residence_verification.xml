@@ -307,6 +307,7 @@
 
             <!-- Uploaded Documents Section -->
             <TextView
+                android:id="@+id/tvUploadedSectionTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
@@ -317,6 +318,7 @@
 
             <!-- Document Item Card -->
             <LinearLayout
+                android:id="@+id/layoutDocCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
@@ -366,12 +368,14 @@
 
                     <!-- Overlay Green Verified Check Badge -->
                     <ImageView
+                        android:id="@+id/imgDocCheck"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentBottom="true"
                         android:contentDescription="Verified"
-                        android:src="@drawable/ic_verified_check" />
+                        android:src="@drawable/ic_verified_check"
+                        android:visibility="gone" />
                 </RelativeLayout>
 
                 <!-- Document Details -->
@@ -397,6 +401,7 @@
 
                     <!-- Status Line 1 -->
                     <TextView
+                        android:id="@+id/tvDocStatus1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -407,6 +412,7 @@
 
                     <!-- Status Line 2 -->
                     <TextView
+                        android:id="@+id/tvDocStatus2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"

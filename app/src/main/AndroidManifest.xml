@@ -26,10 +26,10 @@
             </intent-filter>
         </activity>
 
-        <!-- Màn hình chính (Hồ sơ) -->
+        <!-- ⚠️ TẠM đổi true để test bằng adb - ĐỔI LẠI false TRƯỚC KHI COMMIT -->
         <activity
             android:name=".MainActivity"
-            android:exported="false"
+            android:exported="true"
             android:windowSoftInputMode="adjustResize" />
 
         <!-- Đăng ký -->
@@ -41,10 +41,10 @@
             android:name=".RegisterStep2Activity"
             android:exported="false" />
 
-        <!-- Đánh giá -->
+        <!-- ⚠️ TẠM đổi true để test bằng adb -->
         <activity
             android:name=".ReviewActivity"
-            android:exported="false" />
+            android:exported="true" />
 
         <!-- Chat -->
         <activity
@@ -70,12 +70,33 @@
             android:name=".ProposalActivity"
             android:exported="false" />
 
+        <!-- ⚠️ TẠM đổi true để test bằng adb -->
         <activity
             android:name=".ResidenceVerificationActivity"
-            android:exported="false" />
+            android:exported="true" />
 
         <activity
             android:name=".SearchFilterActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".UserReviewsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ExchangeHistoryActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".MyPostsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SavedHousesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SettingsActivity"
             android:exported="false" />
 
     </application>

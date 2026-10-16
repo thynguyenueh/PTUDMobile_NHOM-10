@@ -71,6 +71,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_REVIEWEE_ID = "reviewee_id";
     public static final String COL_RATING = "rating";
     public static final String COL_COMMENT = "comment";
+    public static final String COL_IMAGE_URI = "image_uri";
 
     // Table: chat_rooms_cache
     public static final String TBL_CHAT_ROOMS = "chat_rooms_cache";
@@ -166,6 +167,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COL_REVIEWEE_ID + " TEXT, " +
                 COL_RATING + " INTEGER, " +
                 COL_COMMENT + " TEXT, " +
+                COL_IMAGE_URI + " TEXT, " +
                 COL_CREATED_AT + " INTEGER, " +
                 COL_SYNC_STATUS + " TEXT DEFAULT 'SYNCED'" +
                 ")");

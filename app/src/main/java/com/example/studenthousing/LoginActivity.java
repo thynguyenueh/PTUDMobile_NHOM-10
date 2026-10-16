@@ -9,8 +9,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+
+import com.example.studenthousing.data.model.User;
+import com.example.studenthousing.data.repository.UserRepository;
+import com.example.studenthousing.util.AppCallback;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -100,11 +105,37 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+        String suffix = phone.length() >= 4 ? phone.substring(phone.length() - 4) : phone;
+        User user = new User();
+        user.setUserId("user_" + phone);
+        user.setPhone(phone);
+        user.setFamilyName("Gia đình " + suffix);
+        user.setRole("PARENT");
+        user.setCreatedAt(System.currentTimeMillis());
 
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
+        UserRepository userRepository = new UserRepository(this);
+        userRepository.saveUserProfile(user, new AppCallback<Void>() {
+            @Override
+            public void onSuccess(Void d) {
+                runOnUiThread(() -> {
+                    Toast.makeText(LoginActivity.this, "Đăng nhập & Lưu Firestore thành công!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                runOnUiThread(() -> {
+                    Toast.makeText(LoginActivity.this, "Đã lưu phiên đăng nhập cục bộ!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                });
+            }
+        });
     }
 }

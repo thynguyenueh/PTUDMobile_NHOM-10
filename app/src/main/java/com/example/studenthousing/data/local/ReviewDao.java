@@ -69,6 +69,7 @@ public class ReviewDao {
         v.put(DatabaseHelper.COL_REVIEWEE_ID, r.getRevieweeId());
         v.put(DatabaseHelper.COL_RATING, r.getRating());
         v.put(DatabaseHelper.COL_COMMENT, r.getComment());
+        v.put(DatabaseHelper.COL_IMAGE_URI, r.getImageUri());
         v.put(DatabaseHelper.COL_CREATED_AT, r.getCreatedAt());
         v.put(DatabaseHelper.COL_SYNC_STATUS, "SYNCED");
         return v;
@@ -82,6 +83,10 @@ public class ReviewDao {
         r.setRevieweeId(c.getString(c.getColumnIndexOrThrow(DatabaseHelper.COL_REVIEWEE_ID)));
         r.setRating(c.getInt(c.getColumnIndexOrThrow(DatabaseHelper.COL_RATING)));
         r.setComment(c.getString(c.getColumnIndexOrThrow(DatabaseHelper.COL_COMMENT)));
+        int imgIdx = c.getColumnIndex(DatabaseHelper.COL_IMAGE_URI);
+        if (imgIdx != -1) {
+            r.setImageUri(c.getString(imgIdx));
+        }
         r.setCreatedAt(c.getLong(c.getColumnIndexOrThrow(DatabaseHelper.COL_CREATED_AT)));
         return r;
     }

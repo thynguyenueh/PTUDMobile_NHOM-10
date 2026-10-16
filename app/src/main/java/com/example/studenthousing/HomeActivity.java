@@ -8,7 +8,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.studenthousing.data.local.DatabaseSeeder;
+import com.example.studenthousing.data.model.AccommodationPost;
+import com.example.studenthousing.data.repository.PostRepository;
 import com.example.studenthousing.databinding.ActivityHomeBinding;
+import com.example.studenthousing.util.AppCallback;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +25,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private ActivityHomeBinding binding;
     private HouseAdapter houseAdapter;
+    private PostRepository postRepository;
     private List<House> allHouses = new ArrayList<>();
 
     @Override
@@ -29,16 +34,59 @@ public class HomeActivity extends AppCompatActivity {
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        allHouses = createSampleHouses();
+        DatabaseSeeder.seedIfEmpty(this);
+        postRepository = new PostRepository(this);
 
         setupHouseList();
         setupFilterChips();
         setupBottomNavigation();
         setupListeners();
-        applyFilter(binding.chipGroupFilter.getCheckedChipId());
+
+        loadPostsFromRepository();
     }
 
-    /** TODO: thay bằng dữ liệu thật (API/Database) khi merge. */
+    private void loadPostsFromRepository() {
+        postRepository.getLatestPosts(10, new AppCallback<List<AccommodationPost>>() {
+            @Override
+            public void onSuccess(List<AccommodationPost> posts) {
+                runOnUiThread(() -> {
+                    if (posts != null && !posts.isEmpty()) {
+                        allHouses = convertPostsToHouses(posts);
+                    } else {
+                        allHouses = createSampleHouses();
+                    }
+                    applyFilter(binding.chipGroupFilter.getCheckedChipId());
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                runOnUiThread(() -> {
+                    allHouses = createSampleHouses();
+                    applyFilter(binding.chipGroupFilter.getCheckedChipId());
+                });
+            }
+        });
+    }
+
+    private List<House> convertPostsToHouses(List<AccommodationPost> posts) {
+        List<House> list = new ArrayList<>();
+        int[] drawables = {R.drawable.house_thao_dien, R.drawable.home_linh_trung, R.drawable.house_linh_xuan};
+        int idx = 0;
+        for (AccommodationPost p : posts) {
+            int imageRes = drawables[idx % drawables.length];
+            idx++;
+            list.add(new House(
+                    p.getTitle() != null ? p.getTitle() : "Nhà ở sinh viên",
+                    p.getAddress() != null ? p.getAddress() : "TP. Hồ Chí Minh",
+                    p.getDistanceKm() > 0 ? p.getDistanceKm() : 1.5,
+                    p.isPoliceVerified(),
+                    imageRes
+            ));
+        }
+        return list;
+    }
+
     private List<House> createSampleHouses() {
         return Arrays.asList(
                 new House(getString(R.string.house_1_title), getString(R.string.house_1_address),
@@ -89,7 +137,7 @@ public class HomeActivity extends AppCompatActivity {
             if (itemId == R.id.nav_home) {
                 return true;
             } else if (itemId == R.id.nav_saved) {
-                Toast.makeText(this, "Danh sách nhà đã lưu", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, SavedHousesActivity.class));
                 return true;
             } else if (itemId == R.id.nav_messages) {
                 startActivity(new Intent(this, ChatActivity.class));
@@ -108,7 +156,6 @@ public class HomeActivity extends AppCompatActivity {
         binding.tvSeeAll.setOnClickListener(v -> showComingSoon());
         binding.etSearch.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                // TODO: gọi tìm kiếm theo trường ĐH khi merge.
                 showComingSoon();
                 return true;
             }
@@ -117,8 +164,11 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void openHouseDetail(@NonNull House house) {
-        // TODO: truyền id nhà qua Intent extra khi có dữ liệu thật.
-        startActivity(new Intent(this, DetailActivity.class));
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra("house_title", house.getTitle());
+        intent.putExtra("house_address", house.getAddress());
+        intent.putExtra("house_verified", house.isVerified());
+        startActivity(intent);
     }
 
     private void showComingSoon() {
