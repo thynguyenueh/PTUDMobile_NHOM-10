@@ -22,7 +22,14 @@ public class SettingsActivity extends AppCompatActivity {
 
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
-        bind(R.id.btnEditProfile, "Chỉnh sửa thông tin cá nhân");
+        View btnEditProfile = findViewById(R.id.btnEditProfile);
+        if (btnEditProfile != null) {
+            btnEditProfile.setOnClickListener(v -> {
+                Intent intent = new Intent(SettingsActivity.this, RegisterActivity.class);
+                intent.putExtra("IS_EDIT_MODE", true);
+                startActivity(intent);
+            });
+        }
         bind(R.id.btnKycVerification, KycActivity.class);
         bind(R.id.btnNotificationSettings, "Cài đặt thông báo");
         bind(R.id.btnLanguageSettings, "Ngôn ngữ");

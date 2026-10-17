@@ -58,6 +58,28 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         if (session != null && session.isLoggedIn()) {
             loadAverageRating();
+            loadUserProfile();
+        }
+    }
+
+    private void loadUserProfile() {
+        TextView tvProfileName = findViewById(R.id.tvProfileName);
+        TextView tvProfilePhone = findViewById(R.id.tvProfilePhone);
+        TextView tvAvatarLetter = findViewById(R.id.tvAvatarLetter);
+
+        String familyName = session.getUserFamilyName();
+        String phone = session.getUserPhone();
+
+        if (tvProfileName != null && familyName != null && !familyName.isEmpty()) {
+            tvProfileName.setText(familyName);
+            if (tvAvatarLetter != null && familyName.length() > 0) {
+                tvAvatarLetter.setText(familyName.substring(0, 1).toUpperCase());
+            }
+        }
+
+        if (tvProfilePhone != null && phone != null && !phone.isEmpty()) {
+            String maskedPhone = phone.length() >= 4 ? phone.substring(0, Math.min(phone.length(), 3)) + " ••• ••" + phone.substring(phone.length() - 2) : phone;
+            tvProfilePhone.setText(maskedPhone + " · TP. Hồ Chí Minh");
         }
     }
 

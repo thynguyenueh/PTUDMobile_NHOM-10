@@ -33,6 +33,7 @@
                 app:tint="@color/text_dark" />
 
             <TextView
+                android:id="@+id/tvHeaderTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -297,11 +298,13 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <CheckBox
+                <com.google.android.material.checkbox.MaterialCheckBox
                     android:id="@+id/cbTerms"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:button="@drawable/custom_checkbox" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    app:buttonTint="@color/olive_green" />
 
                 <TextView
                     android:layout_width="match_parent"

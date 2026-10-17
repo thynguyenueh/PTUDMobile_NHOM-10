@@ -59,6 +59,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/tvAvatarLetter"
                     android:layout_width="115dp"
                     android:layout_height="115dp"
                     android:background="@drawable/bg_avatar"
@@ -69,6 +70,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tvProfileName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
@@ -91,6 +93,7 @@
                     android:textSize="11sp" />
 
                 <TextView
+                    android:id="@+id/tvProfilePhone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
