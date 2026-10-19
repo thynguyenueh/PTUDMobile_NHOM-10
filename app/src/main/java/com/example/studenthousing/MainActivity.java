@@ -113,14 +113,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupBottomNav() {
-        bind(R.id.btnNavHome, HomeActivity.class);
-        bind(R.id.btnNavSaved, SavedHousesActivity.class);
-        bind(R.id.btnNavMessages, ChatActivity.class);
-
-        View btnNavProfile = findViewById(R.id.btnNavProfile);
-        if (btnNavProfile != null) {
-            btnNavProfile.setOnClickListener(v ->
-                    Toast.makeText(this, "Bạn đang ở màn hình Hồ sơ", Toast.LENGTH_SHORT).show());
+        com.google.android.material.bottomnavigation.BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+        if (bottomNav != null) {
+            bottomNav.setSelectedItemId(R.id.nav_profile);
+            bottomNav.setOnItemSelectedListener(item -> {
+                int itemId = item.getItemId();
+                if (itemId == R.id.nav_home) {
+                    startActivity(new Intent(this, HomeActivity.class));
+                    finish();
+                    return true;
+                } else if (itemId == R.id.nav_saved) {
+                    startActivity(new Intent(this, SavedHousesActivity.class));
+                    finish();
+                    return true;
+                } else if (itemId == R.id.nav_messages) {
+                    startActivity(new Intent(this, ChatRoomsActivity.class));
+                    finish();
+                    return true;
+                } else if (itemId == R.id.nav_profile) {
+                    return true;
+                }
+                return false;
+            });
         }
     }
 }

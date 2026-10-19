@@ -23,6 +23,18 @@ public class ChatActivity extends AppCompatActivity {
         chatRepository = new ChatRepository(this);
         etMessageInput = findViewById(R.id.etMessageInput);
 
+        String roomName = getIntent().getStringExtra("ROOM_NAME");
+        if (roomName != null && !roomName.isEmpty()) {
+            android.widget.TextView tvHeaderName = findViewById(R.id.tvChatHeaderName);
+            android.widget.TextView tvAvatarLetter = findViewById(R.id.tvChatAvatarLetter);
+            if (tvHeaderName != null) {
+                tvHeaderName.setText(roomName);
+            }
+            if (tvAvatarLetter != null && roomName.length() > 0) {
+                tvAvatarLetter.setText(roomName.substring(0, 1).toUpperCase());
+            }
+        }
+
         if (findViewById(R.id.btnBack) != null) {
             findViewById(R.id.btnBack).setOnClickListener(v -> finish());
         }

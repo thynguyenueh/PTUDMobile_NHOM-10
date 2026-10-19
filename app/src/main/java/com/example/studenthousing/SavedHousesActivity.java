@@ -25,13 +25,34 @@ public class SavedHousesActivity extends AppCompatActivity {
         layoutSavedHousesContainer = findViewById(R.id.layoutSavedHousesContainer);
         tvTotalSaved = findViewById(R.id.tvTotalSaved);
 
-        View btnGoToSearch = findViewById(R.id.btnGoToSearch);
-        if (btnGoToSearch != null) {
-            btnGoToSearch.setOnClickListener(v ->
-                    startActivity(new Intent(SavedHousesActivity.this, HomeActivity.class)));
-        }
-
         displaySavedHouses();
+        setupBottomNav();
+    }
+
+    private void setupBottomNav() {
+        com.google.android.material.bottomnavigation.BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+        if (bottomNav != null) {
+            bottomNav.setSelectedItemId(R.id.nav_saved);
+            bottomNav.setOnItemSelectedListener(item -> {
+                int itemId = item.getItemId();
+                if (itemId == R.id.nav_home) {
+                    startActivity(new Intent(this, HomeActivity.class));
+                    finish();
+                    return true;
+                } else if (itemId == R.id.nav_saved) {
+                    return true;
+                } else if (itemId == R.id.nav_messages) {
+                    startActivity(new Intent(this, ChatRoomsActivity.class));
+                    finish();
+                    return true;
+                } else if (itemId == R.id.nav_profile) {
+                    startActivity(new Intent(this, MainActivity.class));
+                    finish();
+                    return true;
+                }
+                return false;
+            });
+        }
     }
 
     private void displaySavedHouses() {

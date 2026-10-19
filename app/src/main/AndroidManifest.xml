@@ -46,6 +46,11 @@
             android:name=".ReviewActivity"
             android:exported="true" />
 
+        <!-- Chat Rooms List -->
+        <activity
+            android:name=".ChatRoomsActivity"
+            android:exported="false" />
+
         <!-- Chat -->
         <activity
             android:name=".ChatActivity"
@@ -77,6 +82,10 @@
 
         <activity
             android:name=".SearchFilterActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SearchResultsActivity"
             android:exported="false" />
 
         <activity

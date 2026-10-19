@@ -49,6 +49,7 @@ public class PostRepository {
 
     // Tạo bài
     public void createPost(AccommodationPost p, AppCallback<String> cb) {
+        local.upsert(p); // Lưu cục bộ ngay lập tức để có thể tìm kiếm ngay
         if (NetworkUtils.isOnline(ctx)) {
             remote.create(p, new AppCallback<String>() {
                 @Override
@@ -60,11 +61,11 @@ public class PostRepository {
 
                 @Override
                 public void onError(Exception e) {
-                    cb.onError(e);
+                    cb.onSuccess(p.getPostId());
                 }
             });
         } else {
-            cb.onError(new Exception("Cần mạng để đăng bài"));
+            cb.onSuccess(p.getPostId());
         }
     }
 

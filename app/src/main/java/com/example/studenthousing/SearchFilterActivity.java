@@ -1,5 +1,6 @@
 package com.example.studenthousing;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -23,6 +24,7 @@ public class SearchFilterActivity extends AppCompatActivity {
         binding = ActivitySearchFilterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        resetFilters(); // Reset ban đầu, không chọn sẵn
         setupListeners();
         updateWardCount();
     }
@@ -31,7 +33,7 @@ public class SearchFilterActivity extends AppCompatActivity {
         binding.btnReset.setOnClickListener(v -> resetFilters());
 
         binding.layoutSelectProvince.setOnClickListener(v -> showProvinceDialog());
-        binding.layoutSelectDistrict.setOnClickListener(v -> showDistrictDialog());
+        binding.layoutSelectWard.setOnClickListener(v -> showWardDialog());
 
         binding.chipGroupWards.setOnCheckedStateChangeListener((group, checkedIds) -> updateWardCount());
 
@@ -46,11 +48,12 @@ public class SearchFilterActivity extends AppCompatActivity {
         });
 
         binding.btnApplyFilter.setOnClickListener(v -> {
-            int selectedWards = binding.chipGroupWards.getCheckedChipIds().size();
-            boolean verifiedOnly = binding.switchVerifiedOnly.isChecked();
-            String message = "Đã áp dụng bộ lọc (" + selectedWards + " phường, " +
-                    (verifiedOnly ? "Đã xác thực" : "Tất cả") + ")";
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            String province = binding.tvProvince.getText().toString();
+            String ward = binding.tvWard.getText().toString();
+            Intent intent = new Intent(SearchFilterActivity.this, SearchResultsActivity.class);
+            intent.putExtra("PROVINCE", province);
+            intent.putExtra("WARD", ward);
+            startActivity(intent);
             finish();
         });
     }
@@ -68,22 +71,22 @@ public class SearchFilterActivity extends AppCompatActivity {
     }
 
     private void resetFilters() {
-        binding.tvProvince.setText(R.string.city_hcm);
-        binding.tvDistrict.setText(R.string.district_binh_thanh);
+        binding.tvProvince.setText("Chọn Tỉnh / Thành phố");
+        binding.tvWard.setText("Chọn Phường / Xã");
 
-        binding.chipWard25.setChecked(true);
-        binding.chipWard26.setChecked(true);
+        binding.chipWard25.setChecked(false);
+        binding.chipWard26.setChecked(false);
         binding.chipWard27.setChecked(false);
         binding.chipWard15.setChecked(false);
         binding.chipWard17.setChecked(false);
 
-        binding.switchVerifiedOnly.setChecked(true);
+        binding.switchVerifiedOnly.setChecked(false);
 
-        binding.sliderPrice.setValues(2000000f, 8000000f);
-        binding.chipApartment.setChecked(true);
+        binding.sliderPrice.setValues(1000000f, 8000000f);
+        binding.chipApartment.setChecked(false);
 
         updateWardCount();
-        Toast.makeText(this, "Đã thiết lập lại bộ lọc", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Đã reset bộ lọc", Toast.LENGTH_SHORT).show();
     }
 
     private void showProvinceDialog() {
@@ -94,11 +97,11 @@ public class SearchFilterActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void showDistrictDialog() {
-        String[] districts = {"Quận Bình Thạnh", "TP. Thủ Đức", "Quận 1", "Quận 3", "Quận 7", "Quận Tân Bình"};
+    private void showWardDialog() {
+        String[] wards = {"Phường Thảo Điền", "Phường Bến Nghé", "Phường Linh Trung", "Phường An Phú", "Phường Tân Phong", "Phường Linh Xuân"};
         new AlertDialog.Builder(this)
-                .setTitle("Chọn Quận / Huyện")
-                .setItems(districts, (dialog, which) -> binding.tvDistrict.setText(districts[which]))
+                .setTitle("Chọn Phường / Xã")
+                .setItems(wards, (dialog, which) -> binding.tvWard.setText(wards[which]))
                 .show();
     }
 }

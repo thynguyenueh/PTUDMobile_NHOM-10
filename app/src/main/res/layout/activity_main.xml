@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F7F8F5"
@@ -335,62 +336,11 @@
 
     <!-- ================= FIXED BOTTOM NAVIGATION ================= -->
 
-    <LinearLayout
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        style="@style/Widget.App.BottomNavigation"
         android:layout_width="match_parent"
-        android:layout_height="75dp"
-        android:background="#DDEBD3"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/btnNavHome"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:text="⌂&#10;Trang chủ"
-            android:textColor="#172033"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/btnNavSaved"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:text="♡&#10;Đã lưu"
-            android:textColor="#172033"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/btnNavMessages"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:text="◯&#10;Tin nhắn"
-            android:textColor="#172033"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/btnNavProfile"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:text="♙&#10;Hồ sơ"
-            android:textColor="#719B28"
-            android:textSize="11sp"
-            android:textStyle="bold" />
-
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        app:menu="@menu/menu_bottom_nav" />
 
 </LinearLayout>

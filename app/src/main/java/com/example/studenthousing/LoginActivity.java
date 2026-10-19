@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
+import com.example.studenthousing.data.local.UserDao;
 import com.example.studenthousing.data.model.User;
 import com.example.studenthousing.data.repository.UserRepository;
 import com.example.studenthousing.util.AppCallback;
@@ -30,10 +31,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // 1. Ánh xạ các View
         initViews();
-
-        // 2. Cài đặt sự kiện Click
         setupEvents();
     }
 
@@ -48,23 +46,17 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setupEvents() {
-        // Nút ẩn/hiện mật khẩu
         btnTogglePassword.setOnClickListener(v -> togglePasswordVisibility());
-
-        // Nút Đăng nhập
         btnLogin.setOnClickListener(v -> handleLogin());
 
-        // Nút Tùy chọn khác
         btnSecondary.setOnClickListener(v ->
                 Toast.makeText(LoginActivity.this, "Tính năng đang phát triển", Toast.LENGTH_SHORT).show()
         );
 
-        // Quên mật khẩu
         tvForgotPassword.setOnClickListener(v ->
                 Toast.makeText(LoginActivity.this, "Chuyển sang Quên mật khẩu", Toast.LENGTH_SHORT).show()
         );
 
-        // CHUYỂN SANG MÀN HÌNH ĐĂNG KÝ HỘ GIA ĐÌNH
         tvRegister.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
             startActivity(intent);
@@ -105,37 +97,36 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        String suffix = phone.length() >= 4 ? phone.substring(phone.length() - 4) : phone;
-        User user = new User();
-        user.setUserId("user_" + phone);
-        user.setPhone(phone);
-        user.setFamilyName("Gia đình " + suffix);
-        user.setRole("PARENT");
-        user.setCreatedAt(System.currentTimeMillis());
+        UserDao userDao = new UserDao(this);
+        User existingUser = userDao.getById("user_" + phone);
 
-        UserRepository userRepository = new UserRepository(this);
-        userRepository.saveUserProfile(user, new AppCallback<Void>() {
-            @Override
-            public void onSuccess(Void d) {
-                runOnUiThread(() -> {
-                    Toast.makeText(LoginActivity.this, "Đăng nhập & Lưu Firestore thành công!", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    finish();
-                });
-            }
+        if (existingUser != null) {
+            UserRepository userRepository = new UserRepository(this);
+            userRepository.saveUserProfile(existingUser, new AppCallback<Void>() {
+                @Override
+                public void onSuccess(Void d) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(LoginActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    });
+                }
 
-            @Override
-            public void onError(Exception e) {
-                runOnUiThread(() -> {
-                    Toast.makeText(LoginActivity.this, "Đã lưu phiên đăng nhập cục bộ!", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    finish();
-                });
-            }
-        });
+                @Override
+                public void onError(Exception e) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(LoginActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    });
+                }
+            });
+        } else {
+            Toast.makeText(this, "Số điện thoại chưa được đăng ký tài khoản! Vui lòng đăng ký trước.", Toast.LENGTH_LONG).show();
+        }
     }
 }

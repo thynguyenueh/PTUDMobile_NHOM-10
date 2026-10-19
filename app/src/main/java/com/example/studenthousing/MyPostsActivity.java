@@ -15,6 +15,7 @@ import com.example.studenthousing.data.repository.PostRepository;
 import com.example.studenthousing.util.AppCallback;
 import com.example.studenthousing.util.SessionManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MyPostsActivity extends AppCompatActivity {
@@ -40,22 +41,32 @@ public class MyPostsActivity extends AppCompatActivity {
         View btnCreatePost = findViewById(R.id.btnCreatePost);
         if (btnCreatePost != null) {
             btnCreatePost.setOnClickListener(v ->
-                    Toast.makeText(this, "Mở form đăng bài mới", Toast.LENGTH_SHORT).show());
+                    startActivity(new Intent(MyPostsActivity.this, RegisterStep2Activity.class)));
         }
 
         loadMyPosts();
     }
 
     private void loadMyPosts() {
-        postRepository.getLatestPosts(10, new AppCallback<List<AccommodationPost>>() {
+        String currentUserId = session != null ? session.getUserId() : null;
+        postRepository.getLatestPosts(50, new AppCallback<List<AccommodationPost>>() {
             @Override
             public void onSuccess(List<AccommodationPost> posts) {
-                runOnUiThread(() -> displayPosts(posts));
+                List<AccommodationPost> myPosts = new ArrayList<>();
+                if (posts != null) {
+                    for (AccommodationPost p : posts) {
+                        if (currentUserId == null || (p.getUserId() != null && p.getUserId().equals(currentUserId)) || p.getPostId().startsWith("post_")) {
+                            myPosts.add(p);
+                        }
+                    }
+                }
+                runOnUiThread(() -> displayPosts(myPosts));
             }
 
             @Override
             public void onError(Exception e) {
-                runOnUiThread(() -> displayPosts(null));
+                List<AccommodationPost> cached = postRepository.getCachedPosts();
+                runOnUiThread(() -> displayPosts(cached));
             }
         });
     }
@@ -117,8 +128,12 @@ public class MyPostsActivity extends AppCompatActivity {
         }
 
         if (btnEditPost != null) {
-            btnEditPost.setOnClickListener(v ->
-                    Toast.makeText(MyPostsActivity.this, "Chỉnh sửa: " + title, Toast.LENGTH_SHORT).show());
+            btnEditPost.setOnClickListener(v -> {
+                Intent intent = new Intent(MyPostsActivity.this, RegisterStep2Activity.class);
+                intent.putExtra("IS_EDIT_MODE", true);
+                intent.putExtra("POST_TITLE", title);
+                startActivity(intent);
+            });
         }
 
         layoutPostsContainer.addView(itemView);

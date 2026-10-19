@@ -13,6 +13,7 @@ import com.example.studenthousing.data.model.AccommodationPost;
 import com.example.studenthousing.data.repository.PostRepository;
 import com.example.studenthousing.databinding.ActivityHomeBinding;
 import com.example.studenthousing.util.AppCallback;
+import com.example.studenthousing.util.SessionManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +27,7 @@ public class HomeActivity extends AppCompatActivity {
     private ActivityHomeBinding binding;
     private HouseAdapter houseAdapter;
     private PostRepository postRepository;
+    private SessionManager session;
     private List<House> allHouses = new ArrayList<>();
 
     @Override
@@ -34,6 +36,7 @@ public class HomeActivity extends AppCompatActivity {
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        session = new SessionManager(this);
         DatabaseSeeder.seedIfEmpty(this);
         postRepository = new PostRepository(this);
 
@@ -43,6 +46,20 @@ public class HomeActivity extends AppCompatActivity {
         setupListeners();
 
         loadPostsFromRepository();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (session != null && binding.tvHomeUserName != null) {
+            String familyName = session.getUserFamilyName();
+            if (familyName != null && !familyName.isEmpty()) {
+                binding.tvHomeUserName.setText(familyName);
+            }
+        }
+        if (binding.bottomNav != null) {
+            binding.bottomNav.setSelectedItemId(R.id.nav_home);
+        }
     }
 
     private void loadPostsFromRepository() {
@@ -138,12 +155,15 @@ public class HomeActivity extends AppCompatActivity {
                 return true;
             } else if (itemId == R.id.nav_saved) {
                 startActivity(new Intent(this, SavedHousesActivity.class));
+                finish();
                 return true;
             } else if (itemId == R.id.nav_messages) {
-                startActivity(new Intent(this, ChatActivity.class));
+                startActivity(new Intent(this, ChatRoomsActivity.class));
+                finish();
                 return true;
             } else if (itemId == R.id.nav_profile) {
                 startActivity(new Intent(this, MainActivity.class));
+                finish();
                 return true;
             }
             return false;

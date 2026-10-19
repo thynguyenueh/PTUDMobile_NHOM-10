@@ -49,6 +49,33 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadProfileInfo();
+    }
+
+    private void loadProfileInfo() {
+        android.widget.TextView tvSettingName = findViewById(R.id.tvSettingName);
+        android.widget.TextView tvSettingPhone = findViewById(R.id.tvSettingPhone);
+        android.widget.TextView tvSettingAvatar = findViewById(R.id.tvSettingAvatar);
+
+        String familyName = session.getUserFamilyName();
+        String phone = session.getUserPhone();
+
+        if (tvSettingName != null && familyName != null && !familyName.isEmpty()) {
+            tvSettingName.setText(familyName);
+            if (tvSettingAvatar != null) {
+                tvSettingAvatar.setText(familyName.substring(0, 1).toUpperCase());
+            }
+        }
+
+        if (tvSettingPhone != null && phone != null && !phone.isEmpty()) {
+            String maskedPhone = phone.length() >= 4 ? phone.substring(0, Math.min(phone.length(), 3)) + " ••• ••" + phone.substring(phone.length() - 2) : phone;
+            tvSettingPhone.setText(maskedPhone + " · Tài khoản Đã xác minh");
+        }
+    }
+
     private void bind(int viewId, String toastMsg) {
         View v = findViewById(viewId);
         if (v != null) {

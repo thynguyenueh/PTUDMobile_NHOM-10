@@ -23,7 +23,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 
+import com.example.studenthousing.data.model.AccommodationPost;
 import com.example.studenthousing.data.model.User;
+import com.example.studenthousing.data.repository.PostRepository;
 import com.example.studenthousing.data.repository.UserRepository;
 import com.example.studenthousing.util.AppCallback;
 import com.google.android.material.chip.Chip;
@@ -325,30 +327,62 @@ public class RegisterStep2Activity extends AppCompatActivity {
         user.setRole("PARENT");
         user.setCreatedAt(now);
 
+        String houseTitle = etHouseTitle != null ? etHouseTitle.getText().toString().trim() : "";
+        if (houseTitle.isEmpty()) {
+            houseTitle = "Căn hộ của " + finalName;
+        }
+        String cityName = tvCity != null ? tvCity.getText().toString().trim() : "";
+        String wardName = tvWard != null ? tvWard.getText().toString().trim() : "";
+        String street = etStreet != null ? etStreet.getText().toString().trim() : "";
+        String houseNum = etHouseNumber != null ? etHouseNumber.getText().toString().trim() : "";
+        String fullAddress = (houseNum + " " + street + ", " + wardName + ", " + cityName).replace("  ", " ").trim();
+        if (fullAddress.equals(", ,")) fullAddress = "TP. Hồ Chí Minh";
+
+        String desc = etDescription != null ? etDescription.getText().toString().trim() : "";
+
+        AccommodationPost post = new AccommodationPost();
+        post.setPostId("post_" + now);
+        post.setUserId(user.getUserId());
+        post.setFamilyName(finalName);
+        post.setTitle(houseTitle);
+        post.setAddress(fullAddress);
+        post.setDescription(desc);
+        post.setStatus("Đang hiển thị");
+        post.setCreatedAt(now);
+
         UserRepository userRepository = new UserRepository(this);
+        PostRepository postRepository = new PostRepository(this);
+
         userRepository.saveUserProfile(user, new AppCallback<Void>() {
             @Override
             public void onSuccess(Void d) {
-                runOnUiThread(() -> {
-                    String msg = isEditMode ? "Cập nhật thông tin & chỗ ở thành công!" : "Đăng ký & Lưu dữ liệu thành công!";
-                    Toast.makeText(RegisterStep2Activity.this, msg, Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(RegisterStep2Activity.this, MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    finish();
+                postRepository.createPost(post, new AppCallback<String>() {
+                    @Override
+                    public void onSuccess(String postId) {
+                        navigateToMain();
+                    }
+                    @Override
+                    public void onError(Exception e) {
+                        navigateToMain();
+                    }
                 });
             }
 
             @Override
             public void onError(Exception e) {
-                runOnUiThread(() -> {
-                    Toast.makeText(RegisterStep2Activity.this, "Đã lưu thông tin thành công!", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(RegisterStep2Activity.this, MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    finish();
-                });
+                navigateToMain();
             }
+        });
+    }
+
+    private void navigateToMain() {
+        runOnUiThread(() -> {
+            String msg = isEditMode ? "Cập nhật thông tin & đăng bài thành công!" : "Đăng ký & Đăng bài lên hệ thống thành công!";
+            Toast.makeText(RegisterStep2Activity.this, msg, Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(RegisterStep2Activity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         });
     }
 }

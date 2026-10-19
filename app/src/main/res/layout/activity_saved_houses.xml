@@ -115,26 +115,12 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Bottom Action Button -->
-    <LinearLayout
+    <!-- Bottom Navigation Bar -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        style="@style/Widget.App.BottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:padding="16dp">
-
-        <TextView
-            android:id="@+id/btnGoToSearch"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/bg_button"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:text="🔍 Tìm kiếm thêm nhà ở"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-
-    </LinearLayout>
+        app:menu="@menu/menu_bottom_nav" />
 
 </LinearLayout>
