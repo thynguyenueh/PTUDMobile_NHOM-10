@@ -21,37 +21,37 @@ public class ReviewRepository {
         this.remote = new ReviewRemote();
     }
 
-    // Tạo review
     public void create(Review r, AppCallback<String> cb) {
         if (r.getCreatedAt() == 0) r.setCreatedAt(System.currentTimeMillis());
-
-        if (NetworkUtils.isOnline(ctx)) {
-            remote.create(r, new AppCallback<String>() {
-                @Override
-                public void onSuccess(String id) {
-                    r.setReviewId(id);
-                    local.upsert(r);
-                    cb.onSuccess(id);
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    // Vẫn cache local
-                    String tempId = "temp_" + System.currentTimeMillis();
-                    r.setReviewId(tempId);
-                    local.upsert(r);
-                    cb.onError(e);
-                }
-            });
-        } else {
-            String tempId = "temp_" + System.currentTimeMillis();
-            r.setReviewId(tempId);
-            local.upsert(r);
-            cb.onError(new Exception("Offline — đã lưu local"));
+        if (r.getReviewId() == null || r.getReviewId().isEmpty()) {
+            r.setReviewId("temp_" + java.util.UUID.randomUUID().toString());
         }
+
+        if (!NetworkUtils.isOnline(ctx)) {
+            r.setSyncStatus("PENDING_CREATE");
+            local.upsert(r);
+            if (cb != null) cb.onSuccess(r.getReviewId());
+            return;
+        }
+
+        remote.create(r, new AppCallback<String>() {
+            @Override
+            public void onSuccess(String id) {
+                r.setReviewId(id);
+                r.setSyncStatus("SYNCED");
+                local.upsert(r);
+                if (cb != null) cb.onSuccess(id);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                r.setSyncStatus("PENDING_CREATE");
+                local.upsert(r);
+                if (cb != null) cb.onSuccess(r.getReviewId());
+            }
+        });
     }
 
-    // Đọc review theo reviewee
     public void getByReviewee(String revieweeId, AppCallback<List<Review>> cb) {
         List<Review> cached = local.getByReviewee(revieweeId);
 
@@ -79,7 +79,6 @@ public class ReviewRepository {
         }
     }
 
-    // Đọc review theo request
     public void getByRequest(String requestId, AppCallback<List<Review>> cb) {
         List<Review> cached = local.getByRequest(requestId);
 
@@ -107,7 +106,6 @@ public class ReviewRepository {
         }
     }
 
-    // Điểm trung bình
     public void getAverageRating(String revieweeId, AppCallback<Double> cb) {
         List<Review> cached = local.getByReviewee(revieweeId);
 

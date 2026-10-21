@@ -132,7 +132,7 @@ public class UserReviewsActivity extends AppCompatActivity {
         }
     }
 
-    private void addReviewItemView(String name, int rating, String comment, long timestamp, String imagePath) {
+    private void addReviewItemView(String name, double rating, String comment, long timestamp, String imagePath) {
         LayoutInflater inflater = LayoutInflater.from(this);
         View itemView = inflater.inflate(R.layout.item_review, layoutReviewsContainer, false);
 
@@ -149,8 +149,9 @@ public class UserReviewsActivity extends AppCompatActivity {
         }
 
         StringBuilder stars = new StringBuilder();
+        int ratingInt = (int) rating;
         for (int i = 0; i < 5; i++) {
-            stars.append(i < rating ? "★" : "☆");
+            stars.append(i < ratingInt ? "★" : "☆");
         }
         tvStars.setText(stars.toString());
 

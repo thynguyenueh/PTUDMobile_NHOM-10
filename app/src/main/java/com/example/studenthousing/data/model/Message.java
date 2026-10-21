@@ -12,8 +12,12 @@ public class Message {
     private String imageUrl;
     private long sentAt;
     private boolean isRead;
+    private String syncStatus = "SYNCED";
 
     public Message() {}
+
+    public String getSyncStatus() { return syncStatus; }
+    public void setSyncStatus(String syncStatus) { this.syncStatus = syncStatus; }
 
     public String getMessageId() { return messageId; }
     public void setMessageId(String messageId) { this.messageId = messageId; }

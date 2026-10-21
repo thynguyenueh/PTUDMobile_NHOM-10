@@ -16,18 +16,17 @@ public class ExchangeRemote {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final String COLLECTION = "exchange_requests";
 
-    // Tạo request mới
     public void create(ExchangeRequest r, AppCallback<String> cb) {
-        db.collection(COLLECTION)
-                .add(r)
-                .addOnSuccessListener(ref -> {
-                    r.setRequestId(ref.getId());
-                    cb.onSuccess(ref.getId());
-                })
+        String requestId = r.getRequestId();
+        if (requestId == null || requestId.isEmpty()) {
+            cb.onError(new IllegalArgumentException("Request ID is required for idempotent create"));
+            return;
+        }
+        db.collection(COLLECTION).document(requestId).set(r)
+                .addOnSuccessListener(unused -> cb.onSuccess(requestId))
                 .addOnFailureListener(cb::onError);
     }
 
-    // Update
     public void update(ExchangeRequest r, AppCallback<Void> cb) {
         db.collection(COLLECTION).document(r.getRequestId())
                 .set(r)
@@ -35,7 +34,6 @@ public class ExchangeRemote {
                 .addOnFailureListener(cb::onError);
     }
 
-    // Update chỉ field status
     public void updateStatus(String requestId, String status, AppCallback<Void> cb) {
         Map<String, Object> updates = new HashMap<>();
         updates.put("status", status);
@@ -47,7 +45,6 @@ public class ExchangeRemote {
                 .addOnFailureListener(cb::onError);
     }
 
-    // Delete
     public void delete(String requestId, AppCallback<Void> cb) {
         db.collection(COLLECTION).document(requestId)
                 .delete()
@@ -55,7 +52,6 @@ public class ExchangeRemote {
                 .addOnFailureListener(cb::onError);
     }
 
-    // Đọc danh sách request do user gửi
     public void getBySender(String senderId, AppCallback<List<ExchangeRequest>> cb) {
         db.collection(COLLECTION)
                 .whereEqualTo("senderId", senderId)
@@ -73,7 +69,6 @@ public class ExchangeRemote {
                 .addOnFailureListener(cb::onError);
     }
 
-    // Đọc danh sách request user nhận được
     public void getByReceiver(String receiverId, AppCallback<List<ExchangeRequest>> cb) {
         db.collection(COLLECTION)
                 .whereEqualTo("receiverId", receiverId)
@@ -91,7 +86,6 @@ public class ExchangeRemote {
                 .addOnFailureListener(cb::onError);
     }
 
-    // Get 1 request
     public void getById(String requestId, AppCallback<ExchangeRequest> cb) {
         db.collection(COLLECTION).document(requestId)
                 .get()
@@ -107,7 +101,6 @@ public class ExchangeRemote {
                 .addOnFailureListener(cb::onError);
     }
 
-    // REALTIME LISTENER — cho user theo dõi request gửi/nhận
     public ListenerRegistration listenBySender(String senderId, AppCallback<List<ExchangeRequest>> cb) {
         return db.collection(COLLECTION)
                 .whereEqualTo("senderId", senderId)

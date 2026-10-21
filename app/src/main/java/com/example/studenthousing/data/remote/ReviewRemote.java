@@ -14,12 +14,15 @@ public class ReviewRemote {
     private static final String COLLECTION = "reviews";
 
     public void create(Review r, AppCallback<String> cb) {
-        db.collection(COLLECTION)
-                .add(r)
-                .addOnSuccessListener(ref -> {
-                    r.setReviewId(ref.getId());
-                    cb.onSuccess(ref.getId());
-                })
+        String id = r.getReviewId();
+        if (id == null || id.isEmpty()) {
+            id = db.collection(COLLECTION).document().getId();
+            r.setReviewId(id);
+        }
+        final String reviewId = id;
+        db.collection(COLLECTION).document(reviewId)
+                .set(r)
+                .addOnSuccessListener(ref -> cb.onSuccess(reviewId))
                 .addOnFailureListener(cb::onError);
     }
 
@@ -37,7 +40,6 @@ public class ReviewRemote {
                 .addOnFailureListener(cb::onError);
     }
 
-    // Query theo reviewee (người được đánh giá)
     public void getByReviewee(String revieweeId, AppCallback<List<Review>> cb) {
         db.collection(COLLECTION)
                 .whereEqualTo("revieweeId", revieweeId)
@@ -55,7 +57,6 @@ public class ReviewRemote {
                 .addOnFailureListener(cb::onError);
     }
 
-    // Query theo request (1 request có tối đa 2 review — 2 chiều)
     public void getByRequest(String requestId, AppCallback<List<Review>> cb) {
         db.collection(COLLECTION)
                 .whereEqualTo("requestId", requestId)
@@ -72,7 +73,6 @@ public class ReviewRemote {
                 .addOnFailureListener(cb::onError);
     }
 
-    // Điểm đánh giá trung bình
     public void getAverageRating(String revieweeId, AppCallback<Double> cb) {
         getByReviewee(revieweeId, new AppCallback<List<Review>>() {
             @Override

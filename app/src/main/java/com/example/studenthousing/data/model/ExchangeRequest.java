@@ -1,5 +1,6 @@
 package com.example.studenthousing.data.model;
 
+import com.example.studenthousing.util.Constants;
 import com.google.firebase.firestore.DocumentId;
 
 public class ExchangeRequest {
@@ -13,13 +14,19 @@ public class ExchangeRequest {
     private String exchangePeriod;
     private String message;
     private String agreementText;
-    private String status;           // PENDING | ACCEPTED | REJECTED | CANCELLED
+    private long senderSignedAt;
+    private long receiverSignedAt;
+    private String status = Constants.REQ_PENDING;
     private long createdAt;
     private long respondedAt;
     private long completedAt;
     private long updatedAt;
+    private String syncStatus = Constants.SYNC_SYNCED;
 
     public ExchangeRequest() {}
+
+    public String getSyncStatus() { return syncStatus; }
+    public void setSyncStatus(String syncStatus) { this.syncStatus = syncStatus; }
 
     public String getRequestId() { return requestId; }
     public void setRequestId(String requestId) { this.requestId = requestId; }
@@ -47,6 +54,12 @@ public class ExchangeRequest {
 
     public String getAgreementText() { return agreementText; }
     public void setAgreementText(String agreementText) { this.agreementText = agreementText; }
+
+    public long getSenderSignedAt() { return senderSignedAt; }
+    public void setSenderSignedAt(long senderSignedAt) { this.senderSignedAt = senderSignedAt; }
+
+    public long getReceiverSignedAt() { return receiverSignedAt; }
+    public void setReceiverSignedAt(long receiverSignedAt) { this.receiverSignedAt = receiverSignedAt; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }

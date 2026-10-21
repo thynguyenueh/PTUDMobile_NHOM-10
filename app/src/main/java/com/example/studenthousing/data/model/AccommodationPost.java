@@ -1,39 +1,48 @@
 package com.example.studenthousing.data.model;
 
+import com.example.studenthousing.util.Constants;
 import com.google.firebase.firestore.DocumentId;
+import com.google.firebase.firestore.Exclude;
 import java.util.List;
 
 public class AccommodationPost {
     @DocumentId
     private String postId;
     private String userId;
-    private String familyName;         // denormalize
+    private String familyName;
     private String title;
     private String address;
+    private String addressFingerprint;
+    private String addressVerificationStatus = Constants.ADDR_UNVERIFIED;
+    private String roomNumber;
     private int cityCode;
-    private int districtCode;
     private int wardCode;
     private String cityName;
-    private String districtName;
     private String wardName;
     private double latitude;
     private double longitude;
     private double distanceKm;
-    private String houseType;          // APARTMENT | WHOLE_HOUSE | SHARED_ROOM
+    private String distanceSource;
+    private boolean isDistanceEstimate;
+    private String listingType = Constants.LISTING_EXCHANGE;
+    private String houseType;
     private double price;
     private double area;
     private String description;
-    private List<String> images;       // URL hoặc resource name
+    private List<String> images;
     private List<String> utilities;
     private boolean isPoliceVerified;
     private String verificationBadge;
-    private String status;             // AVAILABLE | EXCHANGED | HIDDEN
+    private String status = Constants.POST_AVAILABLE;
     private long createdAt;
     private long updatedAt;
+    private String syncStatus = Constants.SYNC_SYNCED;
 
     public AccommodationPost() {}
 
-    // Getters & Setters
+    public String getSyncStatus() { return syncStatus; }
+    public void setSyncStatus(String syncStatus) { this.syncStatus = syncStatus; }
+
     public String getPostId() { return postId; }
     public void setPostId(String postId) { this.postId = postId; }
 
@@ -49,11 +58,17 @@ public class AccommodationPost {
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
 
+    public String getAddressFingerprint() { return addressFingerprint; }
+    public void setAddressFingerprint(String addressFingerprint) { this.addressFingerprint = addressFingerprint; }
+
+    public String getAddressVerificationStatus() { return addressVerificationStatus; }
+    public void setAddressVerificationStatus(String addressVerificationStatus) { this.addressVerificationStatus = addressVerificationStatus; }
+
+    public String getRoomNumber() { return roomNumber; }
+    public void setRoomNumber(String roomNumber) { this.roomNumber = roomNumber; }
+
     public int getCityCode() { return cityCode; }
     public void setCityCode(int cityCode) { this.cityCode = cityCode; }
-
-    public int getDistrictCode() { return districtCode; }
-    public void setDistrictCode(int districtCode) { this.districtCode = districtCode; }
 
     public int getWardCode() { return wardCode; }
     public void setWardCode(int wardCode) { this.wardCode = wardCode; }
@@ -61,11 +76,14 @@ public class AccommodationPost {
     public String getCityName() { return cityName; }
     public void setCityName(String cityName) { this.cityName = cityName; }
 
-    public String getDistrictName() { return districtName; }
-    public void setDistrictName(String districtName) { this.districtName = districtName; }
+    @Exclude
+    public String getProvince() { return cityName; }
 
     public String getWardName() { return wardName; }
     public void setWardName(String wardName) { this.wardName = wardName; }
+
+    @Exclude
+    public String getWard() { return wardName; }
 
     public double getLatitude() { return latitude; }
     public void setLatitude(double latitude) { this.latitude = latitude; }
@@ -76,8 +94,20 @@ public class AccommodationPost {
     public double getDistanceKm() { return distanceKm; }
     public void setDistanceKm(double distanceKm) { this.distanceKm = distanceKm; }
 
+    public String getDistanceSource() { return distanceSource; }
+    public void setDistanceSource(String distanceSource) { this.distanceSource = distanceSource; }
+
+    public boolean isDistanceEstimate() { return isDistanceEstimate; }
+    public void setDistanceEstimate(boolean distanceEstimate) { isDistanceEstimate = distanceEstimate; }
+
+    public String getListingType() { return listingType; }
+    public void setListingType(String listingType) { this.listingType = listingType; }
+
     public String getHouseType() { return houseType; }
     public void setHouseType(String houseType) { this.houseType = houseType; }
+
+    @Exclude
+    public String getHousingType() { return houseType; }
 
     public double getPrice() { return price; }
     public void setPrice(double price) { this.price = price; }
@@ -108,4 +138,15 @@ public class AccommodationPost {
 
     public long getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(long updatedAt) { this.updatedAt = updatedAt; }
+
+    @Exclude
+    public String getHouseTypeDisplay() {
+        if (houseType == null) return "";
+        switch (houseType.toUpperCase()) {
+            case "APARTMENT":    return "Căn hộ";
+            case "WHOLE_HOUSE":  return "Nhà nguyên căn";
+            case "SHARED_ROOM":  return "Phòng ở ghép";
+            default:             return houseType;
+        }
+    }
 }
