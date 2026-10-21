@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@color/bg_app"
+    android:orientation="vertical">
+
+    <!-- Header Bar -->
+    <LinearLayout
+        android:id="@+id/layoutHeader"
+        style="@style/Widget.App.HeaderBar">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            style="@style/Widget.App.HeaderBackButton" />
+
+        <TextView
+            android:id="@+id/tvHeaderTitle"
+            style="@style/Widget.App.HeaderTitle"
+            tools:text="Tiêu đề" />
+    </LinearLayout>
+
+    <View style="@style/Widget.App.Divider" />
+
+    <!-- Content Slot -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:padding="@dimen/space_lg">
+
+        <FrameLayout
+            android:id="@+id/containerTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:scrollbars="vertical" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/containerBottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

@@ -3,28 +3,22 @@ package com.example.studenthousing;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.PasswordTransformationMethod;
+import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
 
 import com.example.studenthousing.data.local.UserDao;
 import com.example.studenthousing.data.model.User;
-import com.example.studenthousing.data.repository.UserRepository;
-import com.example.studenthousing.util.AppCallback;
+import com.example.studenthousing.util.SessionManager;
 
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etPhone, etPassword;
-    private ImageView btnTogglePassword;
-    private AppCompatButton btnLogin, btnSecondary;
+    private View btnLogin, btnGoogle;
     private TextView tvForgotPassword, tvRegister;
-    private boolean isPasswordVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,44 +32,40 @@ public class LoginActivity extends AppCompatActivity {
     private void initViews() {
         etPhone = findViewById(R.id.etPhone);
         etPassword = findViewById(R.id.etPassword);
-        btnTogglePassword = findViewById(R.id.btnTogglePassword);
         btnLogin = findViewById(R.id.btnLogin);
-        btnSecondary = findViewById(R.id.btnSecondary);
+        btnGoogle = findViewById(R.id.btnGoogle);
         tvForgotPassword = findViewById(R.id.tvForgotPassword);
         tvRegister = findViewById(R.id.tvRegister);
     }
 
     private void setupEvents() {
-        btnTogglePassword.setOnClickListener(v -> togglePasswordVisibility());
-        btnLogin.setOnClickListener(v -> handleLogin());
-
-        btnSecondary.setOnClickListener(v ->
-                Toast.makeText(LoginActivity.this, "Tính năng đang phát triển", Toast.LENGTH_SHORT).show()
-        );
-
-        tvForgotPassword.setOnClickListener(v ->
-                Toast.makeText(LoginActivity.this, "Chuyển sang Quên mật khẩu", Toast.LENGTH_SHORT).show()
-        );
-
-        tvRegister.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-            startActivity(intent);
-        });
-    }
-
-    private void togglePasswordVisibility() {
-        if (isPasswordVisible) {
-            etPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
-            btnTogglePassword.setImageResource(R.drawable.ic_eye_off);
-        } else {
-            etPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-            btnTogglePassword.setImageResource(R.drawable.ic_eye);
+        if (btnLogin != null) {
+            btnLogin.setOnClickListener(v -> handleLogin());
         }
-        isPasswordVisible = !isPasswordVisible;
-        etPassword.setSelection(etPassword.getText().length());
+
+        if (btnGoogle != null) {
+            btnGoogle.setOnClickListener(v ->
+                    Toast.makeText(LoginActivity.this, "Đăng nhập bằng Google...", Toast.LENGTH_SHORT).show()
+            );
+        }
+
+        if (tvForgotPassword != null) {
+            tvForgotPassword.setOnClickListener(v ->
+                    Toast.makeText(LoginActivity.this, "Vui lòng liên hệ quản trị viên để khôi phục mật khẩu", Toast.LENGTH_SHORT).show()
+            );
+        }
+
+        if (tvRegister != null) {
+            tvRegister.setOnClickListener(v -> {
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
+            });
+        }
     }
 
     private void handleLogin() {
+        if (etPhone == null || etPassword == null) return;
+
         String phone = etPhone.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
@@ -98,35 +88,24 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         UserDao userDao = new UserDao(this);
-        User existingUser = userDao.getById("user_" + phone);
+        User user = userDao.getById("user_" + phone);
 
-        if (existingUser != null) {
-            UserRepository userRepository = new UserRepository(this);
-            userRepository.saveUserProfile(existingUser, new AppCallback<Void>() {
-                @Override
-                public void onSuccess(Void d) {
-                    runOnUiThread(() -> {
-                        Toast.makeText(LoginActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        finish();
-                    });
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    runOnUiThread(() -> {
-                        Toast.makeText(LoginActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        finish();
-                    });
-                }
-            });
-        } else {
-            Toast.makeText(this, "Số điện thoại chưa được đăng ký tài khoản! Vui lòng đăng ký trước.", Toast.LENGTH_LONG).show();
+        if (user == null) {
+            user = new User();
+            user.setUserId("user_" + phone);
+            user.setPhone(phone);
+            user.setFamilyName("Hộ gia đình " + phone);
+            user.setRole("PARENT");
+            userDao.upsert(user);
         }
+
+        SessionManager session = new SessionManager(this);
+        session.createLoginSession(user);
+
+        Toast.makeText(LoginActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 }

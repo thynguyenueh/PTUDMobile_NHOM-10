@@ -6,23 +6,18 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 
-import com.example.studenthousing.data.model.User;
-import com.example.studenthousing.data.repository.UserRepository;
-import com.example.studenthousing.util.AppCallback;
 import com.example.studenthousing.util.SessionManager;
 import com.google.android.material.checkbox.MaterialCheckBox;
 
@@ -32,13 +27,12 @@ import java.util.List;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private ImageView btnBack, btnTogglePassword;
+    private ImageView btnBack;
     private EditText etParentName, etPhone, etPassword, etConfirmPassword;
-    private LinearLayout btnSelectUniversity;
+    private View btnSelectUniversity;
     private TextView tvUniversity, tvLoginLink, tvHeaderTitle;
     private MaterialCheckBox cbTerms;
     private AppCompatButton btnContinue;
-    private boolean isPasswordVisible = false;
     private boolean isEditMode = false;
     private SessionManager session;
 
@@ -60,10 +54,12 @@ public class RegisterActivity extends AppCompatActivity {
         tvHeaderTitle = findViewById(R.id.tvHeaderTitle);
         etParentName = findViewById(R.id.etParentName);
         etPhone = findViewById(R.id.etPhone);
-        btnSelectUniversity = findViewById(R.id.btnSelectUniversity);
+        btnSelectUniversity = findViewById(R.id.tilUniversity);
+        if (btnSelectUniversity == null) {
+            btnSelectUniversity = findViewById(R.id.tvUniversity);
+        }
         tvUniversity = findViewById(R.id.tvUniversity);
         etPassword = findViewById(R.id.etPassword);
-        btnTogglePassword = findViewById(R.id.btnTogglePassword);
         etConfirmPassword = findViewById(R.id.etConfirmPassword);
         cbTerms = findViewById(R.id.cbTerms);
         btnContinue = findViewById(R.id.btnContinue);
@@ -85,11 +81,10 @@ public class RegisterActivity extends AppCompatActivity {
                 cbTerms.setChecked(true);
             }
 
-            // Prefill current user data
-            if (session.getUserPhone() != null) {
+            if (session.getUserPhone() != null && etPhone != null) {
                 etPhone.setText(session.getUserPhone());
             }
-            if (session.getUserFamilyName() != null) {
+            if (session.getUserFamilyName() != null && etParentName != null) {
                 etParentName.setText(session.getUserFamilyName());
             }
         }
@@ -102,10 +97,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (btnSelectUniversity != null) {
             btnSelectUniversity.setOnClickListener(v -> showUniversitySearchDialog());
-        }
-
-        if (btnTogglePassword != null) {
-            btnTogglePassword.setOnClickListener(v -> togglePasswordVisibility());
+        } else if (tvUniversity != null) {
+            tvUniversity.setOnClickListener(v -> showUniversitySearchDialog());
         }
 
         if (btnContinue != null) {
@@ -115,18 +108,6 @@ public class RegisterActivity extends AppCompatActivity {
         if (tvLoginLink != null) {
             tvLoginLink.setOnClickListener(v -> finish());
         }
-    }
-
-    private void togglePasswordVisibility() {
-        if (isPasswordVisible) {
-            etPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
-            btnTogglePassword.setImageResource(R.drawable.ic_eye_off);
-        } else {
-            etPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-            btnTogglePassword.setImageResource(R.drawable.ic_eye);
-        }
-        isPasswordVisible = !isPasswordVisible;
-        etPassword.setSelection(etPassword.getText().length());
     }
 
     private void showUniversitySearchDialog() {
@@ -239,9 +220,9 @@ public class RegisterActivity extends AppCompatActivity {
 
         lvUniversities.setOnItemClickListener((parent, view, position, id) -> {
             String selectedUni = adapter.getItem(position);
-            if (selectedUni != null) {
+            if (selectedUni != null && tvUniversity != null) {
                 tvUniversity.setText(selectedUni);
-                tvUniversity.setTextColor(ContextCompat.getColor(this, R.color.text_dark));
+                tvUniversity.setTextColor(ContextCompat.getColor(this, R.color.text_main));
             }
             dialog.dismiss();
         });
@@ -260,6 +241,8 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void handleContinueOrSave() {
+        if (etParentName == null || etPhone == null || etPassword == null || etConfirmPassword == null) return;
+
         String parentName = etParentName.getText().toString().trim();
         String phone = etPhone.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
@@ -295,12 +278,11 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        if (!cbTerms.isChecked()) {
+        if (cbTerms != null && !cbTerms.isChecked()) {
             Toast.makeText(this, "Vui lòng đồng ý với Điều khoản dịch vụ", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Chuyển sang Bước 2: Thông tin Chỗ ở (có hỗ trợ chỉnh sửa thông tin chỗ ở)
         Intent intent = new Intent(RegisterActivity.this, RegisterStep2Activity.class);
         intent.putExtra("IS_EDIT_MODE", isEditMode);
         intent.putExtra("PARENT_NAME", parentName);

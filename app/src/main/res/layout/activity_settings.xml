@@ -1,23 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F7F8F5"
+    android:fitsSystemWindows="true"
+    android:background="@color/bg_app"
     android:orientation="vertical">
 
-    <!-- Header Bar -->
+    <!-- Top Header Bar -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_height="56dp"
         android:background="@color/white"
         android:gravity="center_vertical"
         android:paddingHorizontal="16dp">
 
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="6dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/cd_back"
             android:src="@drawable/ic_arrow_back"
@@ -28,22 +31,28 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:layout_weight="1"
-            android:text="Cài đặt tài khoản"
+            android:text="@string/settings_title"
             android:textColor="@color/text_main"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textStyle="bold" />
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#E5E7EB" />
+        android:background="@color/divider_line" />
 
+    <!-- Main Scrollable Content -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="16dp">
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:paddingStart="20dp"
+        android:paddingTop="18dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="24dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -56,18 +65,31 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_card"
                 android:gravity="center_vertical"
-                android:padding="16dp">
+                android:padding="18dp">
 
-                <TextView
-                    android:id="@+id/tvSettingAvatar"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:background="@drawable/bg_avatar"
-                    android:gravity="center"
-                    android:text="A"
-                    android:textColor="#FFFFFF"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                <FrameLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_circle_olive">
+
+                    <ImageView
+                        android:id="@+id/ivSettingAvatarImg"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone"
+                        android:contentDescription="@string/cd_avatar" />
+
+                    <TextView
+                        android:id="@+id/tvSettingAvatar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        tools:text="A" />
+                </FrameLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -80,277 +102,488 @@
                         android:id="@+id/tvSettingName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Gia đình chú A"
-                        android:textColor="#172033"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textColor="@color/text_main"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        tools:text="Hộ gia đình" />
 
                     <TextView
                         android:id="@+id/tvSettingPhone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="090 ••• ••68 · Tài khoản Đã xác minh"
-                        android:textColor="#6B7280"
-                        android:textSize="12sp" />
+                        android:textColor="@color/text_sub"
+                        android:textSize="12sp"
+                        tools:text="09xx ••• •xx · Tài khoản Đã xác minh" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <!-- Group 1: Account -->
+            <!-- Detailed Account Info Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Tài khoản &amp; Bảo mật"
-                android:textColor="#6B7280"
-                android:textSize="12sp"
+                android:layout_marginTop="18dp"
+                android:layout_marginBottom="6dp"
+                android:paddingHorizontal="2dp"
+                android:text="@string/settings_section_info"
+                android:textColor="@color/text_sub"
+                android:textSize="11sp"
                 android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_card"
+                android:background="@drawable/bg_review_card"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Email -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingVertical="6dp">
+                    <TextView
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_label_email"
+                        android:textColor="@color/text_sub"
+                        android:textSize="13sp" />
+                    <TextView
+                        android:id="@+id/tvSettingEmail"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/settings_value_not_updated"
+                        android:textColor="@color/text_main"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        tools:text="vana@gmail.com" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="8dp"
+                    android:background="@color/divider_line" />
+
+                <!-- Role -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingVertical="6dp">
+                    <TextView
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_label_role"
+                        android:textColor="@color/text_sub"
+                        android:textSize="13sp" />
+                    <TextView
+                        android:id="@+id/tvSettingRole"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/text_main"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        tools:text="Phụ huynh" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="8dp"
+                    android:background="@color/divider_line" />
+
+                <!-- Student ID / MSSV -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingVertical="6dp">
+                    <TextView
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_label_student_id"
+                        android:textColor="@color/text_sub"
+                        android:textSize="13sp" />
+                    <TextView
+                        android:id="@+id/tvSettingStudentId"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/settings_value_not_updated"
+                        android:textColor="@color/text_main"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        tools:text="3121560001" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="8dp"
+                    android:background="@color/divider_line" />
+
+                <!-- University -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingVertical="6dp">
+                    <TextView
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_label_university"
+                        android:textColor="@color/text_sub"
+                        android:textSize="13sp" />
+                    <TextView
+                        android:id="@+id/tvSettingUniversity"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/settings_value_not_updated"
+                        android:textColor="@color/text_main"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        tools:text="ĐH Bách Khoa TP.HCM" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Group 1: Account & Security -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:layout_marginBottom="6dp"
+                android:paddingHorizontal="2dp"
+                android:text="@string/settings_section_account"
+                android:textColor="@color/text_sub"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_review_card"
                 android:orientation="vertical">
 
+                <!-- KYC & Residence Status -->
                 <LinearLayout
-                    android:id="@+id/btnEditProfile"
+                    android:id="@+id/btnKycVerification"
                     android:layout_width="match_parent"
-                    android:layout_height="55dp"
+                    android:layout_height="56dp"
                     android:clickable="true"
                     android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
                     android:gravity="center_vertical"
                     android:paddingHorizontal="16dp">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_shield_check"
+                        app:tint="@color/text_main" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
                         android:layout_weight="1"
-                        android:text="✏  Chỉnh sửa thông tin cá nhân"
-                        android:textColor="#172033"
-                        android:textSize="14sp" />
+                        android:text="@string/settings_btn_kyc"
+                        android:textColor="@color/text_main"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="›"
-                        android:textColor="#9CA3AF"
-                        android:textSize="22sp" />
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/text_muted" />
 
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#F3F4F6" />
+                    android:background="@color/divider_line" />
 
+                <!-- Edit Profile -->
                 <LinearLayout
-                    android:id="@+id/btnKycVerification"
+                    android:id="@+id/btnEditProfile"
                     android:layout_width="match_parent"
-                    android:layout_height="55dp"
+                    android:layout_height="56dp"
                     android:clickable="true"
                     android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
                     android:gravity="center_vertical"
                     android:paddingHorizontal="16dp">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_edit"
+                        app:tint="@color/text_main" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
                         android:layout_weight="1"
-                        android:text="🛡  Trạng thái xác minh KYC &amp; Cư trú"
-                        android:textColor="#172033"
-                        android:textSize="14sp" />
+                        android:text="@string/settings_btn_edit_profile"
+                        android:textColor="@color/text_main"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="›"
-                        android:textColor="#9CA3AF"
-                        android:textSize="22sp" />
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/text_muted" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <!-- Group 2: App -->
+            <!-- Group 2: App & Notifications -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Ứng dụng &amp; Thông báo"
-                android:textColor="#6B7280"
-                android:textSize="12sp"
+                android:layout_marginTop="18dp"
+                android:layout_marginBottom="6dp"
+                android:paddingHorizontal="2dp"
+                android:text="@string/settings_section_app"
+                android:textColor="@color/text_sub"
+                android:textSize="11sp"
                 android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_card"
+                android:background="@drawable/bg_review_card"
                 android:orientation="vertical">
 
                 <LinearLayout
                     android:id="@+id/btnNotificationSettings"
                     android:layout_width="match_parent"
-                    android:layout_height="55dp"
+                    android:layout_height="56dp"
                     android:clickable="true"
                     android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
                     android:gravity="center_vertical"
                     android:paddingHorizontal="16dp">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_notifications"
+                        app:tint="@color/text_main" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
                         android:layout_weight="1"
-                        android:text="🔔  Cài đặt thông báo"
-                        android:textColor="#172033"
-                        android:textSize="14sp" />
+                        android:text="@string/settings_btn_notifications"
+                        android:textColor="@color/text_main"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="›"
-                        android:textColor="#9CA3AF"
-                        android:textSize="22sp" />
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/text_muted" />
 
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#F3F4F6" />
+                    android:background="@color/divider_line" />
 
                 <LinearLayout
                     android:id="@+id/btnLanguageSettings"
                     android:layout_width="match_parent"
-                    android:layout_height="55dp"
+                    android:layout_height="56dp"
                     android:clickable="true"
                     android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
                     android:gravity="center_vertical"
                     android:paddingHorizontal="16dp">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_help"
+                        app:tint="@color/text_main" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
                         android:layout_weight="1"
-                        android:text="🌐  Ngôn ngữ (Language)"
-                        android:textColor="#172033"
-                        android:textSize="14sp" />
+                        android:text="@string/settings_btn_language"
+                        android:textColor="@color/text_main"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Tiếng Việt ›"
-                        android:textColor="#6B7280"
+                        android:text="@string/settings_language_current"
+                        android:textColor="@color/text_muted"
                         android:textSize="12sp" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <!-- Group 3: Legal -->
+            <!-- Group 3: Support & Legal -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Hỗ trợ &amp; Pháp lý"
-                android:textColor="#6B7280"
-                android:textSize="12sp"
+                android:layout_marginTop="18dp"
+                android:layout_marginBottom="6dp"
+                android:paddingHorizontal="2dp"
+                android:text="@string/settings_section_support"
+                android:textColor="@color/text_sub"
+                android:textSize="11sp"
                 android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_card"
+                android:background="@drawable/bg_review_card"
                 android:orientation="vertical">
 
                 <LinearLayout
                     android:id="@+id/btnTerms"
                     android:layout_width="match_parent"
-                    android:layout_height="55dp"
+                    android:layout_height="56dp"
                     android:clickable="true"
                     android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
                     android:gravity="center_vertical"
                     android:paddingHorizontal="16dp">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_id_card"
+                        app:tint="@color/text_main" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
                         android:layout_weight="1"
-                        android:text="📄  Điều khoản dịch vụ"
-                        android:textColor="#172033"
-                        android:textSize="14sp" />
+                        android:text="@string/settings_btn_terms"
+                        android:textColor="@color/text_main"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="›"
-                        android:textColor="#9CA3AF"
-                        android:textSize="22sp" />
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/text_muted" />
 
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#F3F4F6" />
+                    android:background="@color/divider_line" />
 
                 <LinearLayout
                     android:id="@+id/btnPrivacy"
                     android:layout_width="match_parent"
-                    android:layout_height="55dp"
+                    android:layout_height="56dp"
                     android:clickable="true"
                     android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
                     android:gravity="center_vertical"
                     android:paddingHorizontal="16dp">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_lock"
+                        app:tint="@color/text_main" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
                         android:layout_weight="1"
-                        android:text="🔒  Chính sách bảo mật"
-                        android:textColor="#172033"
-                        android:textSize="14sp" />
+                        android:text="@string/settings_btn_privacy"
+                        android:textColor="@color/text_main"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="›"
-                        android:textColor="#9CA3AF"
-                        android:textSize="22sp" />
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/text_muted" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
+            <!-- Logout Button -->
+            <LinearLayout
+                android:id="@+id/btnLogout"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="28dp"
+                android:layout_marginBottom="32dp"
+                android:background="@drawable/bg_button_danger"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_logout"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/settings_btn_logout"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
-
-    <!-- Logout Button -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:padding="16dp">
-
-        <TextView
-            android:id="@+id/btnLogout"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/bg_button"
-            android:backgroundTint="#EF4444"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:text="↪  Đăng xuất tài khoản"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-
-    </LinearLayout>
 
 </LinearLayout>

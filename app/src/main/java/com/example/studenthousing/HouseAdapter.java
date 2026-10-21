@@ -2,6 +2,7 @@ package com.example.studenthousing;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -68,6 +69,16 @@ public class HouseAdapter extends RecyclerView.Adapter<HouseAdapter.HouseViewHol
             binding.tvHouseAddress.setText(house.getAddress());
             binding.tvHouseDistance.setText(
                     context.getString(R.string.distance_km_format, house.getDistanceKm()));
+
+            if (binding.tvHouseVerified != null) {
+                binding.tvHouseVerified.setVisibility(house.isVerified() ? View.VISIBLE : View.GONE);
+            }
+
+            if (binding.tvHousePrice != null) {
+                binding.tvHousePrice.setText(
+                        context.getString(R.string.unit_price_million, String.valueOf(house.getPrice())));
+            }
+
             binding.getRoot().setOnClickListener(v -> listener.onHouseClick(house));
         }
     }

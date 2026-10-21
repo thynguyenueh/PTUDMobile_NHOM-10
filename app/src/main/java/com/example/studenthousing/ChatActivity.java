@@ -2,6 +2,7 @@ package com.example.studenthousing;
 
 import android.os.Bundle;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,14 +24,18 @@ public class ChatActivity extends AppCompatActivity {
         chatRepository = new ChatRepository(this);
         etMessageInput = findViewById(R.id.etMessageInput);
 
-        String roomName = getIntent().getStringExtra("ROOM_NAME");
+        String roomName = getIntent().getStringExtra("partner_name");
+        if (roomName == null || roomName.isEmpty()) {
+            roomName = getIntent().getStringExtra("ROOM_NAME");
+        }
+
         if (roomName != null && !roomName.isEmpty()) {
-            android.widget.TextView tvHeaderName = findViewById(R.id.tvChatHeaderName);
-            android.widget.TextView tvAvatarLetter = findViewById(R.id.tvChatAvatarLetter);
+            TextView tvHeaderName = findViewById(R.id.tvChatHeaderName);
+            TextView tvAvatarLetter = findViewById(R.id.tvChatAvatarLetter);
             if (tvHeaderName != null) {
                 tvHeaderName.setText(roomName);
             }
-            if (tvAvatarLetter != null && roomName.length() > 0) {
+            if (tvAvatarLetter != null && !roomName.isEmpty()) {
                 tvAvatarLetter.setText(roomName.substring(0, 1).toUpperCase());
             }
         }
@@ -46,11 +51,6 @@ public class ChatActivity extends AppCompatActivity {
 
         if (findViewById(R.id.btnSend) != null) {
             findViewById(R.id.btnSend).setOnClickListener(v -> sendMessage());
-        }
-
-        if (findViewById(R.id.btnCardAction) != null) {
-            findViewById(R.id.btnCardAction).setOnClickListener(v ->
-                    Toast.makeText(this, "Đã xác nhận thỏa thuận đổi chỗ ở!", Toast.LENGTH_SHORT).show());
         }
     }
 
@@ -83,10 +83,9 @@ public class ChatActivity extends AppCompatActivity {
             public void onError(Exception e) {
                 runOnUiThread(() -> {
                     etMessageInput.setText("");
-                    Toast.makeText(ChatActivity.this, "Đã gửi tin nhắn (Lưu cục bộ)!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ChatActivity.this, "Đã gửi tin nhắn!", Toast.LENGTH_SHORT).show();
                 });
             }
         });
     }
 }
-

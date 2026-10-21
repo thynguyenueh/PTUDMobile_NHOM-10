@@ -1,32 +1,68 @@
 package com.example.studenthousing;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class SavedHousesActivity extends AppCompatActivity {
 
-    private LinearLayout layoutSavedHousesContainer;
+    private RecyclerView rvSavedHouses;
     private TextView tvTotalSaved;
+    private HouseAdapter houseAdapter;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_saved_houses);
 
-        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+        prefs = getSharedPreferences("saved_houses_prefs", Context.MODE_PRIVATE);
 
-        layoutSavedHousesContainer = findViewById(R.id.layoutSavedHousesContainer);
+        View btnBack = findViewById(R.id.btnBack);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> finish());
+        }
+
+        rvSavedHouses = findViewById(R.id.rvSavedHouses);
         tvTotalSaved = findViewById(R.id.tvTotalSaved);
 
+        setupRecyclerView();
         displaySavedHouses();
         setupBottomNav();
+    }
+
+    private void setupRecyclerView() {
+        if (rvSavedHouses != null) {
+            houseAdapter = new HouseAdapter(house -> {
+                Intent intent = new Intent(this, DetailActivity.class);
+                intent.putExtra("house_id", house.getPostId());
+                intent.putExtra("house_title", house.getTitle());
+                intent.putExtra("house_address", house.getAddress());
+                intent.putExtra("house_verified", house.isVerified());
+                intent.putExtra("house_distance", house.getDistanceKm());
+                intent.putExtra("house_price", house.getPrice());
+                intent.putExtra("house_area", house.getArea());
+                intent.putExtra("house_description", house.getDescription());
+                intent.putExtra("house_host_name", house.getHostName());
+                intent.putExtra("house_type", house.getHouseType());
+                intent.putExtra("house_photo_res", house.getPhotoRes());
+                startActivity(intent);
+            });
+            rvSavedHouses.setLayoutManager(new LinearLayoutManager(this));
+            rvSavedHouses.setAdapter(houseAdapter);
+        }
     }
 
     private void setupBottomNav() {
@@ -42,7 +78,7 @@ public class SavedHousesActivity extends AppCompatActivity {
                 } else if (itemId == R.id.nav_saved) {
                     return true;
                 } else if (itemId == R.id.nav_messages) {
-                    startActivity(new Intent(this, ChatRoomsActivity.class));
+                    startActivity(new Intent(this, ChatActivity.class));
                     finish();
                     return true;
                 } else if (itemId == R.id.nav_profile) {
@@ -56,51 +92,68 @@ public class SavedHousesActivity extends AppCompatActivity {
     }
 
     private void displaySavedHouses() {
-        if (layoutSavedHousesContainer == null) return;
-        layoutSavedHousesContainer.removeAllViews();
+        List<House> savedList = new ArrayList<>();
 
-        tvTotalSaved.setText("2 căn nhà đã lưu");
+        Map<String, ?> allEntries = prefs.getAll();
+        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+            if (entry.getKey().startsWith("fav_") && Boolean.TRUE.equals(entry.getValue())) {
+                String houseId = entry.getKey().substring(4);
+                String title = prefs.getString("title_" + houseId, "Căn hộ cao cấp Thảo Điền");
+                String address = prefs.getString("address_" + houseId, "Phường Thảo Điền, Quận 2, TP. Thủ Đức");
 
-        addSavedHouseItemView(
-                "Căn hộ cao cấp Thảo Điền",
-                "5.0 Tr/tháng · 65 m²",
-                "Địa chỉ: Phường Thảo Điền, Quận 2, TP. Hồ Chí Minh (1.2 km)"
-        );
-
-        addSavedHouseItemView(
-                "Nhà nguyên căn Linh Xuân",
-                "3.2 Tr/tháng · 45 m²",
-                "Địa chỉ: Phường Linh Xuân, TP. Thủ Đức, TP. Hồ Chí Minh (1.8 km)"
-        );
-    }
-
-    private void addSavedHouseItemView(String title, String priceArea, String address) {
-        LayoutInflater inflater = LayoutInflater.from(this);
-        View itemView = inflater.inflate(R.layout.item_saved_house, layoutSavedHousesContainer, false);
-
-        TextView tvTitle = itemView.findViewById(R.id.tvSavedTitle);
-        TextView tvPriceArea = itemView.findViewById(R.id.tvSavedPriceArea);
-        TextView tvAddress = itemView.findViewById(R.id.tvSavedAddress);
-
-        View btnViewDetail = itemView.findViewById(R.id.btnViewSavedDetail);
-        View btnRemove = itemView.findViewById(R.id.btnRemoveSaved);
-
-        tvTitle.setText(title);
-        tvPriceArea.setText(priceArea);
-        tvAddress.setText(address);
-
-        if (btnViewDetail != null) {
-            btnViewDetail.setOnClickListener(v ->
-                    startActivity(new Intent(SavedHousesActivity.this, DetailActivity.class)));
+                savedList.add(new House(
+                        houseId,
+                        title,
+                        address,
+                        1.2,
+                        true,
+                        R.drawable.house_thao_dien,
+                        5.0,
+                        65.0,
+                        "Căn hộ cao cấp đầy đủ tiện nghi",
+                        "Hộ gia đình Lê Văn Nam",
+                        "Căn hộ"
+                ));
+            }
         }
 
-        if (btnRemove != null) {
-            btnRemove.setOnClickListener(v -> {
-                layoutSavedHousesContainer.removeView(itemView);
-                Toast.makeText(SavedHousesActivity.this, "Đã bỏ lưu: " + title, Toast.LENGTH_SHORT).show();
-            });
+        if (savedList.isEmpty()) {
+            savedList = Arrays.asList(
+                    new House(
+                            "house_saved_1",
+                            "Căn hộ cao cấp Thảo Điền",
+                            "Phường Thảo Điền, Quận 2, TP. Thủ Đức",
+                            1.2,
+                            true,
+                            R.drawable.house_thao_dien,
+                            5.0,
+                            65.0,
+                            "Căn hộ cao cấp đầy đủ tiện nghi",
+                            "Hộ gia đình Lê Văn Nam",
+                            "Căn hộ"
+                    ),
+                    new House(
+                            "house_saved_2",
+                            "Nhà nguyên căn Linh Xuân",
+                            "Phường Linh Xuân, TP. Thủ Đức",
+                            1.8,
+                            true,
+                            R.drawable.house_linh_xuan,
+                            3.2,
+                            45.0,
+                            "Nhà nguyên căn 1 trệt 1 lầu",
+                            "Hộ gia đình Phạm Hoàng",
+                            "Nhà nguyên căn"
+                    )
+            );
         }
 
-        layoutSavedHousesContainer.addView(itemView);
+        if (tvTotalSaved != null) {
+            tvTotalSaved.setText(savedList.size() + " căn nhà đã lưu");
+        }
+
+        if (houseAdapter != null) {
+            houseAdapter.submitList(savedList);
+        }
     }
 }
