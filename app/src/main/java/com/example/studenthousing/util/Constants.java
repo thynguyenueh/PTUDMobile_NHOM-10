@@ -3,10 +3,6 @@ package com.example.studenthousing.util;
 public final class Constants {
     private Constants() {}
 
-    // User Roles
-    public static final String ROLE_USER = "USER";
-    public static final String ROLE_ADMIN = "ADMIN";
-
     // Identity Types
     public static final String IDENTITY_NONE = "NONE";
     public static final String IDENTITY_STUDENT = "STUDENT";

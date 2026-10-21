@@ -167,7 +167,7 @@ public class DistanceCalculator {
     public static String formatDistanceText(double distanceKm, boolean isEstimate) {
         String formattedDist = String.format(Locale.US, "%.1f km", distanceKm);
         if (isEstimate) {
-            return "~ " + formattedDist + " (Ưước lượng)";
+            return "~ " + formattedDist + " (Ước lượng)";
         }
         return formattedDist;
     }

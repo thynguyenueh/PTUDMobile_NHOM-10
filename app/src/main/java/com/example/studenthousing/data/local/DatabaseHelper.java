@@ -116,7 +116,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_PHONE = "phone";
     public static final String COL_EMAIL = "email";
     public static final String COL_AVATAR_URL = "avatar_url";
-    public static final String COL_ROLE = "role";
     public static final String COL_IDENTITY_TYPE = "identity_type";
     public static final String COL_IDENTITY_VERIFIED = "identity_verified";
     public static final String COL_IDENTITY_VERIFIED_AT = "identity_verified_at";
@@ -159,7 +158,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COL_EMAIL + " TEXT, " +
                 "password TEXT, " +
                 COL_AVATAR_URL + " TEXT, " +
-                COL_ROLE + " TEXT DEFAULT 'USER', " +
                 COL_IDENTITY_TYPE + " TEXT DEFAULT 'NONE', " +
                 COL_IDENTITY_VERIFIED + " INTEGER DEFAULT 0, " +
                 COL_IDENTITY_VERIFIED_AT + " INTEGER DEFAULT 0, " +

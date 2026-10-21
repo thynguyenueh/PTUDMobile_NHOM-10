@@ -56,7 +56,6 @@ public class UserDao {
         v.put(DatabaseHelper.COL_EMAIL, u.getEmail());
         v.put(DatabaseHelper.COL_AVATAR_URL, u.getAvatarUrl());
         v.put("password", u.getPassword());
-        v.put(DatabaseHelper.COL_ROLE, u.getRole());
         v.put(DatabaseHelper.COL_IDENTITY_TYPE, u.getIdentityType());
         v.put(DatabaseHelper.COL_IDENTITY_VERIFIED, u.isIdentityVerified() ? 1 : 0);
         v.put(DatabaseHelper.COL_IDENTITY_VERIFIED_AT, u.getIdentityVerifiedAt());
@@ -89,7 +88,6 @@ public class UserDao {
         u.setEmail(getStringOrNull(c, DatabaseHelper.COL_EMAIL));
         u.setAvatarUrl(getStringOrNull(c, DatabaseHelper.COL_AVATAR_URL));
         u.setPassword(getStringOrNull(c, "password"));
-        u.setRole(getStringOrNull(c, DatabaseHelper.COL_ROLE));
         u.setIdentityType(getStringOrNull(c, DatabaseHelper.COL_IDENTITY_TYPE));
         u.setIdentityVerified(getIntAsBool(c, DatabaseHelper.COL_IDENTITY_VERIFIED));
         u.setIdentityVerifiedAt(getLongOrDefault(c, DatabaseHelper.COL_IDENTITY_VERIFIED_AT, 0L));

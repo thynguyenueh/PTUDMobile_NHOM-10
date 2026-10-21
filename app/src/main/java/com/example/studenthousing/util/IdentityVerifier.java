@@ -8,15 +8,7 @@ public class IdentityVerifier {
         if (studentId == null || studentId.trim().isEmpty()) {
             return false;
         }
-        if (universityCode == null || universityCode.trim().isEmpty()) {
-            return false;
-        }
-        if (email != null && !email.trim().isEmpty()) {
-            String lower = email.trim().toLowerCase();
-            if (lower.contains("@") && !lower.endsWith(".edu.vn")) {
-            }
-        }
-        return true;
+        return universityCode != null && !universityCode.trim().isEmpty();
     }
 
     public static boolean isValidCitizenId(String citizenId) {

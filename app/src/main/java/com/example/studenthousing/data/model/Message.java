@@ -1,5 +1,6 @@
 package com.example.studenthousing.data.model;
 
+import com.example.studenthousing.util.Constants;
 import com.google.firebase.firestore.DocumentId;
 
 public class Message {
@@ -12,7 +13,7 @@ public class Message {
     private String imageUrl;
     private long sentAt;
     private boolean isRead;
-    private String syncStatus = "SYNCED";
+    private String syncStatus = Constants.SYNC_SYNCED;
 
     public Message() {}
 

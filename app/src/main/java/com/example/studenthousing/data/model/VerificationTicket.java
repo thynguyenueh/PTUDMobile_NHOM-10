@@ -1,5 +1,6 @@
 package com.example.studenthousing.data.model;
 
+import com.example.studenthousing.util.Constants;
 import com.google.firebase.firestore.DocumentId;
 
 public class VerificationTicket {
@@ -13,7 +14,7 @@ public class VerificationTicket {
     private String status;       // PENDING | APPROVED | REJECTED
     private long submittedAt;
     private long reviewedAt;
-    private String syncStatus = "SYNCED";
+    private String syncStatus = Constants.SYNC_SYNCED;
     private long cachedAt;
 
     public VerificationTicket() {}

@@ -13,7 +13,6 @@ public class User {
     private String phone;
     private String password;
     private boolean phoneVerified;
-    private String role = Constants.ROLE_USER;
     private String identityType = Constants.IDENTITY_NONE;
     private boolean identityVerified;
     private long identityVerifiedAt;
@@ -57,8 +56,7 @@ public class User {
     public boolean isPhoneVerified() { return phoneVerified; }
     public void setPhoneVerified(boolean phoneVerified) { this.phoneVerified = phoneVerified; }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+
 
     public String getIdentityType() { return identityType; }
     public void setIdentityType(String identityType) { this.identityType = identityType; }
