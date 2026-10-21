@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cloud_olive"
+    android:fitsSystemWindows="true"
+    android:background="@color/bg_app"
     android:orientation="vertical">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:clipToPadding="false"
         android:fillViewport="true">
 
         <LinearLayout
@@ -17,15 +20,26 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Photo gallery -->
+            <!-- ================= PHOTO GALLERY (hero) ================= -->
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="280dp">
+                android:layout_height="320dp">
 
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/photoPager"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:background="@drawable/bg_gradient_top" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_gravity="bottom"
+                    android:background="@drawable/bg_gradient_bottom" />
 
                 <ImageButton
                     android:id="@+id/btnBack"
@@ -35,7 +49,9 @@
                     android:layout_margin="16dp"
                     android:background="@drawable/bg_circle_overlay"
                     android:contentDescription="@string/cd_back"
-                    android:src="@drawable/ic_arrow_back" />
+                    android:padding="10dp"
+                    android:src="@drawable/ic_arrow_back"
+                    app:tint="@color/white" />
 
                 <ImageButton
                     android:id="@+id/btnFavorite"
@@ -45,21 +61,67 @@
                     android:layout_margin="16dp"
                     android:background="@drawable/bg_circle_overlay"
                     android:contentDescription="@string/cd_favorite"
-                    android:src="@drawable/ic_favorite_border" />
+                    android:padding="10dp"
+                    android:src="@drawable/ic_favorite_border"
+                    app:tint="@color/white" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|start"
+                    android:layout_margin="16dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/tvVerifiedBadge"
+                        android:layout_width="@dimen/icon_sm"
+                        android:layout_height="@dimen/icon_sm"
+                        android:contentDescription="@string/cd_verified"
+                        android:src="@drawable/ic_verified_check"
+                        android:visibility="gone"
+                        app:tint="@color/primary"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/tvStatusBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_pill_scrim"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="4dp"
+                        android:textColor="@color/white"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        tools:text="Còn trống kỳ mới" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvPhotoCounter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="16dp"
+                    android:background="@drawable/bg_pill_scrim"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="4dp"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    tools:text="1 / 3" />
 
                 <com.google.android.material.tabs.TabLayout
                     android:id="@+id/photoIndicator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center_horizontal"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginBottom="12dp"
                     android:background="@android:color/transparent"
                     app:tabBackground="@drawable/tab_dot_selector"
                     app:tabGravity="center"
                     app:tabIndicatorHeight="0dp"
                     app:tabMinWidth="0dp"
-                    app:tabPaddingEnd="6dp"
-                    app:tabPaddingStart="6dp"
+                    app:tabPaddingEnd="4dp"
+                    app:tabPaddingStart="4dp"
                     app:tabRippleColor="@android:color/transparent" />
             </FrameLayout>
 
@@ -67,16 +129,67 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="24dp">
+                android:padding="20dp">
 
+                <!-- ================= GIÁ TO & LOẠI CHỖ Ở ================= -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvPriceBig"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/primary"
+                        android:textSize="32sp"
+                        android:textStyle="bold"
+                        tools:text="3.5 Tr" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="@string/detail_month_suffix"
+                        android:textColor="@color/primary"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvHouseType"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:textColor="@color/primary"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        tools:text="Căn hộ" />
+                </LinearLayout>
+
+                <!-- ================= TIÊU ĐỀ ================= -->
                 <TextView
+                    android:id="@+id/tvTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
                     android:text="@string/detail_title"
                     android:textColor="@color/text_main"
-                    android:textSize="22sp"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
+                <!-- ================= META DIỆN TÍCH ================= -->
+                <TextView
+                    android:id="@+id/tvAreaMeta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="@color/text_sub"
+                    android:textSize="12sp"
+                    tools:text="Diện tích sử dụng: 45 m² · Đã qua thẩm định" />
+
+                <!-- ================= ĐỊA CHỈ ================= -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -85,207 +198,92 @@
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
                         android:importantForAccessibility="no"
-                        android:src="@drawable/ic_location" />
+                        android:src="@drawable/ic_location"
+                        app:tint="@color/primary" />
 
                     <TextView
+                        android:id="@+id/tvLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
+                        android:layout_marginStart="6dp"
                         android:text="@string/detail_location"
                         android:textColor="@color/text_main"
-                        android:textSize="14sp" />
+                        android:textSize="13sp" />
                 </LinearLayout>
 
-                <!-- Host card -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    app:cardBackgroundColor="@color/light_moss"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="0dp"
-                    app:strokeWidth="0dp">
+                <!-- ================= HOST CARD ================= -->
+                <include layout="@layout/layout_host_card" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:padding="16dp">
+                <!-- ================= DISTANCE CARD ================= -->
+                <include layout="@layout/layout_distance_card" />
 
-                        <TextView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:background="@drawable/bg_circle_olive"
-                            android:gravity="center"
-                            android:text="@string/detail_host_initial"
-                            android:textColor="@color/card_bg"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:maxLines="1"
-                                    android:text="@string/detail_host_name"
-                                    android:textColor="@color/text_main"
-                                    android:textSize="14sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="8dp"
-                                    android:background="@drawable/bg_badge_verified"
-                                    android:drawablePadding="4dp"
-                                    android:gravity="center_vertical"
-                                    android:maxLines="1"
-                                    android:paddingHorizontal="8dp"
-                                    android:paddingVertical="4dp"
-                                    android:text="@string/detail_host_verified"
-                                    android:textColor="@color/olive_green"
-                                    android:textSize="11sp"
-                                    android:textStyle="bold"
-                                    app:drawableStartCompat="@drawable/ic_verified" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:text="@string/detail_host_meta"
-                                android:textColor="@color/text_sub"
-                                android:textSize="12sp" />
-                        </LinearLayout>
-
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:layout_marginStart="8dp"
-                            android:importantForAccessibility="no"
-                            android:src="@drawable/ic_star" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="4dp"
-                            android:text="@string/detail_host_rating"
-                            android:textColor="@color/text_main"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Distance card -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    app:cardBackgroundColor="@color/olive_green"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="0dp"
-                    app:strokeWidth="0dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:padding="16dp">
-
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:background="@drawable/bg_circle_light"
-                            android:importantForAccessibility="no"
-                            android:padding="10dp"
-                            android:src="@drawable/ic_navigation" />
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/detail_distance_label"
-                                android:textColor="@color/on_olive_sub"
-                                android:textSize="12sp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:text="@string/detail_distance_value"
-                                android:textColor="@color/card_bg"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Amenities -->
+                <!-- ================= MÔ TẢ KHÔNG GIAN SỐNG ================= -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:text="@string/detail_amenities"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/detail_desc_label"
                     android:textColor="@color/text_main"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:textStyle="bold" />
 
-                <LinearLayout
-                    android:id="@+id/amenityContainer"
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="-4dp"
-                    android:layout_marginTop="12dp"
-                    android:orientation="horizontal" />
+                    android:layout_marginTop="8dp"
+                    app:cardBackgroundColor="@color/surface_card"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/divider_line"
+                    app:strokeWidth="1dp">
+
+                    <TextView
+                        android:id="@+id/tvDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:lineSpacingExtra="3dp"
+                        android:padding="14dp"
+                        android:textColor="@color/text_sub"
+                        android:textSize="13sp"
+                        tools:text="Căn hộ rộng rãi, thoáng mát, đầy đủ tiện nghi, phù hợp cho sinh viên và hộ gia đình nhỏ. Môi trường an ninh, yên tĩnh, thuận tiện đi lại đến các trường đại học." />
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- ================= TIỆN ÍCH (grid) ================= -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/detail_amenities"
+                    android:textColor="@color/text_main"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <GridLayout
+                    android:id="@+id/gridAmenities"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:columnCount="2" />
+
+                <TextView
+                    android:id="@+id/tvAmenitiesEmpty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/detail_amenities_empty"
+                    android:textColor="@color/text_sub"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
+
+                <!-- Safety Note Banner: removed missing layout include -->
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
-    <!-- Bottom action bar -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/cloud_olive"
-        android:orientation="horizontal"
-        android:padding="16dp">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnChat"
-            style="@style/Widget.App.Button.Secondary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/action_chat"
-            app:icon="@drawable/ic_chat" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnProposeSwap"
-            style="@style/Widget.App.Button.Primary"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_weight="1"
-            android:text="@string/action_propose_swap" />
-    </LinearLayout>
+    <!-- ================= BOTTOM BAR (floating card) ================= -->
+    <include layout="@layout/layout_detail_bottom_bar" />
 </LinearLayout>

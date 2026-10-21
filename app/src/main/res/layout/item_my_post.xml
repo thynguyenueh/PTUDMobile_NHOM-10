@@ -1,118 +1,177 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    android:background="@drawable/bg_card"
-    android:orientation="vertical"
-    android:padding="14dp">
+    android:paddingBottom="@dimen/space_md">
 
-    <!-- Header: Post Icon + Title + Status -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:background="@drawable/bg_review_card"
+        android:orientation="vertical"
+        android:padding="@dimen/space_lg">
 
-        <TextView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/bg_white_icon"
-            android:gravity="center"
-            android:text="⌂"
-            android:textColor="#172033"
-            android:textSize="21sp" />
-
+        <!-- Header: Post Icon + Title + Status -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:layout_width="@dimen/avatar_size_md"
+                android:layout_height="@dimen/avatar_size_md"
+                android:background="@drawable/bg_circle_olive">
+
+                <ImageView
+                    android:layout_width="@dimen/icon_md"
+                    android:layout_height="@dimen/icon_md"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/cd_home"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_nav_home"
+                    app:tint="@color/white" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_sm"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvPostTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_main"
+                    android:textSize="@dimen/text_body_lg"
+                    android:textStyle="bold"
+                    tools:text="Nhà trọ sinh viên gần ĐHQG" />
+
+                <TextView
+                    android:id="@+id/tvPostPriceArea"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xxs"
+                    android:textColor="@color/olive_accent"
+                    android:textSize="@dimen/text_body"
+                    android:textStyle="bold"
+                    tools:text="Giá: 2.5 Tr/tháng · 35 m²" />
+
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/tvPostTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Nhà trọ sinh viên gần ĐHQG"
-                android:textColor="#172033"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvPostPriceArea"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="Giá: 2.5 Tr/tháng · 35 m²"
-                android:textColor="#719B28"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:id="@+id/tvPostStatus"
+                style="@style/Widget.App.Badge.Verified"
+                android:textColor="@color/olive_accent"
+                tools:text="● Đang hiển thị" />
 
         </LinearLayout>
 
         <TextView
-            android:id="@+id/tvPostStatus"
+            android:id="@+id/tvPostAddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_banner_green"
-            android:paddingHorizontal="8dp"
-            android:paddingVertical="4dp"
-            android:text="● Đang hiển thị"
-            android:textColor="#719B28"
-            android:textSize="11sp"
-            android:textStyle="bold" />
+            android:layout_marginTop="@dimen/space_sm"
+            android:textColor="@color/text_sub"
+            android:textSize="@dimen/text_body"
+            tools:text="Địa chỉ: Phường Linh Trung, TP. Thủ Đức, TP. Hồ Chí Minh" />
+
+        <View
+            style="@style/Widget.App.Divider"
+            android:layout_marginTop="@dimen/space_sm"
+            android:layout_marginBottom="@dimen/space_sm" />
+
+        <!-- Actions Bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/btnToggleStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="@dimen/icon_btn_size"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_swap_horiz"
+                android:drawablePadding="@dimen/space_xs"
+                app:drawableTint="@color/status_info"
+                android:paddingHorizontal="@dimen/space_xs"
+                android:textColor="@color/status_info"
+                android:textSize="@dimen/text_small"
+                android:textStyle="bold"
+                tools:text="Đánh dấu đã thuê" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/btnDeletePost"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="@dimen/icon_btn_size"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_delete"
+                android:drawablePadding="@dimen/space_xs"
+                app:drawableTint="@color/status_danger"
+                android:paddingHorizontal="@dimen/space_xs"
+                android:text="@string/action_delete"
+                android:textColor="@color/status_danger"
+                android:textSize="@dimen/text_body"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/btnEditPost"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_xs"
+                android:minHeight="@dimen/icon_btn_size"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_edit"
+                android:drawablePadding="@dimen/space_xs"
+                app:drawableTint="@color/text_main"
+                android:paddingHorizontal="@dimen/space_xs"
+                android:text="@string/action_edit"
+                android:textColor="@color/text_main"
+                android:textSize="@dimen/text_body"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/btnViewPost"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_xs"
+                android:minHeight="@dimen/icon_btn_size"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_eye"
+                android:drawablePadding="@dimen/space_xs"
+                app:drawableTint="@color/olive_accent"
+                android:paddingHorizontal="@dimen/space_xs"
+                android:text="@string/action_view"
+                android:textColor="@color/olive_accent"
+                android:textSize="@dimen/text_body"
+                android:textStyle="bold" />
+
+        </LinearLayout>
 
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/tvPostAddress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Địa chỉ: Phường Linh Trung, TP. Thủ Đức, TP. Hồ Chí Minh"
-        android:textColor="#6B7280"
-        android:textSize="12sp" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:background="#E5E7EB" />
-
-    <!-- Actions Bar -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="end"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/btnEditPost"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="6dp"
-            android:text="✏ Chỉnh sửa"
-            android:textColor="#172033"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/btnViewPost"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:background="?attr/selectableItemBackground"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="6dp"
-            android:text="👁 Xem chi tiết"
-            android:textColor="#719B28"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-
-    </LinearLayout>
-
-</LinearLayout>
+</FrameLayout>

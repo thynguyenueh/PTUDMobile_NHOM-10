@@ -1,86 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
-    android:background="@drawable/bg_card"
-    android:orientation="vertical"
-    android:padding="14dp">
+    app:cardBackgroundColor="@color/surface_card"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="1dp"
+    app:strokeColor="@color/divider_line"
+    app:strokeWidth="1dp">
 
-    <!-- Header: Reviewer Avatar + Name + Rating -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <TextView
-            android:id="@+id/tvReviewerAvatar"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            android:background="@drawable/bg_partner_avatar"
-            android:gravity="center"
-            android:text="M"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
+        <!-- Header: Reviewer Avatar + Name + Rating -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/tvReviewerName"
-                android:layout_width="wrap_content"
+                android:id="@+id/tvReviewerAvatar"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_circle_olive"
+                android:gravity="center"
+                android:textColor="@color/surface_card"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:text="M" />
+
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Gia đình Cô Mai"
-                android:textColor="#172033"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvReviewerName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_main"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    tools:text="Hộ gia đình đối tác" />
+
+                <TextView
+                    android:id="@+id/tvReviewDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="@color/text_sub"
+                    android:textSize="10sp"
+                    tools:text="15/10/2026 · Học kỳ 1" />
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/tvReviewDate"
+                android:id="@+id/tvReviewRatingStars"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="15/10/2026 · Học kỳ 1"
-                android:textColor="#6B7280"
-                android:textSize="11sp" />
-
+                android:drawablePadding="2dp"
+                android:textColor="@color/status_warning"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                tools:text="★ 5.0" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvReviewRatingStars"
-            android:layout_width="wrap_content"
+        <!-- Review Comment Box -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="★★★★★"
-            android:textColor="#FFC400"
-            android:textSize="14sp" />
+            android:layout_marginTop="10dp"
+            app:cardBackgroundColor="@color/bg_app"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/divider_line"
+            app:strokeWidth="1dp">
 
+            <TextView
+                android:id="@+id/tvReviewComment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lineSpacingExtra="2dp"
+                android:padding="12dp"
+                android:textColor="@color/text_main"
+                android:textSize="12sp"
+                tools:text="Gia đình rất uy tín, giữ gìn nhà cửa sạch sẽ và bàn giao đúng hẹn." />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Optional Image Attachment Preview -->
+        <ImageView
+            android:id="@+id/imgReviewAttachment"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:layout_marginTop="10dp"
+            android:contentDescription="@string/cd_attached_image"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            tools:src="@drawable/bg_image_placeholder"
+            tools:visibility="visible" />
     </LinearLayout>
-
-    <!-- Review Comment -->
-    <TextView
-        android:id="@+id/tvReviewComment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:lineSpacingExtra="3dp"
-        android:text="Gia đình rất lịch sự, giữ gìn nhà cửa sạch sẽ chu đáo."
-        android:textColor="#374151"
-        android:textSize="13sp" />
-
-    <!-- Optional Image Attachment Preview -->
-    <ImageView
-        android:id="@+id/imgReviewAttachment"
-        android:layout_width="match_parent"
-        android:layout_height="160dp"
-        android:layout_marginTop="10dp"
-        android:contentDescription="Attached Image"
-        android:scaleType="centerCrop"
-        android:visibility="gone" />
-
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

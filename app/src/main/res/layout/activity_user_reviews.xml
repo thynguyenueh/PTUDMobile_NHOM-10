@@ -1,34 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F7F8F5"
+    android:fitsSystemWindows="true"
+    android:background="@color/bg_app"
     android:orientation="vertical">
 
     <!-- Header Bar -->
     <LinearLayout
+        android:id="@+id/layoutHeader"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:background="@color/white"
+        android:layout_height="56dp"
+        android:background="@color/surface_card"
         android:gravity="center_vertical"
         android:paddingHorizontal="16dp">
 
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="10dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/cd_back"
             android:src="@drawable/ic_arrow_back"
             app:tint="@color/text_main" />
 
         <TextView
+            android:id="@+id/tvHeaderTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="8dp"
             android:layout_weight="1"
-            android:text="Đánh giá nhận được"
+            android:text="@string/reviews_received_title"
             android:textColor="@color/text_main"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -37,100 +42,101 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#E5E7EB" />
+        android:background="@color/divider_line" />
 
-    <androidx.core.widget.NestedScrollView
+    <!-- Summary Box -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:background="@color/surface_card"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:padding="16dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tvAverageRating"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/primary"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            tools:text="4.9" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
             android:orientation="vertical">
-
-            <!-- Summary Card -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_card"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:id="@+id/tvAverageRating"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="4.9"
-                    android:textColor="#172033"
-                    android:textSize="36sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvStars"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="★★★★★"
-                    android:textColor="#FFC400"
-                    android:textSize="18sp" />
-
-                <TextView
-                    android:id="@+id/tvTotalReviews"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Dựa trên các đánh giá từ đối tác đổi nhà"
-                    android:textColor="#6B7280"
-                    android:textSize="12sp" />
-
-            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Danh sách đánh giá"
-                android:textColor="#172033"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:text="★ ★ ★ ★ ★"
+                android:textColor="@color/status_warning"
+                android:textSize="14sp" />
 
-            <!-- Container for Review Items -->
-            <LinearLayout
-                android:id="@+id/layoutReviewsContainer"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tvTotalReviews"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical" />
+                android:layout_marginTop="2dp"
+                android:textColor="@color/text_sub"
+                android:textSize="12sp"
+                tools:text="Dựa trên 2 đánh giá" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider_line" />
+
+    <!-- Content Slot -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:id="@+id/layoutReviewsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <!-- Bottom Bar Slot -->
+    <FrameLayout
+        android:id="@+id/containerBottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/layoutBottomAction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:padding="16dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <TextView
+                android:id="@+id/btnWriteReview"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_button"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="@string/reviews_btn_write"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
-    </androidx.core.widget.NestedScrollView>
-
-    <!-- Bottom Button to Write Review (chỉ hiện khi xem hồ sơ người khác) -->
-    <LinearLayout
-        android:id="@+id/layoutBottomAction"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:padding="16dp"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/btnWriteReview"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/bg_button"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:text="+ Viết đánh giá cho đối tác"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-
-    </LinearLayout>
+    </FrameLayout>
 
 </LinearLayout>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ============================================ -->
+    <!-- SPACING SCALE (4dp base)                    -->
+    <!-- ============================================ -->
+    <dimen name="space_xxs">2dp</dimen>
+    <dimen name="space_xs">4dp</dimen>
+    <dimen name="space_sm">8dp</dimen>
+    <dimen name="space_md">12dp</dimen>
+    <dimen name="space_lg">16dp</dimen>
+    <dimen name="space_xl">20dp</dimen>
+    <dimen name="space_xxl">24dp</dimen>
+    <dimen name="space_xxxl">32dp</dimen>
+
+    <!-- Screen padding: ghi đè trong values-land / values-sw360dp -->
+    <dimen name="screen_padding">16dp</dimen>
+    <dimen name="screen_padding_wide">20dp</dimen>
+
+    <!-- ============================================ -->
+    <!-- COMPONENT SIZES                              -->
+    <!-- ============================================ -->
+    <dimen name="toolbar_height">56dp</dimen>
+    <dimen name="touch_target_min">48dp</dimen>
+    <dimen name="btn_height">52dp</dimen>
+    <dimen name="btn_height_sm">44dp</dimen>
+    <dimen name="icon_btn_size">40dp</dimen>
+    <dimen name="avatar_size_lg">44dp</dimen>
+    <dimen name="avatar_size_md">36dp</dimen>
+    <dimen name="avatar_size_sm">28dp</dimen>
+
+    <!-- Icons -->
+    <dimen name="icon_xs">12dp</dimen>
+    <dimen name="icon_sm">16dp</dimen>
+    <dimen name="icon_md">20dp</dimen>
+    <dimen name="icon_lg">24dp</dimen>
+    <dimen name="icon_xl">32dp</dimen>
+
+    <!-- Card corners -->
+    <dimen name="card_radius_sm">8dp</dimen>
+    <dimen name="card_radius_md">12dp</dimen>
+    <dimen name="card_radius_lg">16dp</dimen>
+    <dimen name="card_radius_xl">20dp</dimen>
+
+    <!-- Elevation -->
+    <dimen name="elevation_low">1dp</dimen>
+    <dimen name="elevation_med">4dp</dimen>
+    <dimen name="elevation_high">8dp</dimen>
+
+    <!-- ============================================ -->
+    <!-- TYPE SCALE                                   -->
+    <!-- ============================================ -->
+    <dimen name="text_caption">10sp</dimen>
+    <dimen name="text_small">11sp</dimen>
+    <dimen name="text_body">13sp</dimen>
+    <dimen name="text_body_lg">14sp</dimen>
+    <dimen name="text_subtitle">16sp</dimen>
+    <dimen name="text_heading">18sp</dimen>
+    <dimen name="text_display">22sp</dimen>
+    <dimen name="text_price_display">32sp</dimen>
+
+    <!-- ============================================ -->
+    <!-- LAYOUT-SPECIFIC                              -->
+    <!-- ============================================ -->
+    <dimen name="hero_image_height">320dp</dimen>
+    <dimen name="card_photo_height">160dp</dimen>
+    <dimen name="list_bottom_padding">88dp</dimen>
+    <dimen name="bottom_bar_margin">12dp</dimen>
+    <dimen name="divider_height">1dp</dimen>
+</resources>

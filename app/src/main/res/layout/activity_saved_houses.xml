@@ -1,126 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F7F8F5"
+    android:fitsSystemWindows="true"
+    android:background="@color/bg_app"
     android:orientation="vertical">
 
     <!-- Header Bar -->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:background="@color/white"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="16dp">
+        android:id="@+id/layoutHeader"
+        style="@style/Widget.App.HeaderBar">
 
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/cd_back"
-            android:src="@drawable/ic_arrow_back"
-            app:tint="@color/text_main" />
+            style="@style/Widget.App.HeaderBackButton" />
 
         <TextView
-            android:layout_width="0dp"
+            android:id="@+id/tvHeaderTitle"
+            style="@style/Widget.App.HeaderTitle"
+            android:text="@string/saved_houses_title" />
+
+        <TextView
+            android:id="@+id/tvTotalSaved"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_weight="1"
-            android:text="Danh sách nhà đã lưu"
-            android:textColor="@color/text_main"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textColor="@color/primary"
+            android:textSize="@dimen/text_body"
+            android:textStyle="bold"
+            tools:text="0 căn nhà" />
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#E5E7EB" />
+    <View style="@style/Widget.App.Divider" />
 
-    <androidx.core.widget.NestedScrollView
+    <!-- Content Slot -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="16dp">
+        android:orientation="vertical"
+        android:padding="@dimen/space_lg">
 
-        <LinearLayout
+        <FrameLayout
+            android:id="@+id/containerTitle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
-            <!-- Summary Banner -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_card"
+                android:layout_marginBottom="@dimen/space_md"
                 android:gravity="center_vertical"
-                android:padding="16dp">
+                android:orientation="horizontal"/>
+        </FrameLayout>
 
-                <TextView
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:background="@drawable/bg_white_icon"
-                    android:gravity="center"
-                    android:text="♡"
-                    android:textColor="#EF4444"
-                    android:textSize="22sp" />
+        <!-- RecyclerView for Saved Houses -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvSavedHouses"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:scrollbars="vertical" />
+    </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tvTotalSaved"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="2 căn nhà đã lưu"
-                        android:textColor="@color/text_main"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="Xem lại nhanh các căn nhà bạn quan tâm"
-                        android:textColor="@color/text_sub"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Danh sách đã lưu"
-                android:textColor="#172033"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <!-- Container for Saved House Items -->
-            <LinearLayout
-                android:id="@+id/layoutSavedHousesContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical" />
-
-        </LinearLayout>
-
-    </androidx.core.widget.NestedScrollView>
-
-    <!-- Bottom Navigation Bar -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNav"
-        style="@style/Widget.App.BottomNavigation"
+    <!-- Bottom Bar Slot -->
+    <FrameLayout
+        android:id="@+id/containerBottomBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:menu="@menu/menu_bottom_nav" />
+        android:layout_height="wrap_content">
+
+        <!-- Bottom Navigation Bar -->
+        <include layout="@layout/layout_bottom_nav" />
+
+    </FrameLayout>
 
 </LinearLayout>

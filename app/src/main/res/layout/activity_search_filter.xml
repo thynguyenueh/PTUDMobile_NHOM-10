@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:background="@color/bg_app"
     android:orientation="vertical">
 
@@ -15,6 +17,15 @@
         android:orientation="horizontal"
         android:paddingHorizontal="20dp"
         android:paddingVertical="16dp">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="12dp"
+            android:contentDescription="@string/cd_back"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="@color/text_main" />
 
         <TextView
             android:layout_width="0dp"
@@ -29,12 +40,15 @@
             android:id="@+id/btnReset"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            android:gravity="center"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
             android:padding="4dp"
             android:text="@string/filter_btn_reset"
-            android:textColor="@color/olive_green"
+            android:textColor="@color/primary"
             android:textSize="14sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -50,6 +64,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:fillViewport="true"
+        android:clipToPadding="false"
         android:paddingHorizontal="20dp"
         android:paddingVertical="16dp">
 
@@ -83,6 +98,7 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="6dp"
                 android:background="@drawable/bg_banner_green"
+                android:foreground="?attr/selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center_vertical"
@@ -94,7 +110,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="TP. Hồ Chí Minh"
+                    android:text="@string/filter_hint_province"
                     android:textColor="@color/text_main"
                     android:textSize="15sp"
                     android:textStyle="bold" />
@@ -102,7 +118,7 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
-                    android:contentDescription="Select"
+                    android:contentDescription="@string/cd_dropdown"
                     android:src="@drawable/ic_chevron_down"
                     app:tint="@color/text_main" />
             </LinearLayout>
@@ -112,7 +128,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:text="Phường / Xã"
+                android:text="@string/filter_label_ward"
                 android:textColor="@color/text_main"
                 android:textSize="13sp"
                 android:textStyle="bold" />
@@ -123,6 +139,7 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="6dp"
                 android:background="@drawable/bg_banner_green"
+                android:foreground="?attr/selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center_vertical"
@@ -134,7 +151,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Chọn Phường / Xã"
+                    android:text="@string/filter_hint_ward"
                     android:textColor="@color/text_muted"
                     android:textSize="15sp"
                     android:textStyle="bold" />
@@ -142,86 +159,12 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
-                    android:contentDescription="Select"
+                    android:contentDescription="@string/cd_dropdown"
                     android:src="@drawable/ic_chevron_down"
                     app:tint="@color/text_main" />
             </LinearLayout>
 
-            <!-- Ward Label & Selected Count -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/filter_label_ward"
-                    android:textColor="@color/text_main"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvWardCount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Đã chọn 2"
-                    android:textColor="@color/text_sub"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <!-- Ward Chips -->
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroupWards"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:chipSpacingHorizontal="8dp"
-                app:chipSpacingVertical="8dp">
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipWard25"
-                    style="@style/Widget.App.Chip"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="Phường 25" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipWard26"
-                    style="@style/Widget.App.Chip"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="Phường 26" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipWard27"
-                    style="@style/Widget.App.Chip"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="false"
-                    android:text="Phường 27" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipWard15"
-                    style="@style/Widget.App.Chip"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="false"
-                    android:text="Phường 15" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipWard17"
-                    style="@style/Widget.App.Chip"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="false"
-                    android:text="Phường 17" />
-            </com.google.android.material.chip.ChipGroup>
 
             <!-- Verification Toggle Card -->
             <LinearLayout
@@ -236,9 +179,9 @@
                 <ImageView
                     android:layout_width="26dp"
                     android:layout_height="26dp"
-                    android:contentDescription="Shield"
+                    android:contentDescription="@string/cd_shield"
                     android:src="@drawable/ic_shield_check"
-                    app:tint="@color/olive_green" />
+                    app:tint="@color/primary" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -309,15 +252,19 @@
                         android:textColor="@color/text_sub"
                         android:textSize="11sp" />
 
-                    <TextView
-                        android:id="@+id/tvMinPrice"
-                        android:layout_width="wrap_content"
+                    <EditText
+                        android:id="@+id/etMinPrice"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="2.000.000"
+                        android:background="@null"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:singleLine="true"
                         android:textColor="@color/text_main"
                         android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:text="1000000" />
                 </LinearLayout>
 
                 <!-- Max Price Box -->
@@ -337,15 +284,19 @@
                         android:textColor="@color/text_sub"
                         android:textSize="11sp" />
 
-                    <TextView
-                        android:id="@+id/tvMaxPrice"
-                        android:layout_width="wrap_content"
+                    <EditText
+                        android:id="@+id/etMaxPrice"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="8.000.000"
+                        android:background="@null"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:singleLine="true"
                         android:textColor="@color/text_main"
                         android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:text="8000000" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -357,9 +308,9 @@
                 android:layout_marginTop="16dp"
                 android:valueFrom="0"
                 android:valueTo="10000000"
-                app:haloColor="@color/badge_soft_bg"
-                app:thumbColor="@color/olive_green"
-                app:trackColorActive="@color/olive_green"
+                app:haloColor="@color/bg_input"
+                app:thumbColor="@color/primary"
+                app:trackColorActive="@color/primary"
                 app:trackColorInactive="@color/bg_input"
                 app:values="@array/initial_price_range" />
 
@@ -408,7 +359,7 @@
                     style="@style/Widget.App.Chip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true"
+                    android:checked="false"
                     android:text="@string/filter_type_apartment" />
 
                 <com.google.android.material.chip.Chip
@@ -442,8 +393,8 @@
             android:id="@+id/btnApplyFilter"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:backgroundTint="@color/olive_green"
-            android:text="Áp dụng (124 Kết quả)"
+            android:backgroundTint="@color/primary"
+            android:text="@string/filter_btn_apply_simple"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="15sp"

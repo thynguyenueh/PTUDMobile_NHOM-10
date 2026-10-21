@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/surface_card">
+
+    <EditText
+        android:id="@+id/etSearchUniversity"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/bg_search_bar"
+        android:hint="@string/search_university_hint"
+        android:importantForAutofill="no"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textSize="14sp"
+        android:textColor="@color/text_main"
+        android:textColorHint="@color/text_muted"
+        android:inputType="text"
+        android:singleLine="true" />
+
+    <ListView
+        android:id="@+id/lvUniversities"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginTop="12dp"
+        android:divider="@color/divider_line"
+        android:dividerHeight="1dp"
+        tools:listitem="@android:layout/simple_list_item_1" />
+
+</LinearLayout>

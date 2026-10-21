@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -27,18 +28,17 @@ import java.util.concurrent.Executors;
 
 public class ResidenceVerificationActivity extends AppCompatActivity {
 
-    // Lưu hồ sơ đang chờ duyệt (users_cache chỉ có 0/1 nên không phân biệt được "đang chờ")
     public static final String PREFS_NAME = "residence_prefs";
-    public static final String KEY_STATUS = "status_";      // + userId -> "PENDING"
+    public static final String KEY_STATUS = "status_";      // + userId -> "PENDING" | "VERIFIED"
     public static final String KEY_METHOD = "method_";      // + userId -> "FILE" | "MANUAL"
-    public static final String KEY_FILE_PATH = "file_";     // + userId -> đường dẫn file đã copy
+    public static final String KEY_FILE_PATH = "file_";     // + userId
     public static final String KEY_REG_NUMBER = "reg_";     // + userId
     public static final String KEY_WARD = "ward_";          // + userId
     public static final String KEY_SUBMITTED_AT = "at_";    // + userId
 
     private static final String[] WARDS = {
             "Phường Bến Nghé", "Phường Bến Thành", "Phường Đa Kao",
-            "Phường 1", "Phường 2", "Phường 3", "Phường 25", "Phường 26"
+            "Phường 1", "Phường 2", "Phường 3", "Phường 25", "Phường 26", "Phường Linh Trung"
     };
 
     private ActivityResidenceVerificationBinding binding;
@@ -48,7 +48,7 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
     private final ExecutorService io = Executors.newSingleThreadExecutor();
 
     private String userId;
-    private String selectedFilePath = null;   // file CT07 đã copy vào bộ nhớ app
+    private String selectedFilePath = null;
     private String selectedFileName = null;
     private String selectedWard = null;
     private boolean alreadyVerified = false;
@@ -97,9 +97,13 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
             showWardPicker();
         });
         binding.btnSubmitVerification.setOnClickListener(v -> submit());
+
+        binding.layoutDocCard.setOnLongClickListener(v -> {
+            simulateApproveVerification();
+            return true;
+        });
     }
 
-    /** true = Option 1 (tải file CT07), false = Option 2 (nhập số đăng ký + chọn Phường). */
     private void selectOption(boolean option1) {
         binding.rbOption1.setChecked(option1);
         binding.rbOption2.setChecked(!option1);
@@ -108,7 +112,6 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
         binding.etRegistrationNumber.setEnabled(!option1);
     }
 
-    /** Kiểm tra trạng thái hiện tại: đã duyệt / đang chờ / chưa gửi. */
     private void loadStatus() {
         io.execute(() -> {
             User u = userDao.getById(userId);
@@ -122,40 +125,42 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
         alreadyVerified = verified;
         if (verified) {
             binding.btnSubmitVerification.setEnabled(false);
-            binding.btnSubmitVerification.setText("Đã xác thực cư trú");
-            binding.layoutDocCard.setVisibility(android.view.View.VISIBLE);
-            binding.tvUploadedSectionTitle.setVisibility(android.view.View.VISIBLE);
-            binding.imgDocCheck.setVisibility(android.view.View.VISIBLE);
+            binding.btnSubmitVerification.setText("Đã xác thực cư trú chính thức");
+            binding.layoutDocCard.setVisibility(View.VISIBLE);
+            binding.tvUploadedSectionTitle.setVisibility(View.VISIBLE);
+            binding.imgDocCheck.setVisibility(View.VISIBLE);
             binding.tvDocStatus1.setText("Đã xác thực cư trú");
-            binding.tvDocStatus2.setText("Thông tin cư trú đã được đối soát chính xác.");
+            binding.tvDocStatus2.setText("Thông tin cư trú đã đối soát thành công với Công an Phường.");
             String savedPath = prefs.getString(KEY_FILE_PATH + userId, null);
             if (savedPath != null) {
                 binding.tvFilename.setText(new File(savedPath).getName());
+            } else {
+                binding.tvFilename.setText("Hồ_Sơ_CT07_Đã_Duyệt.pdf");
             }
         } else if (pending) {
-            binding.btnSubmitVerification.setEnabled(false);
-            binding.btnSubmitVerification.setText("Đang chờ Công an Phường đối soát (trong 24h)");
-            binding.layoutDocCard.setVisibility(android.view.View.VISIBLE);
-            binding.tvUploadedSectionTitle.setVisibility(android.view.View.VISIBLE);
-            binding.imgDocCheck.setVisibility(android.view.View.GONE);
+            binding.btnSubmitVerification.setEnabled(true);
+            binding.btnSubmitVerification.setText("Đang chờ duyệt • Bấm để mô phỏng Duyệt");
+            binding.layoutDocCard.setVisibility(View.VISIBLE);
+            binding.tvUploadedSectionTitle.setVisibility(View.VISIBLE);
+            binding.imgDocCheck.setVisibility(View.GONE);
             binding.tvDocStatus1.setText("Đang chờ đối soát...");
-            binding.tvDocStatus2.setText("Hồ sơ đã được gửi tới Công an Phường.");
+            binding.tvDocStatus2.setText("Hồ sơ đã gửi tới Công an Phường. Bấm nút dưới để phê duyệt thử nghiệm.");
             String savedPath = prefs.getString(KEY_FILE_PATH + userId, null);
             if (savedPath != null) {
                 binding.tvFilename.setText(new File(savedPath).getName());
             }
         } else if (selectedFilePath != null) {
-            binding.layoutDocCard.setVisibility(android.view.View.VISIBLE);
-            binding.tvUploadedSectionTitle.setVisibility(android.view.View.VISIBLE);
-            binding.imgDocCheck.setVisibility(android.view.View.GONE);
+            binding.layoutDocCard.setVisibility(View.VISIBLE);
+            binding.tvUploadedSectionTitle.setVisibility(View.VISIBLE);
+            binding.imgDocCheck.setVisibility(View.GONE);
             binding.tvDocStatus1.setText("Tệp đã chuẩn bị gửi");
             binding.tvDocStatus2.setText("Bấm 'Gửi hồ sơ đối soát' bên dưới để hoàn tất.");
             if (selectedFileName != null) {
                 binding.tvFilename.setText(selectedFileName);
             }
         } else {
-            binding.layoutDocCard.setVisibility(android.view.View.GONE);
-            binding.tvUploadedSectionTitle.setVisibility(android.view.View.GONE);
+            binding.layoutDocCard.setVisibility(View.GONE);
+            binding.tvUploadedSectionTitle.setVisibility(View.GONE);
         }
     }
 
@@ -164,14 +169,18 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
             try {
                 String name = queryName(uri);
                 File dir = new File(getFilesDir(), "residence");
-                if (!dir.exists()) dir.mkdirs();
+                if (!dir.exists()) {
+                    boolean created = dir.mkdirs();
+                }
                 File out = new File(dir, userId + "_" + System.currentTimeMillis() + "_" + name);
                 try (InputStream in = getContentResolver().openInputStream(uri);
                      OutputStream os = new FileOutputStream(out)) {
                     if (in == null) throw new Exception("Không đọc được tệp");
                     byte[] buf = new byte[8192];
                     int n;
-                    while ((n = in.read(buf)) > 0) os.write(buf, 0, n);
+                    while ((n = in.read(buf)) > 0) {
+                        os.write(buf, 0, n);
+                    }
                 }
                 selectedFilePath = out.getAbsolutePath();
                 selectedFileName = name;
@@ -225,6 +234,12 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
             return;
         }
 
+        boolean isPending = "PENDING".equals(prefs.getString(KEY_STATUS + userId, null));
+        if (isPending) {
+            simulateApproveVerification();
+            return;
+        }
+
         boolean option1 = binding.rbOption1.isChecked();
         SharedPreferences.Editor ed = prefs.edit();
 
@@ -236,7 +251,8 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
             ed.putString(KEY_METHOD + userId, "FILE")
                     .putString(KEY_FILE_PATH + userId, selectedFilePath);
         } else {
-            String reg = binding.etRegistrationNumber.getText().toString().trim();
+            String reg = binding.etRegistrationNumber.getText() != null ?
+                    binding.etRegistrationNumber.getText().toString().trim() : "";
             if (reg.isEmpty()) {
                 binding.etRegistrationNumber.setError("Nhập số đăng ký cư trú");
                 return;
@@ -256,8 +272,27 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
 
         applyStatus(false, true);
         Toast.makeText(this,
-                "Đã nhận hồ sơ. Đang chờ Công an Phường đối soát (trong 24h)",
+                "Đã nhận hồ sơ! Bấm nút bên dưới một lần nữa để Phê duyệt xác nhận thử nghiệm.",
                 Toast.LENGTH_LONG).show();
+    }
+
+    private void simulateApproveVerification() {
+        io.execute(() -> {
+            User u = userDao.getById(userId);
+            if (u != null) {
+                u.setResidenceVerified(true);
+                u.setResidenceVerifiedAt(System.currentTimeMillis());
+                userDao.upsert(u);
+            }
+            prefs.edit().putString(KEY_STATUS + userId, "VERIFIED").apply();
+
+            runOnUiThread(() -> {
+                applyStatus(true, false);
+                Toast.makeText(this,
+                        "Chúc mừng! Hồ sơ cư trú của bạn đã được đối soát thành công.",
+                        Toast.LENGTH_LONG).show();
+            });
+        });
     }
 
     @Override

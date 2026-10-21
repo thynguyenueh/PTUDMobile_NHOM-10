@@ -297,7 +297,7 @@ public class RegisterStep2Activity extends AppCompatActivity {
             String selectedItem = adapter.getItem(position);
             if (selectedItem != null) {
                 targetTextView.setText(selectedItem);
-                targetTextView.setTextColor(ContextCompat.getColor(this, R.color.text_dark));
+                targetTextView.setTextColor(ContextCompat.getColor(this, R.color.text_main));
             }
             dialog.dismiss();
         });

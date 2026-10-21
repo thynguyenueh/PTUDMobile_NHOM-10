@@ -1,140 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F7F8F5"
+    android:fitsSystemWindows="true"
+    android:background="@color/bg_app"
     android:orientation="vertical">
 
     <!-- Header Bar -->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:background="@color/white"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="16dp">
+        android:id="@+id/layoutHeader"
+        style="@style/Widget.App.HeaderBar">
 
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/cd_back"
-            android:src="@drawable/ic_arrow_back"
-            app:tint="@color/text_main" />
+            style="@style/Widget.App.HeaderBackButton" />
 
         <TextView
-            android:layout_width="0dp"
+            android:id="@+id/tvHeaderTitle"
+            style="@style/Widget.App.HeaderTitle"
+            android:text="@string/exchange_history_title" />
+
+        <TextView
+            android:id="@+id/tvTotalExchanges"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_weight="1"
-            android:text="Lịch sử đổi nhà"
-            android:textColor="@color/text_main"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textColor="@color/primary"
+            android:textSize="@dimen/text_body"
+            android:textStyle="bold"
+            tools:text="0 lượt" />
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#E5E7EB" />
+    <View style="@style/Widget.App.Divider" />
 
-    <androidx.core.widget.NestedScrollView
+    <!-- Content Slot -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="16dp">
+        android:orientation="vertical"
+        android:padding="@dimen/space_lg">
 
-        <LinearLayout
+        <!-- Three equal-width status tabs -->
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupExchangeStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginTop="@dimen/space_xs"
+            app:chipSpacingHorizontal="4dp"
+            app:singleSelection="true"
+            app:selectionRequired="true"
+            app:singleLine="true">
 
-            <!-- Summary Banner -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_banner_green"
-                android:gravity="center_vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:background="@drawable/bg_green_icon"
-                    android:gravity="center"
-                    android:text="↔"
-                    android:textColor="#FFFFFF"
-                    android:textSize="22sp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tvTotalExchanges"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="3 lượt đổi nhà đã hoàn tất"
-                        android:textColor="@color/text_main"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="Tất cả giao dịch đã được xác nhận thành công"
-                        android:textColor="@color/text_sub"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <TextView
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipExchangeAll"
+                style="@style/Widget.App.Chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Danh sách lượt đổi"
-                android:textColor="#172033"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:checked="true"
+                android:text="@string/exchange_filter_all" />
 
-            <!-- Container for Exchange Items -->
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipExchangePending"
+                style="@style/Widget.App.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/exchange_filter_pending" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipExchangeApproved"
+                style="@style/Widget.App.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/exchange_filter_approved" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipExchangeCompleted"
+                style="@style/Widget.App.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/exchange_filter_completed" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipExchangeClosed"
+                style="@style/Widget.App.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/exchange_filter_closed" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <!-- ScrollView with Exchanges Container -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/space_md"
+            android:layout_weight="1"
+            android:fillViewport="true">
+
             <LinearLayout
                 android:id="@+id/layoutExchangesContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:orientation="vertical" />
-
-        </LinearLayout>
-
-    </androidx.core.widget.NestedScrollView>
+        </ScrollView>
+    </LinearLayout>
 
     <!-- Bottom Action Button -->
-    <LinearLayout
+    <FrameLayout
+        android:id="@+id/containerBottomBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:padding="16dp">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/btnCreateProposal"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/bg_button"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:text="+ Tạo đề xuất đổi nhà mới"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            android:layout_height="wrap_content"
+            android:background="@color/surface_card"
+            android:padding="@dimen/space_lg">
 
-    </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCreateProposal"
+                style="@style/Widget.App.Button.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/btn_height"
+                android:text="@string/exchange_btn_create_proposal" />
+        </LinearLayout>
+    </FrameLayout>
 
 </LinearLayout>

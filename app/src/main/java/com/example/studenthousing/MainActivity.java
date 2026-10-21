@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                     return true;
                 } else if (itemId == R.id.nav_messages) {
-                    startActivity(new Intent(this, ChatRoomsActivity.class));
+                    startActivity(new Intent(this, ChatActivity.class));
                     finish();
                     return true;
                 } else if (itemId == R.id.nav_profile) {

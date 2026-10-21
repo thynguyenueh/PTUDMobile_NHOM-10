@@ -8,7 +8,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.studenthousing.databinding.ActivitySearchFilterBinding;
-import com.google.android.material.slider.RangeSlider;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -24,26 +23,24 @@ public class SearchFilterActivity extends AppCompatActivity {
         binding = ActivitySearchFilterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        resetFilters(); // Reset ban đầu, không chọn sẵn
+        resetFilters();
         setupListeners();
-        updateWardCount();
     }
 
     private void setupListeners() {
+        binding.btnBack.setOnClickListener(v -> finish());
         binding.btnReset.setOnClickListener(v -> resetFilters());
 
         binding.layoutSelectProvince.setOnClickListener(v -> showProvinceDialog());
         binding.layoutSelectWard.setOnClickListener(v -> showWardDialog());
-
-        binding.chipGroupWards.setOnCheckedStateChangeListener((group, checkedIds) -> updateWardCount());
 
         binding.sliderPrice.addOnChangeListener((slider, value, fromUser) -> {
             List<Float> values = slider.getValues();
             if (values.size() >= 2) {
                 int minPrice = Math.round(values.get(0));
                 int maxPrice = Math.round(values.get(1));
-                binding.tvMinPrice.setText(formatter.format(minPrice).replace(',', '.'));
-                binding.tvMaxPrice.setText(formatter.format(maxPrice).replace(',', '.'));
+                binding.etMinPrice.setText(String.valueOf(minPrice));
+                binding.etMaxPrice.setText(String.valueOf(maxPrice));
             }
         });
 
@@ -58,35 +55,21 @@ public class SearchFilterActivity extends AppCompatActivity {
         });
     }
 
-    private void updateWardCount() {
-        int count = binding.chipGroupWards.getCheckedChipIds().size();
-        binding.tvWardCount.setText(getString(R.string.filter_ward_selected_count, count));
-        updateResultButtonCount();
-    }
-
-    private void updateResultButtonCount() {
-        int count = binding.chipGroupWards.getCheckedChipIds().size();
-        int estimatedResults = Math.max(12, count * 62);
-        binding.btnApplyFilter.setText(getString(R.string.filter_btn_apply, estimatedResults));
-    }
-
     private void resetFilters() {
         binding.tvProvince.setText("Chọn Tỉnh / Thành phố");
         binding.tvWard.setText("Chọn Phường / Xã");
 
-        binding.chipWard25.setChecked(false);
-        binding.chipWard26.setChecked(false);
-        binding.chipWard27.setChecked(false);
-        binding.chipWard15.setChecked(false);
-        binding.chipWard17.setChecked(false);
-
-        binding.switchVerifiedOnly.setChecked(false);
+        binding.switchVerifiedOnly.setChecked(true);
 
         binding.sliderPrice.setValues(1000000f, 8000000f);
-        binding.chipApartment.setChecked(false);
+        binding.etMinPrice.setText("1000000");
+        binding.etMaxPrice.setText("8000000");
 
-        updateWardCount();
-        Toast.makeText(this, "Đã reset bộ lọc", Toast.LENGTH_SHORT).show();
+        binding.chipApartment.setChecked(false);
+        binding.chipWholeHouse.setChecked(false);
+        binding.chipSharedRoom.setChecked(false);
+
+        Toast.makeText(this, "Đã thiết lập lại bộ lọc", Toast.LENGTH_SHORT).show();
     }
 
     private void showProvinceDialog() {
