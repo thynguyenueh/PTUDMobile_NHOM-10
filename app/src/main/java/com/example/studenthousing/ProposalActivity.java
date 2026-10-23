@@ -7,7 +7,6 @@ import android.widget.Toast;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.studenthousing.data.local.PostDao;
@@ -142,11 +141,11 @@ public class ProposalActivity extends AppCompatActivity {
 
     private void bindHomeCard(ItemHomeCardBinding card,
                               @DrawableRes int photo,
-                              @StringRes int label,
+                              int labelRes,
                               String title,
                               String area) {
         card.ivHomePhoto.setImageResource(photo);
-        card.tvHomeLabel.setText(label);
+        card.tvHomeLabel.setText(labelRes);
         card.tvHomeName.setText(title);
         card.tvHomeArea.setText(area);
     }
@@ -163,7 +162,8 @@ public class ProposalActivity extends AppCompatActivity {
             return;
         }
 
-        String period = getString(getSelectedPeriodLabel());
+        String periodCode = getSelectedPeriodCode();
+        String periodDisplay = formatPeriodDisplay(periodCode);
         String senderId = session.isLoggedIn() ? session.getUserId() : "user_guest";
         String receiverId = "host_" + hostName.hashCode();
 
@@ -172,7 +172,7 @@ public class ProposalActivity extends AppCompatActivity {
         request.setReceiverId(receiverId);
         request.setSenderPostId(myPostId);
         request.setReceiverPostId(partnerPostId);
-        request.setExchangePeriod(period);
+        request.setExchangePeriod(periodCode);
         request.setMessage(message);
         request.setStatus("PENDING");
         request.setCreatedAt(System.currentTimeMillis());
@@ -182,7 +182,7 @@ public class ProposalActivity extends AppCompatActivity {
             public void onSuccess(String id) {
                 runOnUiThread(() -> {
                     Toast.makeText(ProposalActivity.this,
-                            getString(R.string.proposal_sent, hostName, period),
+                            getString(R.string.proposal_sent, hostName, periodDisplay),
                             Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(ProposalActivity.this, ExchangeHistoryActivity.class);
                     startActivity(intent);
@@ -194,7 +194,7 @@ public class ProposalActivity extends AppCompatActivity {
             public void onError(Exception e) {
                 runOnUiThread(() -> {
                     Toast.makeText(ProposalActivity.this,
-                            getString(R.string.proposal_sent, hostName, period),
+                            getString(R.string.proposal_sent, hostName, periodDisplay),
                             Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(ProposalActivity.this, ExchangeHistoryActivity.class);
                     startActivity(intent);
@@ -204,15 +204,20 @@ public class ProposalActivity extends AppCompatActivity {
         });
     }
 
-    @StringRes
-    private int getSelectedPeriodLabel() {
+    private String getSelectedPeriodCode() {
         int checkedId = binding.togglePeriod.getCheckedButtonId();
         if (checkedId == R.id.btnSemester2) {
-            return R.string.proposal_period_semester_2;
+            return "SEMESTER_2";
         }
         if (checkedId == R.id.btnFullYear) {
-            return R.string.proposal_period_full_year;
+            return "FULL_YEAR";
         }
-        return R.string.proposal_period_semester_1;
+        return "SEMESTER_1";
+    }
+
+    private String formatPeriodDisplay(String code) {
+        if ("SEMESTER_2".equals(code)) return "Học kỳ 2";
+        if ("FULL_YEAR".equals(code)) return "Cả năm";
+        return "Học kỳ 1";
     }
 }

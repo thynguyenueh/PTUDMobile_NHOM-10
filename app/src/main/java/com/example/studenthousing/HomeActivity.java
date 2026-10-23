@@ -135,7 +135,8 @@ public class HomeActivity extends AppCompatActivity {
             double price = p.getPrice() > 0 ? p.getPrice() : 3.5;
             double area = p.getArea() > 0 ? p.getArea() : 45.0;
             String desc = p.getDescription() != null && !p.getDescription().isEmpty() ? p.getDescription() : "Căn hộ rộng rãi, thoáng mát, gần trường học, an ninh tốt.";
-            String type = p.getHouseType() != null ? p.getHouseType() : "Căn hộ";
+            String type = p.getHouseType() != null ? p.getHouseType() : "APARTMENT";
+            String badge = p.getVerificationBadge() != null ? p.getVerificationBadge() : "Đã xác thực Công an Phường";
 
             list.add(new House(
                     p.getPostId() != null ? p.getPostId() : "post_" + idx,
@@ -148,7 +149,11 @@ public class HomeActivity extends AppCompatActivity {
                     area,
                     desc,
                     host,
-                    type
+                    type,
+                    p.getStatus() != null ? p.getStatus() : "AVAILABLE",
+                    badge,
+                    p.isDistanceEstimate(),
+                    p.getDistanceSource() != null ? p.getDistanceSource() : "osrm"
             ));
         }
         return list;
@@ -167,7 +172,11 @@ public class HomeActivity extends AppCompatActivity {
                         65.0,
                         "Căn hộ cao cấp đầy đủ tiện nghi, view đẹp, bảo vệ 24/7, gần bến xe buýt và siêu thị.",
                         "Hộ gia đình Lê Văn Nam",
-                        "Căn hộ"
+                        "APARTMENT",
+                        "AVAILABLE",
+                        "Đã xác thực Công an Phường",
+                        false,
+                        "osrm"
                 ),
                 new House(
                         "house_2",
@@ -180,7 +189,11 @@ public class HomeActivity extends AppCompatActivity {
                         40.0,
                         "Phòng trọ rộng rãi có gác lửng, toilet riêng, giờ giấc tự do, cách ĐHQG 500m.",
                         "Hộ gia đình Trần Thị Mai",
-                        "Phòng ở ghép"
+                        "SHARED_ROOM",
+                        "AVAILABLE",
+                        "Đã xác thực Công an Phường",
+                        false,
+                        "osrm"
                 ),
                 new House(
                         "house_3",
@@ -193,7 +206,11 @@ public class HomeActivity extends AppCompatActivity {
                         80.0,
                         "Nhà nguyên căn 1 trệt 1 lầu, 2 phòng ngủ, bếp rộng, thích hợp cho nhóm 4-6 sinh viên ở ghép.",
                         "Hộ gia đình Phạm Hoàng",
-                        "Nhà nguyên căn"
+                        "WHOLE_HOUSE",
+                        "AVAILABLE",
+                        "Chưa xác thực Công an Phường",
+                        true,
+                        "haversine"
                 ),
                 new House(
                         "house_4",
@@ -206,7 +223,11 @@ public class HomeActivity extends AppCompatActivity {
                         35.0,
                         "Phòng đẹp mới xây, có thang máy, trang bị máy lạnh, tủ lạnh, bếp từ.",
                         "Hộ gia đình Nguyễn Văn An",
-                        "Căn hộ"
+                        "APARTMENT",
+                        "AVAILABLE",
+                        "Đã xác thực Công an Phường",
+                        false,
+                        "osrm"
                 )
         );
     }
@@ -340,6 +361,10 @@ public class HomeActivity extends AppCompatActivity {
         intent.putExtra("house_description", house.getDescription());
         intent.putExtra("house_host_name", house.getHostName());
         intent.putExtra("house_type", house.getHouseType());
+        intent.putExtra("house_status", house.getStatus());
+        intent.putExtra("verification_badge", house.getVerificationBadge());
+        intent.putExtra("is_distance_estimate", house.isDistanceEstimate());
+        intent.putExtra("distance_source", house.getDistanceSource());
         intent.putExtra("house_photo_res", house.getPhotoRes());
         startActivity(intent);
     }

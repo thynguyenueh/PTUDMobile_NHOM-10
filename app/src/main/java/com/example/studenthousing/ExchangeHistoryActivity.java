@@ -13,7 +13,9 @@ import com.example.studenthousing.data.model.ExchangeRequest;
 import com.example.studenthousing.data.repository.ExchangeRepository;
 import com.example.studenthousing.util.AppCallback;
 import com.example.studenthousing.util.SessionManager;
+import com.google.android.material.chip.ChipGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ExchangeHistoryActivity extends AppCompatActivity {
@@ -22,6 +24,10 @@ public class ExchangeHistoryActivity extends AppCompatActivity {
     private ExchangeRepository exchangeRepository;
     private LinearLayout layoutExchangesContainer;
     private TextView tvTotalExchanges;
+    private ChipGroup chipGroupExchangeStatus;
+
+    private List<ExchangeRequest> allRequests = new ArrayList<>();
+    private String currentFilterStatus = "ALL";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +41,9 @@ public class ExchangeHistoryActivity extends AppCompatActivity {
 
         layoutExchangesContainer = findViewById(R.id.layoutExchangesContainer);
         tvTotalExchanges = findViewById(R.id.tvTotalExchanges);
+        chipGroupExchangeStatus = findViewById(R.id.chipGroupExchangeStatus);
+
+        setupFilterChips();
 
         View btnCreateProposal = findViewById(R.id.btnCreateProposal);
         if (btnCreateProposal != null) {
@@ -45,63 +54,124 @@ public class ExchangeHistoryActivity extends AppCompatActivity {
         loadExchangeHistory();
     }
 
+    private void setupFilterChips() {
+        if (chipGroupExchangeStatus != null) {
+            chipGroupExchangeStatus.setOnCheckedStateChangeListener((group, checkedIds) -> {
+                if (checkedIds.isEmpty()) return;
+                int checkedId = checkedIds.get(0);
+                if (checkedId == R.id.chipExchangePending) {
+                    currentFilterStatus = "PENDING";
+                } else if (checkedId == R.id.chipExchangeApproved) {
+                    currentFilterStatus = "ACCEPTED";
+                } else if (checkedId == R.id.chipExchangeCompleted) {
+                    currentFilterStatus = "COMPLETED";
+                } else if (checkedId == R.id.chipExchangeClosed) {
+                    currentFilterStatus = "CLOSED";
+                } else {
+                    currentFilterStatus = "ALL";
+                }
+                applyFilterAndDisplay();
+            });
+        }
+    }
+
     private void loadExchangeHistory() {
         String userId = session.getUserId() != null ? session.getUserId() : "current_user";
 
         exchangeRepository.getBySender(userId, new AppCallback<List<ExchangeRequest>>() {
             @Override
             public void onSuccess(List<ExchangeRequest> list) {
-                runOnUiThread(() -> displayExchanges(list));
+                allRequests = list != null ? list : new ArrayList<>();
+                runOnUiThread(() -> applyFilterAndDisplay());
             }
 
             @Override
             public void onError(Exception e) {
-                runOnUiThread(() -> displayExchanges(null));
+                allRequests = new ArrayList<>();
+                runOnUiThread(() -> applyFilterAndDisplay());
             }
         });
     }
 
-    private void displayExchanges(List<ExchangeRequest> list) {
+    private void applyFilterAndDisplay() {
         if (layoutExchangesContainer == null) return;
         layoutExchangesContainer.removeAllViews();
 
-        if (list != null && !list.isEmpty()) {
-            tvTotalExchanges.setText(list.size() + " lượt đổi nhà đã ghi nhận");
-            for (ExchangeRequest req : list) {
+        List<ExchangeRequest> filtered = new ArrayList<>();
+        if (allRequests != null && !allRequests.isEmpty()) {
+            for (ExchangeRequest req : allRequests) {
+                String st = req.getStatus() != null ? req.getStatus() : "PENDING";
+                if ("ALL".equals(currentFilterStatus)) {
+                    filtered.add(req);
+                } else if ("CLOSED".equals(currentFilterStatus)) {
+                    if ("REJECTED".equals(st) || "CANCELLED".equals(st)) {
+                        filtered.add(req);
+                    }
+                } else if (currentFilterStatus.equalsIgnoreCase(st)) {
+                    filtered.add(req);
+                }
+            }
+        }
+
+        if (!filtered.isEmpty()) {
+            tvTotalExchanges.setText(filtered.size() + " lượt đổi nhà");
+            for (ExchangeRequest req : filtered) {
                 addExchangeItemView(
-                        "Đổi nhà #" + req.getRequestId().substring(0, Math.min(6, req.getRequestId().length())),
+                        "Yêu cầu đổi trọ #" + req.getRequestId().substring(0, Math.min(6, req.getRequestId().length())),
                         "Đối tác ID: " + req.getReceiverId(),
-                        req.getStatus() != null ? req.getStatus() : "Hoàn tất",
-                        "Thời gian: " + (req.getExchangePeriod() != null ? req.getExchangePeriod() : "Học kỳ 1"),
-                        req.getMessage() != null ? req.getMessage() : "Thỏa thuận đổi nhà đã ký kết.",
+                        formatStatusDisplay(req.getStatus()),
+                        "Thời gian đổi: " + formatPeriodDisplay(req.getExchangePeriod()),
+                        req.getMessage() != null ? req.getMessage() : "Thỏa thuận đổi nhà 2 chiều.",
                         req.getReceiverId(),
                         req.getRequestId()
                 );
             }
         } else {
-            // Mẫu nếu chưa có dữ liệu DB/Firestore
-            tvTotalExchanges.setText("3 lượt đổi nhà đã hoàn tất");
+            // Mẫu thử nghiệm nếu chưa có dữ liệu
+            tvTotalExchanges.setText("3 lượt đổi nhà ghi nhận");
 
             addExchangeItemView("Căn hộ Thảo Điền, Q.2",
-                    "Gia đình Cô Mai",
+                    "Gia đình Lê Văn Nam",
                     "✓ Hoàn tất",
-                    "Thời gian: Học kỳ 1 (09/2026 - 01/2027)",
+                    "Thời gian đổi: Học kỳ 1 (SEMESTER_1)",
                     "Thỏa thuận đổi nhà 2 chiều đã hoàn tất thành công.",
                     "user_co_mai", "req_001");
 
             addExchangeItemView("Nhà trọ Linh Trung, Thủ Đức",
-                    "Gia đình Chú Nam",
-                    "✓ Hoàn tất",
-                    "Thời gian: Học kỳ 2 (02/2026 - 06/2026)",
-                    "Thỏa thuận đổi nhà cho sinh viên đã hoàn tất.",
+                    "Gia đình Trần Thị Mai",
+                    "✓ Đã đồng ý",
+                    "Thời gian đổi: Học kỳ 2 (SEMESTER_2)",
+                    "Thỏa thuận đổi nhà cho sinh viên đang chờ bàn giao.",
                     "user_chu_nam", "req_002");
 
             addExchangeItemView("Phòng trọ Linh Xuân, Thủ Đức",
-                    "Bạn Tuấn (ĐH Bách Khoa)",
-                    "✓ Hoàn tất",
-                    "Thời gian: Học kỳ Hè (07/2026 - 08/2026)",
-                    "Đổi phòng thời hạn ngắn hoàn tất.",
+                    "Gia đình Phạm Hoàng",
+                    "Đang chờ duyệt",
+                    "Thời gian đổi: Cả năm (FULL_YEAR)",
+                    "Đã gửi yêu cầu đổi phòng thời hạn 1 năm.",
                     "user_tuan", "req_003");
+        }
+    }
+
+    private String formatPeriodDisplay(String period) {
+        if (period == null) return "Học kỳ 1";
+        switch (period.toUpperCase()) {
+            case "SEMESTER_1": return "Học kỳ 1";
+            case "SEMESTER_2": return "Học kỳ 2";
+            case "FULL_YEAR":   return "Cả năm";
+            default:           return period;
+        }
+    }
+
+    private String formatStatusDisplay(String status) {
+        if (status == null) return "Chờ duyệt";
+        switch (status.toUpperCase()) {
+            case "PENDING":   return "Đang chờ duyệt";
+            case "ACCEPTED":  return "✓ Đã đồng ý";
+            case "REJECTED":  return "✕ Đã từ chối";
+            case "CANCELLED": return "✕ Đã hủy";
+            case "COMPLETED": return "✓ Hoàn tất";
+            default:          return status;
         }
     }
 

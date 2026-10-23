@@ -37,6 +37,10 @@ public class DetailActivity extends AppCompatActivity {
     private String houseDescription;
     private String houseHostName;
     private String houseType;
+    private String houseStatus;
+    private String verificationBadge;
+    private boolean isDistanceEstimate;
+    private String distanceSource;
     private int housePhotoRes;
 
     private boolean isFavorite = false;
@@ -91,8 +95,22 @@ public class DetailActivity extends AppCompatActivity {
 
         houseType = intent.getStringExtra("house_type");
         if (houseType == null || houseType.isEmpty()) {
-            houseType = "Căn hộ";
+            houseType = "APARTMENT";
         }
+
+        houseStatus = intent.getStringExtra("house_status");
+        if (houseStatus == null || houseStatus.isEmpty()) {
+            houseStatus = "AVAILABLE";
+        }
+
+        verificationBadge = intent.getStringExtra("verification_badge");
+        if (verificationBadge == null || verificationBadge.isEmpty()) {
+            verificationBadge = "Đã xác thực Công an Phường";
+        }
+
+        isDistanceEstimate = intent.getBooleanExtra("is_distance_estimate", false);
+        distanceSource = intent.getStringExtra("distance_source");
+        if (distanceSource == null) distanceSource = "osrm";
 
         housePhotoRes = intent.getIntExtra("house_photo_res", R.drawable.house_thao_dien);
     }
@@ -101,7 +119,7 @@ public class DetailActivity extends AppCompatActivity {
         binding.tvTitle.setText(houseTitle);
         binding.tvLocation.setText(houseAddress);
 
-        String priceStr = housePrice + " Tr";
+        String priceStr = formatPriceDisplay(housePrice);
         binding.tvPriceBig.setText(priceStr);
 
         TextView tvBottomPrice = findViewById(R.id.tvBottomPrice);
@@ -109,9 +127,13 @@ public class DetailActivity extends AppCompatActivity {
             tvBottomPrice.setText(priceStr + " /tháng");
         }
 
-        binding.tvHouseType.setText(houseType);
-        binding.tvAreaMeta.setText("Diện tích sử dụng: " + houseArea + " m² · Đã qua thẩm định");
+        binding.tvHouseType.setText(formatHouseTypeDisplay(houseType));
+        binding.tvAreaMeta.setText("Diện tích sử dụng: " + houseArea + " m² · " + verificationBadge);
         binding.tvDescription.setText(houseDescription);
+
+        if (binding.tvStatusBadge != null) {
+            binding.tvStatusBadge.setText(formatStatusDisplay(houseStatus));
+        }
 
         if (binding.tvVerifiedBadge != null) {
             binding.tvVerifiedBadge.setVisibility(houseVerified ? View.VISIBLE : View.GONE);
@@ -136,8 +158,50 @@ public class DetailActivity extends AppCompatActivity {
         // Distance card bindings inside layout_distance_card
         TextView tvDistanceValue = findViewById(R.id.tvDistanceValue);
         if (tvDistanceValue != null) {
-            tvDistanceValue.setText(houseDistance + " km · ĐHQG TP.HCM");
+            if (isDistanceEstimate) {
+                tvDistanceValue.setText("~ " + houseDistance + " km (Ước lượng Haversine)");
+            } else {
+                tvDistanceValue.setText(houseDistance + " km · ĐHQG TP.HCM (" + distanceSource.toUpperCase() + ")");
+            }
         }
+    }
+
+    private String formatHouseTypeDisplay(String type) {
+        if (type == null) return "Căn hộ";
+        switch (type.toUpperCase()) {
+            case "APARTMENT":    return "Căn hộ";
+            case "WHOLE_HOUSE":  return "Nhà nguyên căn";
+            case "SHARED_ROOM":  return "Phòng ở ghép";
+            default:             return type;
+        }
+    }
+
+    private String formatStatusDisplay(String status) {
+        if (status == null) return "Còn trống kỳ mới";
+        switch (status.toUpperCase()) {
+            case "AVAILABLE": return "Còn trống kỳ mới";
+            case "EXCHANGED": return "Đã đổi trọ";
+            case "HIDDEN":    return "Đã ẩn";
+            default:          return status;
+        }
+    }
+
+    private String formatPriceDisplay(double price) {
+        if (price >= 1_000_000) {
+            double millions = price / 1_000_000.0;
+            if (millions == (long) millions) {
+                return String.format(java.util.Locale.getDefault(), "%d Tr", (long) millions);
+            } else {
+                return String.format(java.util.Locale.getDefault(), "%.1f Tr", millions);
+            }
+        } else if (price > 0) {
+            if (price == (long) price) {
+                return String.format(java.util.Locale.getDefault(), "%d Tr", (long) price);
+            } else {
+                return String.format(java.util.Locale.getDefault(), "%.1f Tr", price);
+            }
+        }
+        return "3.5 Tr";
     }
 
     private void setupPhotoPager() {
