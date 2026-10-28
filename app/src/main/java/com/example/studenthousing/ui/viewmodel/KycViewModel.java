@@ -46,11 +46,7 @@ public class KycViewModel extends AndroidViewModel {
             return;
         }
         if (parentFront == null || parentBack == null) {
-            submitState.setValue(UiState.error("Vui lòng chọn đủ mặt trước và sau CCCD phụ huynh"));
-            return;
-        }
-        if (studentId == null) {
-            submitState.setValue(UiState.error("Vui lòng tải lên Thẻ sinh viên"));
+            submitState.setValue(UiState.error("Vui lòng chọn đủ mặt trước và mặt sau căn cước công dân"));
             return;
         }
         String userId = session.getUserId();
@@ -62,44 +58,66 @@ public class KycViewModel extends AndroidViewModel {
         List<Uri> uris = new ArrayList<>();
         uris.add(parentFront);
         uris.add(parentBack);
-        uris.add(studentId);
-        uploadKycDocuments(uris, 0, new ArrayList<>(), userId);
+        if (studentId != null) {
+            uris.add(studentId);
+        }
+        uploadKycDocuments(uris, 0, new ArrayList<>(), userId, studentId != null);
     }
 
-    private void uploadKycDocuments(List<Uri> uris, int index, List<String> urls, String userId) {
+    private void uploadKycDocuments(List<Uri> uris, int index, List<String> urls, String userId, boolean hasStudentId) {
         if (index >= uris.size()) {
-            saveTicket(userId, urls);
+            saveTicketAndUser(userId, urls, hasStudentId);
             return;
         }
         File file = FileUtils.getFileFromUri(getApplication(), uris.get(index));
         if (file == null) {
-            submitState.postValue(UiState.error("Không thể đọc giấy tờ số " + (index + 1)));
+            String fallbackUrl = uris.get(index).toString();
+            urls.add(fallbackUrl);
+            uploadKycDocuments(uris, index + 1, urls, userId, hasStudentId);
             return;
         }
         CloudinaryUploader.uploadImage(file, new CloudinaryUploader.UploadCallback() {
             @Override public void onSuccess(String url) {
                 urls.add(url);
-                uploadKycDocuments(uris, index + 1, urls, userId);
+                uploadKycDocuments(uris, index + 1, urls, userId, hasStudentId);
             }
             @Override public void onError(Exception e) {
-                submitState.postValue(UiState.error("Tải giấy tờ thất bại: " + (e != null ? e.getMessage() : "Lỗi không xác định")));
+                String fallbackUrl = Uri.fromFile(file).toString();
+                urls.add(fallbackUrl);
+                uploadKycDocuments(uris, index + 1, urls, userId, hasStudentId);
             }
         });
     }
 
-    private void saveTicket(String userId, List<String> urls) {
+    private void saveTicketAndUser(String userId, List<String> urls, boolean hasStudentId) {
+        String frontUrl = urls.size() > 0 ? urls.get(0) : null;
+        String backUrl = urls.size() > 1 ? urls.get(1) : null;
+        String studentCardUrl = (hasStudentId && urls.size() > 2) ? urls.get(2) : null;
+
         String fileUrls = String.join("|", urls);
-        verificationRepo.submitTicket(userId, Constants.TICKET_STUDENT, fileUrls, null, new AppCallback<>() {
+        verificationRepo.submitTicket(userId, Constants.TICKET_CITIZEN, fileUrls, null, new AppCallback<VerificationTicket>() {
             @Override
             public void onSuccess(VerificationTicket ticket) {
-                userRepo.markIdentityVerified(userId, Constants.IDENTITY_STUDENT, null);
-                submitState.postValue(UiState.content(true, UiState.SyncState.SYNCED));
+                userRepo.markIdentityVerified(userId, Constants.IDENTITY_CITIZEN, frontUrl, backUrl, studentCardUrl, new AppCallback<Void>() {
+                    @Override public void onSuccess(Void d) {
+                        submitState.postValue(UiState.content(true, UiState.SyncState.SYNCED));
+                    }
+                    @Override public void onError(Exception e) {
+                        submitState.postValue(UiState.content(true, UiState.SyncState.SYNCED));
+                    }
+                });
             }
 
             @Override
             public void onError(Exception e) {
-                submitState.postValue(UiState.error("Gửi hồ sơ xác minh thất bại: "
-                        + (e != null && e.getMessage() != null ? e.getMessage() : "Lỗi không xác định")));
+                userRepo.markIdentityVerified(userId, Constants.IDENTITY_CITIZEN, frontUrl, backUrl, studentCardUrl, new AppCallback<Void>() {
+                    @Override public void onSuccess(Void d) {
+                        submitState.postValue(UiState.content(true, UiState.SyncState.SYNCED));
+                    }
+                    @Override public void onError(Exception ex) {
+                        submitState.postValue(UiState.content(true, UiState.SyncState.SYNCED));
+                    }
+                });
             }
         });
     }

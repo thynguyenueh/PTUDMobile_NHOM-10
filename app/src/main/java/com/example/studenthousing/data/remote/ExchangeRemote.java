@@ -172,7 +172,6 @@ public class ExchangeRemote {
     public void getBySender(String senderId, AppCallback<List<ExchangeRequest>> cb) {
         db.collection(COLLECTION)
                 .whereEqualTo("senderId", senderId)
-                .orderBy("createdAt", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(snap -> {
                     List<ExchangeRequest> list = new ArrayList<>();
@@ -181,6 +180,7 @@ public class ExchangeRemote {
                         r.setRequestId(doc.getId());
                         list.add(r);
                     }
+                    list.sort((r1, r2) -> Long.compare(r2.getCreatedAt(), r1.getCreatedAt()));
                     cb.onSuccess(list);
                 })
                 .addOnFailureListener(cb::onError);
@@ -189,7 +189,6 @@ public class ExchangeRemote {
     public void getByReceiver(String receiverId, AppCallback<List<ExchangeRequest>> cb) {
         db.collection(COLLECTION)
                 .whereEqualTo("receiverId", receiverId)
-                .orderBy("createdAt", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(snap -> {
                     List<ExchangeRequest> list = new ArrayList<>();
@@ -198,6 +197,7 @@ public class ExchangeRemote {
                         r.setRequestId(doc.getId());
                         list.add(r);
                     }
+                    list.sort((r1, r2) -> Long.compare(r2.getCreatedAt(), r1.getCreatedAt()));
                     cb.onSuccess(list);
                 })
                 .addOnFailureListener(cb::onError);
@@ -221,7 +221,6 @@ public class ExchangeRemote {
     public ListenerRegistration listenBySender(String senderId, AppCallback<List<ExchangeRequest>> cb) {
         return db.collection(COLLECTION)
                 .whereEqualTo("senderId", senderId)
-                .orderBy("createdAt", Query.Direction.DESCENDING)
                 .addSnapshotListener((snap, e) -> {
                     if (e != null) { cb.onError(e); return; }
                     if (snap == null) return;
@@ -232,6 +231,7 @@ public class ExchangeRemote {
                         r.setRequestId(doc.getId());
                         list.add(r);
                     }
+                    list.sort((r1, r2) -> Long.compare(r2.getCreatedAt(), r1.getCreatedAt()));
                     cb.onSuccess(list);
                 });
     }
@@ -239,7 +239,6 @@ public class ExchangeRemote {
     public ListenerRegistration listenByReceiver(String receiverId, AppCallback<List<ExchangeRequest>> cb) {
         return db.collection(COLLECTION)
                 .whereEqualTo("receiverId", receiverId)
-                .orderBy("createdAt", Query.Direction.DESCENDING)
                 .addSnapshotListener((snap, e) -> {
                     if (e != null) { cb.onError(e); return; }
                     if (snap == null) return;
@@ -250,6 +249,7 @@ public class ExchangeRemote {
                         r.setRequestId(doc.getId());
                         list.add(r);
                     }
+                    list.sort((r1, r2) -> Long.compare(r2.getCreatedAt(), r1.getCreatedAt()));
                     cb.onSuccess(list);
                 });
     }

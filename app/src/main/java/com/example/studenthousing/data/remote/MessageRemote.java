@@ -61,7 +61,6 @@ public class MessageRemote {
     public void getUserRooms(String userId, AppCallback<List<ChatRoom>> cb) {
         db.collection(ROOM_COLLECTION)
                 .whereArrayContains("participantIds", userId)
-                .orderBy("lastMessageTime", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(snap -> {
                     List<ChatRoom> list = new ArrayList<>();
@@ -70,6 +69,7 @@ public class MessageRemote {
                         room.setRoomId(doc.getId());
                         list.add(room);
                     }
+                    list.sort((r1, r2) -> Long.compare(r2.getLastMessageTime(), r1.getLastMessageTime()));
                     cb.onSuccess(list);
                 })
                 .addOnFailureListener(cb::onError);
@@ -78,7 +78,6 @@ public class MessageRemote {
     public ListenerRegistration listenUserRooms(String userId, AppCallback<List<ChatRoom>> cb) {
         return db.collection(ROOM_COLLECTION)
                 .whereArrayContains("participantIds", userId)
-                .orderBy("lastMessageTime", Query.Direction.DESCENDING)
                 .addSnapshotListener((snap, e) -> {
                     if (e != null) { cb.onError(e); return; }
                     if (snap == null) return;
@@ -88,6 +87,7 @@ public class MessageRemote {
                         room.setRoomId(doc.getId());
                         list.add(room);
                     }
+                    list.sort((r1, r2) -> Long.compare(r2.getLastMessageTime(), r1.getLastMessageTime()));
                     cb.onSuccess(list);
                 });
     }

@@ -312,6 +312,11 @@
         <item name="cornerSize">@dimen/card_radius_md</item>
     </style>
 
+    <style name="ShapeAppearance.Material3.Corner.Medium" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+
     <style name="ShapeAppearance.App.Image16" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">@dimen/card_radius_lg</item>

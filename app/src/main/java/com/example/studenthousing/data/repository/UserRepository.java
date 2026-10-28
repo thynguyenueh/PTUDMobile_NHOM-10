@@ -56,12 +56,19 @@ public class UserRepository {
     }
 
     public void markIdentityVerified(String userId, String identityType, AppCallback<Void> cb) {
+        markIdentityVerified(userId, identityType, null, null, null, cb);
+    }
+
+    public void markIdentityVerified(String userId, String identityType, String frontUrl, String backUrl, String studentCardUrl, AppCallback<Void> cb) {
         User u = getCachedUser(userId);
         if (u != null) {
             u.setIdentityVerified(true);
             u.setIdentityType(identityType != null ? identityType : Constants.IDENTITY_STUDENT);
             u.setIdentityVerifiedAt(System.currentTimeMillis());
             u.setVerified(true);
+            if (frontUrl != null) u.setCitizenIdFrontUrl(frontUrl);
+            if (backUrl != null) u.setCitizenIdBackUrl(backUrl);
+            if (studentCardUrl != null) u.setStudentCardUrl(studentCardUrl);
             saveUserProfile(u, cb);
         } else if (cb != null) {
             cb.onError(new Exception("User not found in cache"));

@@ -196,7 +196,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:scaleType="centerCrop"
-                                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
+                                app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Image12" />
 
                             <TextView
                                 style="@style/TextAppearance.App.Caption"
@@ -235,7 +235,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:scaleType="centerCrop"
-                                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
+                                app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Image12" />
 
                             <TextView
                                 style="@style/TextAppearance.App.Caption"
@@ -369,7 +369,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:scaleType="centerCrop"
-                                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
+                                app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Image12" />
 
                             <TextView
                                 style="@style/TextAppearance.App.Caption"

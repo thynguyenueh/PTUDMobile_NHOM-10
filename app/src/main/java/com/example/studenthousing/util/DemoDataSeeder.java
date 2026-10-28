@@ -280,6 +280,32 @@ public class DemoDataSeeder {
         u5.setUpdatedAt(now - 8 * DAY);
         list.add(u5);
 
+        User ua = new User();
+        ua.setUserId("user_0123456789");
+        ua.setFamilyName("Gia đình User A");
+        ua.setPhone("0123456789");
+        ua.setPassword("123456");
+        ua.setRole("PARENT");
+        ua.setPhoneVerified(true);
+        ua.setVerified(true);
+        ua.setResidenceVerified(true);
+        ua.setCreatedAt(now - 30 * DAY);
+        ua.setUpdatedAt(now - 30 * DAY);
+        list.add(ua);
+
+        User ub = new User();
+        ub.setUserId("user_0987654321");
+        ub.setFamilyName("Gia đình User B");
+        ub.setPhone("0987654321");
+        ub.setPassword("654321");
+        ub.setRole("PARENT");
+        ub.setPhoneVerified(true);
+        ub.setVerified(true);
+        ub.setResidenceVerified(true);
+        ub.setCreatedAt(now - 30 * DAY);
+        ub.setUpdatedAt(now - 30 * DAY);
+        list.add(ub);
+
         return list;
     }
 

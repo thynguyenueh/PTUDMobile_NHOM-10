@@ -13,6 +13,9 @@ public class User {
     private String universityCode;
     private String universityName;
     private String citizenIdHash;
+    private String citizenIdFrontUrl;
+    private String citizenIdBackUrl;
+    private String studentCardUrl;
     private boolean residenceVerified;
     private long residenceVerifiedAt;
     private boolean fullyVerified;
@@ -24,6 +27,7 @@ public class User {
     private boolean isVerified;
     private String avatarUrl;
     private String password;
+    private String role = "PARENT";
     private long createdAt;
     private long updatedAt;
 
@@ -59,6 +63,15 @@ public class User {
     public String getCitizenIdHash() { return citizenIdHash; }
     public void setCitizenIdHash(String citizenIdHash) { this.citizenIdHash = citizenIdHash; }
 
+    public String getCitizenIdFrontUrl() { return citizenIdFrontUrl; }
+    public void setCitizenIdFrontUrl(String citizenIdFrontUrl) { this.citizenIdFrontUrl = citizenIdFrontUrl; }
+
+    public String getCitizenIdBackUrl() { return citizenIdBackUrl; }
+    public void setCitizenIdBackUrl(String citizenIdBackUrl) { this.citizenIdBackUrl = citizenIdBackUrl; }
+
+    public String getStudentCardUrl() { return studentCardUrl; }
+    public void setStudentCardUrl(String studentCardUrl) { this.studentCardUrl = studentCardUrl; }
+
     public boolean isResidenceVerified() { return residenceVerified; }
     public void setResidenceVerified(boolean residenceVerified) { this.residenceVerified = residenceVerified; }
 
@@ -91,6 +104,9 @@ public class User {
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 
     public long getCreatedAt() { return createdAt; }
     public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }

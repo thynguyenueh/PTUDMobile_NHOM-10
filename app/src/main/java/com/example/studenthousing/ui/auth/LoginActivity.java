@@ -145,10 +145,14 @@ public class LoginActivity extends AppCompatActivity {
 
         com.google.firebase.auth.FirebaseAuth.getInstance().signInAnonymously().addOnCompleteListener(authTask -> {
             com.google.firebase.auth.FirebaseUser fbUser = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
-            if (fbUser != null) {
-                user.setUserId(fbUser.getUid());
-                userDao.upsert(user);
+            if (user.getUserId() == null || user.getUserId().trim().isEmpty()) {
+                if (fbUser != null) {
+                    user.setUserId(fbUser.getUid());
+                } else {
+                    user.setUserId("user_" + phone);
+                }
             }
+            userDao.upsert(user);
             session.createLoginSession(user);
             Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
             goToHome();

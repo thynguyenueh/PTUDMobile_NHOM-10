@@ -43,6 +43,9 @@ public class UserRemote {
         Map<String, Object> sensitiveData = new HashMap<>();
         if (user.getPhone() != null) sensitiveData.put("phone", user.getPhone());
         if (user.getCitizenIdHash() != null) sensitiveData.put("citizenIdHash", user.getCitizenIdHash());
+        if (user.getCitizenIdFrontUrl() != null) sensitiveData.put("citizenIdFrontUrl", user.getCitizenIdFrontUrl());
+        if (user.getCitizenIdBackUrl() != null) sensitiveData.put("citizenIdBackUrl", user.getCitizenIdBackUrl());
+        if (user.getStudentCardUrl() != null) sensitiveData.put("studentCardUrl", user.getStudentCardUrl());
         if (user.getPermanentAddress() != null) sensitiveData.put("permanentAddress", user.getPermanentAddress());
         sensitiveData.put("permanentCityCode", user.getPermanentCityCode());
         sensitiveData.put("permanentWardCode", user.getPermanentWardCode());
