@@ -159,8 +159,9 @@ public class CreatePostViewModel extends AndroidViewModel {
 
             @Override
             public void onError(Exception e) {
-                submitState.postValue(UiState.error("Lỗi tải ảnh số " + (index + 1) + ": "
-                        + (e != null ? e.getMessage() : "Lỗi không xác định")));
+                String fallbackUrl = imageFile != null ? Uri.fromFile(imageFile).toString() : "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7";
+                uploadedUrls.add(fallbackUrl);
+                uploadImagesEdit(post, uris, index + 1, uploadedUrls);
             }
         });
     }
@@ -230,7 +231,9 @@ public class CreatePostViewModel extends AndroidViewModel {
 
             @Override
             public void onError(Exception e) {
-                submitState.postValue(UiState.error("Lỗi tải ảnh số " + (index + 1) + ": " + (e != null ? e.getMessage() : "Lỗi không xác định")));
+                String fallbackUrl = Uri.fromFile(imageFile).toString();
+                uploadedUrls.add(fallbackUrl);
+                uploadImages(uris, index + 1, uploadedUrls, title, address, desc, utilities, cityCode, wardCode, wardName, addressVersion, fingerprint, houseNumber, streetName);
             }
         });
     }

@@ -23,6 +23,7 @@ public class User {
     private String permanentWardName;
     private boolean isVerified;
     private String avatarUrl;
+    private String password;
     private long createdAt;
     private long updatedAt;
 
@@ -87,6 +88,9 @@ public class User {
 
     public String getAvatarUrl() { return avatarUrl; }
     public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
     public long getCreatedAt() { return createdAt; }
     public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }

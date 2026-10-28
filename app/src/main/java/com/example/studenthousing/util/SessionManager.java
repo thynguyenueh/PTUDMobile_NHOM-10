@@ -44,13 +44,11 @@ public class SessionManager {
     }
 
     public String getUserId() {
-        String sessionUserId = pref.getString(KEY_USER_ID, null);
         com.google.firebase.auth.FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (sessionUserId == null || firebaseUser == null
-                || !sessionUserId.equals(firebaseUser.getUid())) {
-            return null;
+        if (firebaseUser != null) {
+            return firebaseUser.getUid();
         }
-        return firebaseUser.getUid();
+        return pref.getString(KEY_USER_ID, null);
     }
 
     public void logout() {

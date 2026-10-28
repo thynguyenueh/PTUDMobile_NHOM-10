@@ -122,17 +122,22 @@ public class ChatViewModel extends AndroidViewModel {
         if (text == null || text.trim().isEmpty() || roomId == null || currentUserId == null) return;
 
         Message msg = new Message();
+        msg.setMessageId(java.util.UUID.randomUUID().toString());
         msg.setRoomId(roomId);
         msg.setSenderId(currentUserId);
         msg.setContent(text.trim());
         msg.setType("TEXT");
         msg.setSentAt(System.currentTimeMillis());
 
+        UiState<List<Message>> currentState = messagesState.getValue();
+        List<Message> currentList = currentState != null && currentState.getContent() != null ? new ArrayList<>(currentState.getContent()) : new ArrayList<>();
+        currentList.add(msg);
+        messagesState.setValue(UiState.content(currentList, UiState.SyncState.SYNCED));
+        actionEvent.postValue("MESSAGE_SENT");
+
         chatRepository.sendMessage(roomId, msg, new AppCallback<String>() {
             @Override
-            public void onSuccess(String data) {
-                actionEvent.postValue("MESSAGE_SENT");
-            }
+            public void onSuccess(String data) {}
 
             @Override
             public void onError(Exception e) {

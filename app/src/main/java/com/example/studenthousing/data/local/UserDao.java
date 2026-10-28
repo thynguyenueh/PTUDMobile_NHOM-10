@@ -49,6 +49,7 @@ public class UserDao {
         v.put(DatabaseHelper.COL_USER_ID, u.getUserId());
         v.put(DatabaseHelper.COL_FAMILY_NAME, u.getFamilyName());
         v.put(DatabaseHelper.COL_PHONE, u.getPhone());
+        v.put(DatabaseHelper.COL_PASSWORD, u.getPassword());
         v.put(DatabaseHelper.COL_AVATAR_URL, u.getAvatarUrl());
         v.put(DatabaseHelper.COL_IDENTITY_TYPE, u.getIdentityType());
         v.put(DatabaseHelper.COL_IDENTITY_VERIFIED, u.isIdentityVerified() ? 1 : 0);
@@ -77,6 +78,7 @@ public class UserDao {
         u.setUserId(getStringOrNull(c, DatabaseHelper.COL_USER_ID));
         u.setFamilyName(getStringOrNull(c, DatabaseHelper.COL_FAMILY_NAME));
         u.setPhone(getStringOrNull(c, DatabaseHelper.COL_PHONE));
+        u.setPassword(getStringOrNull(c, DatabaseHelper.COL_PASSWORD));
         u.setAvatarUrl(getStringOrNull(c, DatabaseHelper.COL_AVATAR_URL));
         u.setIdentityType(getStringOrNull(c, DatabaseHelper.COL_IDENTITY_TYPE));
         u.setIdentityVerified(getIntAsBool(c, DatabaseHelper.COL_IDENTITY_VERIFIED));

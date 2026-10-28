@@ -59,8 +59,24 @@
                     android:id="@+id/etPhone"
                     style="@style/Widget.App.FormInput"
                     android:autofillHints="phoneNumber"
-                    android:imeOptions="actionDone"
+                    android:imeOptions="actionNext"
                     android:inputType="phone" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilPassword"
+                style="@style/Widget.App.FormField"
+                android:layout_marginTop="@dimen/space_md"
+                android:hint="Mật khẩu"
+                app:endIconMode="password_toggle"
+                app:startIconDrawable="@drawable/ic_lock">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPassword"
+                    style="@style/Widget.App.FormInput"
+                    android:autofillHints="password"
+                    android:imeOptions="actionDone"
+                    android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
@@ -70,7 +86,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/btn_height"
             android:layout_marginTop="@dimen/space_md"
-            android:text="@string/login_btn_phone_otp" />
+            android:text="Đăng nhập" />
 
         <!-- Divider "Hoặc" -->
         <LinearLayout

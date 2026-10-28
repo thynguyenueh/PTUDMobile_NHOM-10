@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "studenthousing.db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
 
     // Table: posts_cache
     public static final String TBL_POSTS = "posts_cache";
@@ -102,6 +102,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Table: users_cache
     public static final String TBL_USERS = "users_cache";
     public static final String COL_PHONE = "phone";
+    public static final String COL_PASSWORD = "password";
     public static final String COL_AVATAR_URL = "avatar_url";
     public static final String COL_IDENTITY_TYPE = "identity_type";
     public static final String COL_IDENTITY_VERIFIED = "identity_verified";
@@ -145,6 +146,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COL_USER_ID + " TEXT PRIMARY KEY, " +
                 COL_FAMILY_NAME + " TEXT, " +
                 COL_PHONE + " TEXT UNIQUE, " +
+                COL_PASSWORD + " TEXT, " +
                 COL_AVATAR_URL + " TEXT, " +
                 COL_IDENTITY_TYPE + " TEXT DEFAULT 'NONE', " +
                 COL_IDENTITY_VERIFIED + " INTEGER DEFAULT 0, " +

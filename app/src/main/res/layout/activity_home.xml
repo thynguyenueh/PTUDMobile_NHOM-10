@@ -266,6 +266,38 @@
                     android:visibility="gone"
                     tools:visibility="visible" />
 
+                <!-- Tabs: Tất cả / Đề xuất gần trường -->
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/screen_padding_wide"
+                    android:layout_marginTop="@dimen/space_sm"
+                    android:scrollbars="none">
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipGroupHomeTabs"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:selectionRequired="true"
+                        app:singleSelection="true">
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipTabAll"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="Tất cả" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipTabSuggestions"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Đề xuất gần trường" />
+                    </com.google.android.material.chip.ChipGroup>
+                </HorizontalScrollView>
+
                 <!-- List -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvHouses"

@@ -82,6 +82,16 @@
                 tools:text="Phường Linh Trung, Thủ Đức" />
 
             <TextView
+                android:id="@+id/tvHouseTime"
+                style="@style/TextAppearance.App.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/text_muted"
+                android:textSize="11sp"
+                tools:text="2 giờ trước" />
+
+            <TextView
                 android:id="@+id/tvHouseDistance"
                 style="@style/TextAppearance.App.Caption"
                 android:layout_width="match_parent"

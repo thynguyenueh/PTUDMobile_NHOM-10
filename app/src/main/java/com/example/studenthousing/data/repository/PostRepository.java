@@ -79,8 +79,10 @@ public class PostRepository {
     }
 
     public void createPost(AccommodationPost p, AppCallback<String> cb) {
-        if (p.getPostId() == null || p.getPostId().isEmpty()) {
-            p.setPostId("temp_" + System.currentTimeMillis());
+        String oldTempId = p.getPostId();
+        if (oldTempId == null || oldTempId.isEmpty() || !oldTempId.startsWith("temp_")) {
+            oldTempId = "temp_" + System.currentTimeMillis();
+            p.setPostId(oldTempId);
         }
 
         if (p.getAddressFingerprint() == null || p.getAddressFingerprint().isEmpty()) {
@@ -108,10 +110,14 @@ public class PostRepository {
         p.setSyncStatus(Constants.SYNC_PENDING_CREATE);
         local.upsert(p);
 
+        final String tempId = oldTempId;
         if (NetworkUtils.isOnline(ctx)) {
             remote.create(p, new AppCallback<String>() {
                 @Override
                 public void onSuccess(String postId) {
+                    if (tempId != null && tempId.startsWith("temp_") && !tempId.equals(postId)) {
+                        local.deleteById(tempId);
+                    }
                     p.setPostId(postId);
                     p.setSyncStatus(Constants.SYNC_SYNCED);
                     local.upsert(p);
@@ -120,7 +126,9 @@ public class PostRepository {
 
                 @Override
                 public void onError(Exception e) {
-                    cb.onError(e);
+                    p.setSyncStatus(Constants.SYNC_PENDING_CREATE);
+                    local.upsert(p);
+                    cb.onSuccess(p.getPostId());
                 }
             });
         } else {

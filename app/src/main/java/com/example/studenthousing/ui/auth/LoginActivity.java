@@ -34,8 +34,8 @@ public class LoginActivity extends AppCompatActivity {
     private static final String WEB_CLIENT_ID =
             "643135707324-45gf2nbr40nhaubqa9a1jm547j19fqtl.apps.googleusercontent.com";
 
-    private TextInputLayout tilPhone;
-    private EditText etPhone;
+    private TextInputLayout tilPhone, tilPassword;
+    private EditText etPhone, etPassword;
     private MaterialButton btnLogin, btnGoogle;
     private android.widget.TextView tvRegister;
     private AuthViewModel viewModel;
@@ -87,13 +87,15 @@ public class LoginActivity extends AppCompatActivity {
     private void initViews() {
         tilPhone = findViewById(R.id.tilPhone);
         etPhone = findViewById(R.id.etPhone);
+        tilPassword = findViewById(R.id.tilPassword);
+        etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
         btnGoogle = findViewById(R.id.btnGoogle);
         tvRegister = findViewById(R.id.tvRegister);
     }
 
     private void setupEvents() {
-        btnLogin.setOnClickListener(v -> handlePhoneLogin());
+        btnLogin.setOnClickListener(v -> handleLogin());
 
         btnGoogle.setOnClickListener(v ->
                 googleClient.signOut().addOnCompleteListener(t ->
@@ -103,9 +105,13 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(new Intent(this, RegisterActivity.class)));
     }
 
-    private void handlePhoneLogin() {
+    private void handleLogin() {
         tilPhone.setError(null);
+        if (tilPassword != null) tilPassword.setError(null);
+
         String rawPhone = etPhone.getText() != null ? etPhone.getText().toString().trim() : "";
+        String password = etPassword != null && etPassword.getText() != null ? etPassword.getText().toString().trim() : "";
+
         if (rawPhone.isEmpty()) {
             tilPhone.setError("Vui lòng nhập số điện thoại");
             etPhone.requestFocus();
@@ -116,26 +122,36 @@ public class LoginActivity extends AppCompatActivity {
             etPhone.requestFocus();
             return;
         }
+        if (password.isEmpty()) {
+            if (tilPassword != null) tilPassword.setError("Vui lòng nhập mật khẩu");
+            if (etPassword != null) etPassword.requestFocus();
+            return;
+        }
+
         String phone = OtpHelper.toLocal(rawPhone);
+        com.example.studenthousing.data.local.UserDao userDao = new com.example.studenthousing.data.local.UserDao(this);
+        User user = userDao.getByPhone(phone);
 
-        btnLogin.setEnabled(false);
-        OtpHelper.send(this, phone, new OtpHelper.SendCallback() {
-            @Override
-            public void onCodeSent(String verificationId) {
-                btnLogin.setEnabled(true);
-                Toast.makeText(LoginActivity.this, "Đã gửi mã OTP đến " + phone, Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(LoginActivity.this, OtpActivity.class);
-                intent.putExtra(OtpActivity.EXTRA_VERIFICATION_ID, verificationId);
-                intent.putExtra(OtpActivity.EXTRA_PHONE, phone);
-                intent.putExtra(OtpActivity.EXTRA_MODE, OtpActivity.MODE_LOGIN);
-                startActivity(intent);
-            }
+        if (user == null) {
+            Toast.makeText(this, "Số điện thoại chưa được đăng ký tài khoản!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-            @Override
-            public void onFailed(String message) {
-                btnLogin.setEnabled(true);
-                Toast.makeText(LoginActivity.this, "Lỗi gửi OTP: " + message, Toast.LENGTH_LONG).show();
+        if (user.getPassword() != null && !user.getPassword().isEmpty() && !user.getPassword().equals(password)) {
+            if (tilPassword != null) tilPassword.setError("Mật khẩu không chính xác");
+            if (etPassword != null) etPassword.requestFocus();
+            return;
+        }
+
+        com.google.firebase.auth.FirebaseAuth.getInstance().signInAnonymously().addOnCompleteListener(authTask -> {
+            com.google.firebase.auth.FirebaseUser fbUser = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
+            if (fbUser != null) {
+                user.setUserId(fbUser.getUid());
+                userDao.upsert(user);
             }
+            session.createLoginSession(user);
+            Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+            goToHome();
         });
     }
 

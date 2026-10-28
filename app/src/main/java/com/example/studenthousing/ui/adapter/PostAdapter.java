@@ -59,6 +59,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         holder.tvUtilities.setText(utilitiesSummary == null ? "" : utilitiesSummary);
         holder.tvUtilities.setVisibility(utilitiesSummary == null ? View.GONE : View.VISIBLE);
 
+        if (holder.tvTime != null) {
+            String timeStr = com.example.studenthousing.util.TimeFormatter.relative(context, post.getCreatedAt());
+            holder.tvTime.setText(timeStr);
+            holder.tvTime.setVisibility(timeStr.isEmpty() ? View.GONE : View.VISIBLE);
+        }
+
         boolean isAvailable = Constants.POST_AVAILABLE.equalsIgnoreCase(post.getStatus());
         if (holder.tvStatus != null) {
             holder.tvStatus.setText(isAvailable ? "Sẵn sàng đổi" : "Đã đổi");
@@ -99,7 +105,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivPhoto;
-        TextView tvTitle, tvAddress, tvDistance, tvStatus, tvUtilities;
+        TextView tvTitle, tvAddress, tvDistance, tvStatus, tvUtilities, tvTime;
         ImageView ivVerified;
 
         public ViewHolder(@NonNull View itemView) {
@@ -110,6 +116,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             tvDistance = itemView.findViewById(R.id.tvHouseDistance);
             tvStatus = itemView.findViewById(R.id.tvPostStatus);
             tvUtilities = itemView.findViewById(R.id.tvHouseUtilities);
+            tvTime = itemView.findViewById(R.id.tvHouseTime);
             ivVerified = itemView.findViewById(R.id.ivHouseVerified);
         }
     }

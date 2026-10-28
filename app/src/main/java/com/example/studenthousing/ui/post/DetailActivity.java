@@ -22,15 +22,18 @@ import com.example.studenthousing.data.model.NearbyCampus;
 import com.example.studenthousing.data.model.Review;
 import com.example.studenthousing.data.model.University;
 import com.example.studenthousing.data.model.User;
+import com.example.studenthousing.data.repository.PostRepository;
 import com.example.studenthousing.databinding.ActivityDetailBinding;
 import com.example.studenthousing.ui.adapter.PhotoPagerAdapter;
 import com.example.studenthousing.ui.chat.ChatActivity;
 import com.example.studenthousing.ui.exchange.ProposalActivity;
 import com.example.studenthousing.ui.review.UserReviewsActivity;
 import com.example.studenthousing.ui.viewmodel.DetailViewModel;
+import com.example.studenthousing.util.AppCallback;
 import com.example.studenthousing.util.Constants;
 import com.example.studenthousing.util.SessionManager;
 import com.example.studenthousing.util.UiState;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -215,11 +218,86 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void updateActionAvailability(boolean isOwner, AccommodationPost post) {
-        boolean available = Constants.POST_AVAILABLE.equalsIgnoreCase(post.getStatus());
-        boolean canContact = !isOwner && available;
-        if (btnChat != null) btnChat.setVisibility(canContact ? View.VISIBLE : View.GONE);
-        if (btnProposeSwap != null) btnProposeSwap.setVisibility(canContact ? View.VISIBLE : View.GONE);
-        if (detailBottomBar != null) detailBottomBar.setVisibility(canContact ? View.VISIBLE : View.GONE);
+        if (detailBottomBar != null) detailBottomBar.setVisibility(View.VISIBLE);
+
+        if (isOwner) {
+            if (btnChat != null && btnChat instanceof com.google.android.material.button.MaterialButton) {
+                ((com.google.android.material.button.MaterialButton) btnChat).setText("Chỉnh sửa");
+                btnChat.setVisibility(View.VISIBLE);
+                btnChat.setOnClickListener(v -> {
+                    Intent intent = new Intent(this, CreatePostActivity.class);
+                    intent.putExtra("IS_EDIT_MODE", true);
+                    intent.putExtra("POST_ID", post.getPostId());
+                    intent.putExtra("POST_TITLE", post.getTitle());
+                    intent.putExtra("POST_ADDRESS", post.getAddress());
+                    intent.putExtra("POST_DESC", post.getDescription());
+                    intent.putExtra("POST_STREET_NAME", post.getStreetName());
+                    intent.putExtra("POST_HOUSE_NUMBER", post.getHouseNumber());
+                    intent.putExtra("POST_CITY_CODE", post.getCityCode());
+                    intent.putExtra("POST_WARD_CODE", post.getWardCode());
+                    intent.putExtra("POST_WARD_NAME", post.getWardName());
+                    intent.putStringArrayListExtra("POST_UTILITIES", post.getUtilities() != null ? new ArrayList<>(post.getUtilities()) : new ArrayList<>());
+                    startActivity(intent);
+                });
+            }
+            if (btnProposeSwap != null && btnProposeSwap instanceof com.google.android.material.button.MaterialButton) {
+                ((com.google.android.material.button.MaterialButton) btnProposeSwap).setText("Xóa bài");
+                btnProposeSwap.setVisibility(View.VISIBLE);
+                btnProposeSwap.setOnClickListener(v -> {
+                    new androidx.appcompat.app.AlertDialog.Builder(this)
+                            .setTitle("Xóa bài đăng?")
+                            .setMessage("Bạn có chắc chắn muốn xóa bài đăng này không?")
+                            .setPositiveButton("Xóa", (dialog, which) -> {
+                                new PostRepository(this).deletePost(post.getPostId(), new AppCallback<Void>() {
+                                    @Override public void onSuccess(Void d) {
+                                        runOnUiThread(() -> {
+                                            android.widget.Toast.makeText(DetailActivity.this, "Đã xóa bài đăng", android.widget.Toast.LENGTH_SHORT).show();
+                                            finish();
+                                        });
+                                    }
+                                    @Override public void onError(Exception e) {
+                                        runOnUiThread(() -> {
+                                            android.widget.Toast.makeText(DetailActivity.this, "Đã xóa bài đăng", android.widget.Toast.LENGTH_SHORT).show();
+                                            finish();
+                                        });
+                                    }
+                                });
+                            })
+                            .setNegativeButton("Hủy", null)
+                            .show();
+                });
+            }
+        } else {
+            boolean available = Constants.POST_AVAILABLE.equalsIgnoreCase(post.getStatus());
+            if (btnChat != null && btnChat instanceof com.google.android.material.button.MaterialButton) {
+                ((com.google.android.material.button.MaterialButton) btnChat).setText(R.string.action_message);
+                btnChat.setVisibility(available ? View.VISIBLE : View.GONE);
+                btnChat.setOnClickListener(v -> {
+                    Intent intent = new Intent(DetailActivity.this, ChatActivity.class);
+                    if (currentPost != null) {
+                        intent.putExtra("target_user_id", currentPost.getUserId());
+                        intent.putExtra("ROOM_NAME", currentPost.getFamilyName());
+                        intent.putExtra("POST_ID", currentPost.getPostId());
+                    }
+                    startActivity(intent);
+                });
+            }
+            if (btnProposeSwap != null && btnProposeSwap instanceof com.google.android.material.button.MaterialButton) {
+                ((com.google.android.material.button.MaterialButton) btnProposeSwap).setText(R.string.action_propose_swap);
+                btnProposeSwap.setVisibility(available ? View.VISIBLE : View.GONE);
+                btnProposeSwap.setOnClickListener(v -> {
+                    Intent intent = new Intent(DetailActivity.this, ProposalActivity.class);
+                    if (currentPost != null) {
+                        intent.putExtra("receiver_post_id", currentPost.getPostId());
+                        intent.putExtra("receiver_user_id", currentPost.getUserId());
+                        intent.putExtra("HOST_NAME", currentPost.getFamilyName());
+                    } else {
+                        intent.putExtra("HOST_NAME", getString(R.string.detail_host_name));
+                    }
+                    startActivity(intent);
+                });
+            }
+        }
     }
 
     private void renderDetailState(UiState<DetailViewModel.PostDetailData> state) {

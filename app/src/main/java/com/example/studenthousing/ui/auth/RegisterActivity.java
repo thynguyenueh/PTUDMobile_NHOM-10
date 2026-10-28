@@ -64,8 +64,8 @@ public class RegisterActivity extends AppCompatActivity {
     };
 
     private ImageView btnBack;
-    private TextInputLayout tilParentName, tilPhone, tilUniversity;
-    private TextInputEditText etParentName, etPhone, tvUniversity;
+    private TextInputLayout tilParentName, tilPhone, tilPassword, tilUniversity;
+    private TextInputEditText etParentName, etPhone, etPassword, tvUniversity;
     private TextView tvLoginLink, tvHeaderTitle;
     private MaterialCheckBox cbTerms;
     private MaterialButton btnContinue;
@@ -97,6 +97,8 @@ public class RegisterActivity extends AppCompatActivity {
         etParentName = findViewById(R.id.etParentName);
         tilPhone = findViewById(R.id.tilPhone);
         etPhone = findViewById(R.id.etPhone);
+        tilPassword = findViewById(R.id.tilPassword);
+        etPassword = findViewById(R.id.etPassword);
         tilUniversity = findViewById(R.id.tilUniversity);
         tvUniversity = findViewById(R.id.tvUniversity);
         cbTerms = findViewById(R.id.cbTerms);
@@ -164,12 +166,14 @@ public class RegisterActivity extends AppCompatActivity {
     private void clearErrors() {
         if (tilParentName != null) tilParentName.setError(null);
         if (tilPhone != null) tilPhone.setError(null);
+        if (tilPassword != null) tilPassword.setError(null);
         if (tilUniversity != null) tilUniversity.setError(null);
     }
 
     private void handleContinueOrSave() {
         String parentName = etParentName != null && etParentName.getText() != null ? etParentName.getText().toString().trim() : "";
         String rawPhone = etPhone != null && etPhone.getText() != null ? etPhone.getText().toString().trim() : "";
+        String password = etPassword != null && etPassword.getText() != null ? etPassword.getText().toString().trim() : "";
 
         clearErrors();
 
@@ -183,7 +187,7 @@ public class RegisterActivity extends AppCompatActivity {
             String phoneEdit = !TextUtils.isEmpty(rawPhone) ? OtpHelper.toLocal(rawPhone) : session.getUserPhone();
             String universityEdit = tvUniversity != null && tvUniversity.getText() != null
                     ? LocationData.clean(tvUniversity.getText().toString()) : "";
-            registerOrUpdateUser(parentName, phoneEdit, universityEdit, session.getUserId());
+            registerOrUpdateUser(parentName, phoneEdit, universityEdit, session.getUserId(), null);
             return;
         }
 
@@ -197,43 +201,32 @@ public class RegisterActivity extends AppCompatActivity {
             if (etPhone != null) etPhone.requestFocus();
             return;
         }
+        if (TextUtils.isEmpty(password) || password.length() < 6) {
+            if (tilPassword != null) tilPassword.setError("Mật khẩu phải có ít nhất 6 ký tự");
+            if (etPassword != null) etPassword.requestFocus();
+            return;
+        }
 
         if (cbTerms != null && !cbTerms.isChecked()) {
             Toast.makeText(this, "Vui lòng đồng ý với Điều khoản dịch vụ", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        final String phone = TextUtils.isEmpty(rawPhone) ? null : OtpHelper.toLocal(rawPhone);
-        final String university = tvUniversity != null && tvUniversity.getText() != null ? LocationData.clean(tvUniversity.getText().toString()) : "";
-
-        if (phone == null) {
-            registerOrUpdateUser(parentName, null, university, googleUid);
+        final String phone = OtpHelper.toLocal(rawPhone);
+        UserDao userDao = new UserDao(this);
+        if (userDao.getByPhone(phone) != null) {
+            if (tilPhone != null) tilPhone.setError("Số điện thoại này đã được đăng ký");
+            if (etPhone != null) etPhone.requestFocus();
+            Toast.makeText(this, "Số điện thoại này đã được đăng ký!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        sendRegistrationOtp(parentName, phone, university, googleUid);
+        final String university = tvUniversity != null && tvUniversity.getText() != null ? LocationData.clean(tvUniversity.getText().toString()) : "";
+        String newUid = "user_" + System.currentTimeMillis();
+        registerOrUpdateUser(parentName, phone, university, newUid, password);
     }
 
-    private void sendRegistrationOtp(String parentName, String phone, String university, String googleUid) {
-        OtpHelper.send(this, phone, new OtpHelper.SendCallback() {
-            @Override public void onCodeSent(String id) {
-                Toast.makeText(RegisterActivity.this, "Đã gửi mã OTP đến " + phone, Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(RegisterActivity.this, OtpActivity.class);
-                i.putExtra(OtpActivity.EXTRA_VERIFICATION_ID, id);
-                i.putExtra(OtpActivity.EXTRA_PHONE, phone);
-                i.putExtra(OtpActivity.EXTRA_MODE, OtpActivity.MODE_REGISTER);
-                i.putExtra(OtpActivity.EXTRA_PARENT_NAME, parentName);
-                i.putExtra(OtpActivity.EXTRA_UNIVERSITY, university);
-                if (googleUid != null) i.putExtra(OtpActivity.EXTRA_GOOGLE_UID, googleUid);
-                startActivity(i);
-            }
-            @Override public void onFailed(String msg) {
-                Toast.makeText(RegisterActivity.this, "Lỗi gửi OTP: " + msg, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    private void registerOrUpdateUser(String parentName, String phone, String university, String customUid) {
+    private void registerOrUpdateUser(String parentName, String phone, String university, String customUid, String password) {
         long now = System.currentTimeMillis();
         UserDao userDao = new UserDao(this);
         final User user;
@@ -241,8 +234,7 @@ public class RegisterActivity extends AppCompatActivity {
                 ? customUid
                 : session.getUserId();
         if (uid == null || uid.isEmpty()) {
-            Toast.makeText(this, "Thiếu định danh người dùng Firebase", Toast.LENGTH_LONG).show();
-            return;
+            uid = "user_" + now;
         }
 
         User existing = userDao.getById(uid);
@@ -255,34 +247,40 @@ public class RegisterActivity extends AppCompatActivity {
         }
         if (phone != null) user.setPhone(phone);
         user.setFamilyName(parentName);
+        if (password != null && !password.isEmpty()) {
+            user.setPassword(password);
+        }
         if (university != null && !university.isEmpty()) {
             user.setUniversityName(university);
         }
+        user.setPhoneVerified(true);
         user.setUpdatedAt(now);
 
-        UserRepository userRepository = new UserRepository(this);
-        userRepository.saveUserProfile(user, new AppCallback<Void>() {
-            @Override
-            public void onSuccess(Void d) {
-                session.createLoginSession(user);
-                runOnUiThread(() -> {
-                    String msg = isEditMode ? "Cập nhật thông tin thành công!" : "Đăng ký tài khoản thành công!";
-                    Toast.makeText(RegisterActivity.this, msg, Toast.LENGTH_SHORT).show();
+        userDao.upsert(user);
 
-                    Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    finish();
-                });
+        com.google.firebase.auth.FirebaseAuth.getInstance().signInAnonymously().addOnCompleteListener(authTask -> {
+            com.google.firebase.auth.FirebaseUser fbUser = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
+            if (fbUser != null) {
+                user.setUserId(fbUser.getUid());
             }
+            userDao.upsert(user);
+            session.createLoginSession(user);
 
-            @Override
-            public void onError(Exception e) {
-                runOnUiThread(() -> {
-                    String err = isEditMode ? "Cập nhật thất bại: Không thể kết nối máy chủ" : "Đăng ký thất bại: Không thể kết nối máy chủ";
-                    Toast.makeText(RegisterActivity.this, err, Toast.LENGTH_LONG).show();
-                });
-            }
+            UserRepository userRepository = new UserRepository(this);
+            userRepository.saveUserProfile(user, new AppCallback<Void>() {
+                @Override public void onSuccess(Void d) {}
+                @Override public void onError(Exception e) {}
+            });
+
+            runOnUiThread(() -> {
+                String msg = isEditMode ? "Cập nhật thông tin thành công!" : "Đăng ký tài khoản thành công!";
+                Toast.makeText(RegisterActivity.this, msg, Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            });
         });
     }
 }

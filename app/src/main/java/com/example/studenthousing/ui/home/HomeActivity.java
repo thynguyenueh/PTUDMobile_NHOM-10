@@ -54,6 +54,7 @@ public class HomeActivity extends AppCompatActivity {
     private List<AccommodationPost> allPosts = new ArrayList<>();
     private FilterCriteria currentFilter = new FilterCriteria();
     private boolean filterActive = false;
+    private boolean isSuggestionsTab = false;
     private Runnable emptyAction;
 
     private final ActivityResultLauncher<Intent> filterLauncher = registerForActivityResult(
@@ -84,6 +85,17 @@ public class HomeActivity extends AppCompatActivity {
 
         setupBottomNavigation();
         setupListeners();
+
+        com.google.android.material.chip.ChipGroup chipGroupHomeTabs = findViewById(R.id.chipGroupHomeTabs);
+        if (chipGroupHomeTabs != null) {
+            chipGroupHomeTabs.setOnCheckedStateChangeListener((group, checkedIds) -> {
+                if (!checkedIds.isEmpty()) {
+                    int checkedId = checkedIds.get(0);
+                    isSuggestionsTab = (checkedId == R.id.chipTabSuggestions);
+                    applyFilter();
+                }
+            });
+        }
 
         binding.swipeRefreshHome.setOnRefreshListener(() -> {
             binding.swipeRefreshHome.setRefreshing(true);
@@ -170,10 +182,46 @@ public class HomeActivity extends AppCompatActivity {
 
     private void applyFilter() {
         filterActive = currentFilter.isActive();
+
+        String userUni = "";
+        try {
+            com.example.studenthousing.data.local.UserDao userDao = new com.example.studenthousing.data.local.UserDao(this);
+            User u = userDao.getById(session.getUserId());
+            if (u != null && u.getUniversityName() != null) userUni = u.getUniversityName().toLowerCase();
+        } catch (Exception ignored) {}
+
         List<AccommodationPost> filtered = new ArrayList<>();
         for (AccommodationPost post : allPosts) {
-            if (currentFilter.matches(post)) filtered.add(post);
+            if (!currentFilter.matches(post)) continue;
+
+            if (isSuggestionsTab) {
+                boolean matchesUni = true;
+                if (!userUni.isEmpty()) {
+                    String pAddr = post.getAddress() != null ? post.getAddress().toLowerCase() : "";
+                    String pTitle = post.getTitle() != null ? post.getTitle().toLowerCase() : "";
+                    String pDesc = post.getDescription() != null ? post.getDescription().toLowerCase() : "";
+                    String pWard = post.getWardName() != null ? post.getWardName().toLowerCase() : "";
+
+                    matchesUni = pAddr.contains(userUni) || pTitle.contains(userUni) || pDesc.contains(userUni) || pWard.contains(userUni);
+                    if (!matchesUni) {
+                        if (userUni.contains("ueh") || userUni.contains("kinh tế")) {
+                            matchesUni = pAddr.contains("quận 1") || pAddr.contains("quận 3") || pAddr.contains("quận 10") || pAddr.contains("phú nhuận");
+                        } else if (userUni.contains("bách khoa") || userUni.contains("hcmut") || userUni.contains("đhqg")) {
+                            matchesUni = pAddr.contains("thủ đức") || pAddr.contains("linh trung") || pAddr.contains("dĩ an") || pAddr.contains("quận 10");
+                        } else {
+                            matchesUni = true;
+                        }
+                    }
+                }
+                if (matchesUni) filtered.add(post);
+            } else {
+                filtered.add(post);
+            }
         }
+
+        // Sort posts from newest to oldest (createdAt descending)
+        filtered.sort((p1, p2) -> Long.compare(p2.getCreatedAt(), p1.getCreatedAt()));
+
         adapter.updateData(filtered);
         showState(filtered.isEmpty() ? State.EMPTY : State.CONTENT);
         boolean trulyNoPosts = allPosts.isEmpty() && !filterActive;
