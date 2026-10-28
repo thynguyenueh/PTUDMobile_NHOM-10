@@ -32,9 +32,31 @@ public class ChatRepository {
 
     public void ensureRoom(String roomId, List<String> participants,
                            String postId, String postTitle, AppCallback<Void> cb) {
+        if (participants == null || participants.size() < 2) {
+            if (cb != null) cb.onError(new IllegalArgumentException("Chat room requires at least 2 participants"));
+            return;
+        }
+
+        List<String> normalizedParticipants = new java.util.ArrayList<>();
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        for (String participant : participants) {
+            if (participant == null) continue;
+            String value = participant.trim();
+            if (value.isEmpty() || !seen.add(value)) continue;
+            normalizedParticipants.add(value);
+        }
+        if (normalizedParticipants.size() < 2) {
+            if (cb != null) cb.onError(new IllegalArgumentException("Chat room requires 2 distinct participants"));
+            return;
+        }
+
+        final String safeRoomId = (roomId == null || roomId.trim().isEmpty())
+                ? getRoomId(normalizedParticipants.get(0), normalizedParticipants.get(1))
+                : roomId.trim();
+
         ChatRoom room = new ChatRoom();
-        room.setRoomId(roomId);
-        room.setParticipantIds(participants);
+        room.setRoomId(safeRoomId);
+        room.setParticipantIds(normalizedParticipants);
         room.setPostId(postId);
         room.setPostTitle(postTitle);
         room.setCreatedAt(System.currentTimeMillis());
@@ -44,7 +66,7 @@ public class ChatRepository {
             if (cb != null) cb.onSuccess(null);
             return;
         }
-        remote.ensureRoom(roomId, participants, postId, postTitle, new AppCallback<Void>() {
+        remote.ensureRoom(safeRoomId, normalizedParticipants, postId, postTitle, new AppCallback<Void>() {
             @Override public void onSuccess(Void value) {
                 if (cb != null) cb.onSuccess(null);
             }
@@ -116,15 +138,6 @@ public class ChatRepository {
                 if (cb != null) cb.onSuccess(msg.getMessageId());
             }
         });
-    }
-
-    public void markAsRead(String roomId, String currentUserId, AppCallback<Void> cb) {
-        localMessages.markAsRead(roomId, currentUserId);
-        if (NetworkUtils.isOnline(ctx)) {
-            remote.markAsRead(roomId, currentUserId, cb);
-        } else if (cb != null) {
-            cb.onSuccess(null);
-        }
     }
 
     public List<ChatRoom> getUserRoomsCached(String userId) {

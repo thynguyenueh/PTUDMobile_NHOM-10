@@ -5,4 +5,6 @@
     style="@style/Widget.App.BottomNavigation"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    app:itemIconTint="@color/nav_item_color"
+    app:itemTextColor="@color/nav_item_color"
     app:menu="@menu/menu_bottom_nav" />

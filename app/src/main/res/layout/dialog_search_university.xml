@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -9,16 +10,15 @@
 
     <EditText
         android:id="@+id/etSearchUniversity"
+        style="@style/Widget.App.FormInput"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="@dimen/search_bar_height"
         android:background="@drawable/bg_search_bar"
         android:hint="@string/search_university_hint"
         android:importantForAutofill="no"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:textSize="14sp"
-        android:textColor="@color/text_main"
-        android:textColorHint="@color/text_muted"
+        android:paddingStart="@dimen/space_lg"
+        android:paddingEnd="@dimen/space_lg"
+        android:textSize="@dimen/text_body_lg"
         android:inputType="text"
         android:singleLine="true" />
 
@@ -26,7 +26,7 @@
         android:id="@+id/lvUniversities"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="@dimen/space_md"
         android:divider="@color/divider_line"
         android:dividerHeight="1dp"
         tools:listitem="@android:layout/simple_list_item_1" />

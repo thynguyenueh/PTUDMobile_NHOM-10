@@ -3,6 +3,8 @@ package com.example.studenthousing.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 public class SessionManager {
     private static final String PREF_NAME = "StudentHousingSession";
     private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
@@ -42,10 +44,17 @@ public class SessionManager {
     }
 
     public String getUserId() {
-        return pref.getString(KEY_USER_ID, null);
+        String sessionUserId = pref.getString(KEY_USER_ID, null);
+        com.google.firebase.auth.FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (sessionUserId == null || firebaseUser == null
+                || !sessionUserId.equals(firebaseUser.getUid())) {
+            return null;
+        }
+        return firebaseUser.getUid();
     }
 
     public void logout() {
+        FirebaseAuth.getInstance().signOut();
         pref.edit().clear().apply();
         try {
             android.database.sqlite.SQLiteDatabase db =
@@ -57,25 +66,12 @@ public class SessionManager {
             db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_EXCHANGE, whereSynced, null);
             db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_REVIEWS, whereSynced, null);
             db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_CHAT_ROOMS, null, null);
-            db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_USERS, null, null);
+            db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_CHAT_ROOM_PARTICIPANTS, null, null);
             db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_SAVED_HOUSES, null, null);
         } catch (Exception ignored) {}
     }
 
-    public static void saveUid(Context ctx, String uid) {
-        SharedPreferences sp = ctx.getApplicationContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        sp.edit().putBoolean(KEY_IS_LOGGED_IN, uid != null && !uid.isEmpty())
-                .putString(KEY_USER_ID, uid).apply();
-    }
-
     public static String getUid(Context ctx) {
-        SharedPreferences sp = ctx.getApplicationContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        String uid = sp.getString(KEY_USER_ID, null);
-        return (uid != null && !uid.isEmpty()) ? uid : null;
-    }
-
-    public static boolean isLoggedIn(Context ctx) {
-        SharedPreferences sp = ctx.getApplicationContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        return sp.getBoolean(KEY_IS_LOGGED_IN, false);
+        return new SessionManager(ctx).getUserId();
     }
 }

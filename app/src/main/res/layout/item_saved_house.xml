@@ -1,150 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.App.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/space_md">
+    android:layout_marginHorizontal="@dimen/space_sm"
+    android:layout_marginBottom="@dimen/space_md"
+    android:clickable="true"
+    android:focusable="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_review_card"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?attr/selectableItemBackground"
-        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:padding="@dimen/space_md">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+        <!-- Thumbnail -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            style="@style/Widget.App.Card.Outlined"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp">
 
-            <!-- Ảnh + trạng thái -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="@dimen/avatar_size_lg"
-                android:layout_height="@dimen/avatar_size_lg"
-                style="@style/Widget.App.Card.Outlined">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-                <FrameLayout
+                <ImageView
+                    android:id="@+id/ivSavedPhoto"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/ivSavedPhoto"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:contentDescription="@string/cd_photo"
-                        android:scaleType="centerCrop"
-                        tools:src="@drawable/bg_image_placeholder" />
-
-                    <TextView
-                        android:id="@+id/tvSavedStatus"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom"
-                        android:background="@color/scrim_translucent"
-                        android:gravity="center"
-                        android:paddingVertical="@dimen/space_xs"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/text_small"
-                        android:textStyle="bold"
-                        android:visibility="gone"
-                        tools:text="@string/placeholder_status"
-                        tools:visibility="visible" />
-                </FrameLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/space_sm"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <!-- Tiêu đề + xác thực + nút trái tim bỏ lưu -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tvSavedTitle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ellipsize="end"
-                        android:maxLines="1"
-                        android:textColor="@color/text_main"
-                        android:textSize="@dimen/text_body_lg"
-                        android:textStyle="bold"
-                        tools:text="@string/placeholder_title" />
-
-                    <ImageView
-                        android:id="@+id/tvSavedVerified"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginStart="@dimen/space_sm"
-                        android:contentDescription="@string/cd_verified"
-                        android:src="@drawable/ic_verified_check"
-                        app:tint="@color/primary"
-                        android:visibility="gone" />
-
-                    <ImageView
-                        android:id="@+id/btnRemoveSaved"
-                        android:layout_width="@dimen/avatar_size_md"
-                        android:layout_height="@dimen/avatar_size_md"
-                        android:layout_marginStart="@dimen/space_xs"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="@string/action_unsave"
-                        android:padding="@dimen/space_xs"
-                        android:src="@drawable/ic_favorite"
-                        app:tint="@color/status_danger" />
-                </LinearLayout>
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/cd_photo"
+                    android:scaleType="centerCrop"
+                    tools:src="@drawable/bg_image_placeholder" />
 
                 <TextView
-                    android:id="@+id/tvSavedPriceArea"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/space_xs"
-                    android:textColor="@color/primary"
-                    android:textSize="@dimen/text_body_lg"
-                    android:textStyle="bold"
-                    tools:text="@string/placeholder_price_area" />
-
-                <!-- Địa chỉ ngắn + khoảng cách -->
-                <LinearLayout
+                    android:id="@+id/tvSavedStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/space_xs"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:layout_gravity="bottom"
+                    android:background="@color/scrim_translucent"
+                    android:gravity="center"
+                    android:paddingVertical="2dp"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_caption"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    tools:text="Sẵn sàng đổi"
+                    tools:visibility="visible" />
+            </FrameLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-                    <TextView
-                        android:id="@+id/tvSavedAddress"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ellipsize="end"
-                        android:maxLines="1"
-                        android:textColor="@color/text_sub"
-                        android:textSize="@dimen/text_body"
-                        tools:text="@string/placeholder_address" />
+        <!-- Details -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_md"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/tvSavedDistance"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/space_sm"
-                        android:textColor="@color/text_main"
-                        android:textSize="@dimen/text_body"
-                        android:textStyle="bold"
-                        tools:text="@string/placeholder_distance" />
-                </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvSavedTitle"
+                    style="@style/TextAppearance.App.Heading"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    tools:text="Căn hộ mini cao cấp gần ĐHQG" />
+
+                <ImageView
+                    android:id="@+id/tvSavedVerified"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="@dimen/space_xs"
+                    android:contentDescription="@string/cd_verified"
+                    android:src="@drawable/ic_verified_check"
+                    app:tint="@color/primary"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/btnRemoveSaved"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="@dimen/space_xs"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/action_unsave"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_favorite"
+                    app:tint="@color/status_danger" />
             </LinearLayout>
-        </LinearLayout>
 
+            <TextView
+                android:id="@+id/tvSavedAddress"
+                style="@style/TextAppearance.App.BodySub"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xxs"
+                android:ellipsize="end"
+                android:maxLines="1"
+                tools:text="Phường Linh Trung, Thủ Đức" />
+
+            <TextView
+                android:id="@+id/tvSavedDistance"
+                style="@style/TextAppearance.App.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:drawablePadding="@dimen/space_xs"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:visibility="gone"
+                app:drawableStartCompat="@drawable/ic_graduation_cap"
+                app:drawableTint="@color/primary"
+                tools:text="Gần ĐHQG TP.HCM · ~1,5 km"
+                tools:visibility="visible" />
+        </LinearLayout>
     </LinearLayout>
-</FrameLayout>
+</com.google.android.material.card.MaterialCardView>

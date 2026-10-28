@@ -6,9 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.studenthousing.data.model.VerifiedAddress;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.example.studenthousing.util.Constants;
 
 public class VerifiedAddressDao {
     private final DatabaseHelper dbHelper;
@@ -21,20 +19,6 @@ public class VerifiedAddressDao {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.insertWithOnConflict(DatabaseHelper.TBL_VERIFIED_ADDRESSES, null, toValues(addr),
                 SQLiteDatabase.CONFLICT_REPLACE);
-    }
-
-    public VerifiedAddress getByAddressId(String addressId) {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor c = db.query(DatabaseHelper.TBL_VERIFIED_ADDRESSES, null,
-                DatabaseHelper.COL_ADDRESS_ID + "=?",
-                new String[]{addressId}, null, null, null);
-        if (c.moveToFirst()) {
-            VerifiedAddress a = cursorTo(c);
-            c.close();
-            return a;
-        }
-        c.close();
-        return null;
     }
 
     public VerifiedAddress findByFingerprint(String fingerprint) {
@@ -52,16 +36,17 @@ public class VerifiedAddressDao {
         return null;
     }
 
-    public List<VerifiedAddress> getByOwner(String ownerUserId) {
-        List<VerifiedAddress> list = new ArrayList<>();
+    public java.util.List<VerifiedAddress> getByOwner(String ownerUserId) {
+        java.util.List<VerifiedAddress> list = new java.util.ArrayList<>();
+        if (ownerUserId == null || ownerUserId.isEmpty()) return list;
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor c = db.query(DatabaseHelper.TBL_VERIFIED_ADDRESSES, null,
+        try (Cursor c = db.query(DatabaseHelper.TBL_VERIFIED_ADDRESSES, null,
                 DatabaseHelper.COL_OWNER_USER_ID + "=?",
-                new String[]{ownerUserId}, null, null, null);
-        while (c.moveToNext()) {
-            list.add(cursorTo(c));
+                new String[]{ownerUserId}, null, null, null)) {
+            while (c.moveToNext()) {
+                list.add(cursorTo(c));
+            }
         }
-        c.close();
         return list;
     }
 
@@ -76,11 +61,10 @@ public class VerifiedAddressDao {
         ContentValues v = new ContentValues();
         v.put(DatabaseHelper.COL_ADDRESS_ID, a.getAddressId());
         v.put(DatabaseHelper.COL_FINGERPRINT, a.getFingerprint());
-        v.put(DatabaseHelper.COL_CITY_CODE, a.getCityCode());
+        v.put(DatabaseHelper.COL_CITY_CODE, a.getCityCode() > 0 ? a.getCityCode() : Constants.TPHCM_CITY_CODE);
         v.put(DatabaseHelper.COL_WARD_CODE, a.getWardCode());
         v.put(DatabaseHelper.COL_STREET_NORMALIZED, a.getStreetNormalized());
         v.put(DatabaseHelper.COL_HOUSE_NUMBER_NORM, a.getHouseNumberNorm());
-        v.put(DatabaseHelper.COL_ROOM_NUMBER_NORM, a.getRoomNumberNorm());
         v.put(DatabaseHelper.COL_FULL_ADDRESS, a.getFullAddress());
         v.put(DatabaseHelper.COL_OWNER_USER_ID, a.getOwnerUserId());
         v.put(DatabaseHelper.COL_VERIFICATION_TICKET_ID, a.getVerificationTicketId());
@@ -94,11 +78,10 @@ public class VerifiedAddressDao {
         VerifiedAddress a = new VerifiedAddress();
         a.setAddressId(getStringOrNull(c, DatabaseHelper.COL_ADDRESS_ID));
         a.setFingerprint(getStringOrNull(c, DatabaseHelper.COL_FINGERPRINT));
-        a.setCityCode(getIntOrDefault(c, DatabaseHelper.COL_CITY_CODE, 0));
+        a.setCityCode(getIntOrDefault(c, DatabaseHelper.COL_CITY_CODE, Constants.TPHCM_CITY_CODE));
         a.setWardCode(getIntOrDefault(c, DatabaseHelper.COL_WARD_CODE, 0));
         a.setStreetNormalized(getStringOrNull(c, DatabaseHelper.COL_STREET_NORMALIZED));
         a.setHouseNumberNorm(getStringOrNull(c, DatabaseHelper.COL_HOUSE_NUMBER_NORM));
-        a.setRoomNumberNorm(getStringOrNull(c, DatabaseHelper.COL_ROOM_NUMBER_NORM));
         a.setFullAddress(getStringOrNull(c, DatabaseHelper.COL_FULL_ADDRESS));
         a.setOwnerUserId(getStringOrNull(c, DatabaseHelper.COL_OWNER_USER_ID));
         a.setVerificationTicketId(getStringOrNull(c, DatabaseHelper.COL_VERIFICATION_TICKET_ID));

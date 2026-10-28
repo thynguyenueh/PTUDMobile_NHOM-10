@@ -18,7 +18,6 @@ public final class UiState<T> {
 
     public ScreenState getScreenState() { return screenState; }
     public T getContent() { return content; }
-    public SyncState getSyncState() { return syncState; }
     public String getErrorMessage() { return errorMessage; }
 
     public static <T> UiState<T> loading() {

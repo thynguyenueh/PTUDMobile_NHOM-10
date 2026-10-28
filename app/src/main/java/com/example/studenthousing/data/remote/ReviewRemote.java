@@ -14,16 +14,27 @@ public class ReviewRemote {
     private static final String COLLECTION = "reviews";
 
     public void create(Review r, AppCallback<String> cb) {
-        String id = r.getReviewId();
-        if (id == null || id.isEmpty()) {
-            id = db.collection(COLLECTION).document().getId();
-            r.setReviewId(id);
+        if (r == null || r.getRequestId() == null || r.getRequestId().trim().isEmpty()
+                || r.getReviewerId() == null || r.getReviewerId().trim().isEmpty()) {
+            if (cb != null) cb.onError(new IllegalArgumentException("Review requestId and reviewerId are required"));
+            return;
         }
+
+        String requestId = r.getRequestId().trim();
+        String reviewerId = r.getReviewerId().trim();
+        String id = requestId + "_" + reviewerId;
+        r.setRequestId(requestId);
+        r.setReviewerId(reviewerId);
+        r.setReviewId(id);
         final String reviewId = id;
         db.collection(COLLECTION).document(reviewId)
                 .set(r)
-                .addOnSuccessListener(ref -> cb.onSuccess(reviewId))
-                .addOnFailureListener(cb::onError);
+                .addOnSuccessListener(ref -> {
+                    if (cb != null) cb.onSuccess(reviewId);
+                })
+                .addOnFailureListener(e -> {
+                    if (cb != null) cb.onError(e);
+                });
     }
 
     public void update(Review r, AppCallback<Void> cb) {

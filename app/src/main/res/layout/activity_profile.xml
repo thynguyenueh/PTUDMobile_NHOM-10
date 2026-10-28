@@ -29,30 +29,29 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
+                android:layout_height="@dimen/toolbar_height"
                 android:gravity="center_vertical">
 
                 <TextView
+                    style="@style/TextAppearance.App.Heading"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/profile_title"
-                    android:textColor="@color/text_main"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/text_display"
+                    android:text="@string/profile_title" />
 
                 <FrameLayout
                     android:id="@+id/btnSettings"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    android:layout_width="@dimen/touch_target_min"
+                    android:layout_height="@dimen/touch_target_min"
                     android:background="@drawable/bg_icon"
-                    android:foreground="?attr/selectableItemBackground"
                     android:clickable="true"
-                    android:focusable="true">
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="@dimen/icon_lg"
+                        android:layout_height="@dimen/icon_lg"
                         android:layout_gravity="center"
                         android:contentDescription="@string/cd_settings"
                         android:src="@drawable/ic_settings"
@@ -117,7 +116,7 @@
                 <LinearLayout
                     android:id="@+id/btnKyc"
                     android:layout_width="match_parent"
-                    android:layout_height="70dp"
+                    android:layout_height="wrap_content"
                     android:foreground="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
@@ -157,9 +156,10 @@
                             android:id="@+id/tvKycStatusSub"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/olive_accent"
-                            android:textSize="11sp"
-                            tools:text="Đã xác minh Tích xanh" />
+                            android:layout_marginTop="2dp"
+                            android:text="Chưa xác minh"
+                            android:textColor="@color/text_sub"
+                            android:textSize="12sp" />
 
                     </LinearLayout>
 
@@ -180,7 +180,7 @@
                 <LinearLayout
                     android:id="@+id/btnResidenceAuth"
                     android:layout_width="match_parent"
-                    android:layout_height="70dp"
+                    android:layout_height="wrap_content"
                     android:foreground="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
@@ -220,9 +220,10 @@
                             android:id="@+id/tvResidenceAuthSub"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/olive_accent"
-                            android:textSize="11sp"
-                            tools:text="Công an Phường / VNeID" />
+                            android:layout_marginTop="2dp"
+                            android:text="Chưa gửi hồ sơ đối soát"
+                            android:textColor="@color/text_sub"
+                            android:textSize="12sp" />
 
                     </LinearLayout>
 

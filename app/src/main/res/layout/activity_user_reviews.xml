@@ -8,106 +8,38 @@
     android:background="@color/bg_app"
     android:orientation="vertical">
 
-    <!-- Header Bar -->
-    <LinearLayout
-        android:id="@+id/layoutHeader"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="@color/surface_card"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="16dp">
-
+    <LinearLayout style="@style/Widget.App.HeaderBar">
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:padding="10dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/cd_back"
-            android:src="@drawable/ic_arrow_back"
-            app:tint="@color/text_main" />
+            style="@style/Widget.App.HeaderBackButton" />
 
         <TextView
             android:id="@+id/tvHeaderTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:text="@string/reviews_received_title"
-            android:textColor="@color/text_main"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            style="@style/Widget.App.HeaderTitle"
+            android:text="@string/reviews_received_title" />
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/divider_line" />
+    <View style="@style/Widget.App.Divider" />
 
-    <!-- Summary Box -->
-    <LinearLayout
+    <View style="@style/Widget.App.Divider" />
+
+    <TextView
+        android:id="@+id/tvReviewsState"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/surface_card"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="16dp">
+        android:gravity="center"
+        android:padding="@dimen/space_lg"
+        android:textColor="@color/text_sub"
+        android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/tvAverageRating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/primary"
-            android:textSize="32sp"
-            android:textStyle="bold"
-            tools:text="4.9" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="★ ★ ★ ★ ★"
-                android:textColor="@color/status_warning"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/tvTotalReviews"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:textColor="@color/text_sub"
-                android:textSize="12sp"
-                tools:text="Dựa trên 2 đánh giá" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/divider_line" />
-
-    <!-- Content Slot -->
-    <ScrollView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvUserReviews"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:fillViewport="true"
-        android:padding="16dp">
+        android:clipToPadding="false"
+        android:padding="@dimen/space_lg" />
 
-        <LinearLayout
-            android:id="@+id/layoutReviewsContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
-
-    <!-- Bottom Bar Slot -->
     <FrameLayout
         android:id="@+id/containerBottomBar"
         android:layout_width="match_parent"
@@ -118,25 +50,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
-            android:padding="16dp"
+            android:padding="@dimen/space_lg"
             android:visibility="gone"
             tools:visibility="visible">
 
             <TextView
                 android:id="@+id/btnWriteReview"
+                style="@style/TextAppearance.App.SectionTitle"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:background="@drawable/bg_button"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:text="@string/reviews_btn_write"
                 android:textColor="@color/white"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
+                android:textSize="@dimen/text_body_lg2"
+                android:text="@string/reviews_btn_write" />
         </LinearLayout>
-
     </FrameLayout>
-
 </LinearLayout>

@@ -1,10 +1,13 @@
 package com.example.studenthousing.domain;
 
 import com.example.studenthousing.data.model.AccommodationPost;
+import com.example.studenthousing.data.model.NearbyCampus;
+import com.example.studenthousing.util.Constants;
 
 import java.io.Serializable;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class FilterCriteria implements Serializable {
@@ -13,37 +16,31 @@ public class FilterCriteria implements Serializable {
 
     public static final String EXTRA = "extra_filter_criteria";
 
-    public static final String TYPE_APARTMENT = "APARTMENT";
-    public static final String TYPE_WHOLE_HOUSE = "WHOLE_HOUSE";
-    public static final String TYPE_SHARED_ROOM = "SHARED_ROOM";
-
-    public String province;
+    public String province = Constants.TPHCM_CITY_NAME; // "TP. Hồ Chí Minh"
+    public String searchQuery = "";
     public ArrayList<String> wards = new ArrayList<>();
-    public long minPrice = 0L;
-    public long maxPrice = Long.MAX_VALUE;
-    public String housingType;
-    public boolean verifiedOnly;
+    public String campusId;
+    public double maxDistanceKm = 0.0;
+    public ArrayList<String> selectedUtilities = new ArrayList<>();
 
     public boolean isActive() {
-        return province != null
-                || !wards.isEmpty()
-                || minPrice > 0L
-                || maxPrice != Long.MAX_VALUE
-                || housingType != null
-                || verifiedOnly;
+        return (searchQuery != null && !searchQuery.trim().isEmpty()) || !wards.isEmpty() || (campusId != null && !campusId.isEmpty()) || maxDistanceKm > 0.0 || !selectedUtilities.isEmpty();
     }
 
     public boolean matches(AccommodationPost p) {
         if (p == null) return false;
 
-        if (verifiedOnly && !p.isPoliceVerified()) return false;
-
-        double rawPrice = p.getPrice();
-        double priceInVnd = rawPrice > 1000 ? rawPrice : rawPrice * 1_000_000.0;
-        if (priceInVnd < minPrice || priceInVnd > maxPrice) return false;
-
-        if (province != null && !normalize(province).equals(normalize(p.getCityName()))) {
-            return false;
+        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+            String q = normalize(searchQuery);
+            boolean titleMatch = normalize(p.getTitle()).contains(q);
+            boolean addrMatch = normalize(p.getAddress()).contains(q);
+            boolean nameMatch = normalize(p.getFamilyName()).contains(q);
+            boolean streetMatch = normalize(p.getStreetName()).contains(q);
+            boolean wardMatch = normalize(p.getWardName()).contains(q);
+            boolean descMatch = normalize(p.getDescription()).contains(q);
+            if (!titleMatch && !addrMatch && !nameMatch && !streetMatch && !wardMatch && !descMatch) {
+                return false;
+            }
         }
 
         if (!wards.isEmpty()) {
@@ -58,7 +55,38 @@ public class FilterCriteria implements Serializable {
             if (!found) return false;
         }
 
-        return housingType == null || housingType.equalsIgnoreCase(p.getHouseType());
+        if (campusId != null && !campusId.isEmpty()) {
+            if (p.getNearbyCampusIds() == null || !p.getNearbyCampusIds().contains(campusId)) {
+                return false;
+            }
+            if (maxDistanceKm > 0.0 && p.getNearbyCampuses() != null) {
+                boolean distanceMatch = false;
+                for (NearbyCampus nc : p.getNearbyCampuses()) {
+                    if (nc != null && campusId.equals(nc.getCampusId())) {
+                        if (nc.getKm() <= maxDistanceKm) {
+                            distanceMatch = true;
+                            break;
+                        }
+                    }
+                }
+                if (!distanceMatch) return false;
+            }
+        }
+
+        if (selectedUtilities != null && !selectedUtilities.isEmpty()) {
+            if (p.getUtilities() == null) return false;
+            List<String> postUtils = new ArrayList<>();
+            for (String u : p.getUtilities()) {
+                postUtils.add(normalize(u));
+            }
+            for (String reqU : selectedUtilities) {
+                if (!postUtils.contains(normalize(reqU))) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     static String normalize(String s) {

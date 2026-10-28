@@ -159,23 +159,12 @@ public class DistanceCalculator {
         return R * c;
     }
 
-    public static int calculateMotorbikeMinutes(double distanceKm) {
-        if (distanceKm <= 0) return 1;
-        return (int) Math.max(1, Math.round((distanceKm / 30.0) * 60));
-    }
-
     public static String formatDistanceText(double distanceKm, boolean isEstimate) {
         String formattedDist = String.format(Locale.US, "%.1f km", distanceKm);
         if (isEstimate) {
             return "~ " + formattedDist + " (Ước lượng)";
         }
         return formattedDist;
-    }
-
-    public static String formatDistanceAndDuration(double distanceKm, boolean isEstimate) {
-        String distText = formatDistanceText(distanceKm, isEstimate);
-        int minutes = calculateMotorbikeMinutes(distanceKm);
-        return distText + " · " + minutes + " phút đi xe máy";
     }
 
     private void notifySuccess(DistanceResultCallback callback, double distanceKm, String source, boolean isEstimate) {

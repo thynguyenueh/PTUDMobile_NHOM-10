@@ -3,10 +3,6 @@ package com.example.studenthousing.data.remote;
 import com.example.studenthousing.data.model.VerifiedAddress;
 import com.example.studenthousing.util.AppCallback;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class VerifiedAddressRemote {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -46,13 +42,17 @@ public class VerifiedAddressRemote {
                 .addOnFailureListener(cb::onError);
     }
 
-    public void getByOwner(String ownerUserId, AppCallback<List<VerifiedAddress>> cb) {
+    public void getByOwner(String ownerUserId, AppCallback<java.util.List<VerifiedAddress>> cb) {
+        if (ownerUserId == null || ownerUserId.isEmpty()) {
+            cb.onSuccess(new java.util.ArrayList<>());
+            return;
+        }
         db.collection(COLLECTION)
                 .whereEqualTo("ownerUserId", ownerUserId)
                 .get()
                 .addOnSuccessListener(snap -> {
-                    List<VerifiedAddress> list = new ArrayList<>();
-                    for (QueryDocumentSnapshot doc : snap) {
+                    java.util.List<VerifiedAddress> list = new java.util.ArrayList<>();
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : snap) {
                         VerifiedAddress addr = doc.toObject(VerifiedAddress.class);
                         if (addr != null) addr.setAddressId(doc.getId());
                         list.add(addr);

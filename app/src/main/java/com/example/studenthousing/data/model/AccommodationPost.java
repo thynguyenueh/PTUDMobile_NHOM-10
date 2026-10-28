@@ -3,6 +3,8 @@ package com.example.studenthousing.data.model;
 import com.example.studenthousing.util.Constants;
 import com.google.firebase.firestore.DocumentId;
 import com.google.firebase.firestore.Exclude;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class AccommodationPost {
@@ -14,25 +16,27 @@ public class AccommodationPost {
     private String address;
     private String addressFingerprint;
     private String addressVerificationStatus = Constants.ADDR_UNVERIFIED;
-    private String roomNumber;
-    private int cityCode;
+    private int cityCode = Constants.TPHCM_CITY_CODE;
     private int wardCode;
-    private String cityName;
+    private String cityName = Constants.TPHCM_CITY_NAME;
     private String wardName;
+    private String streetName;
+    @Exclude
+    private String houseNumber;
+    @Exclude
     private double latitude;
+    @Exclude
     private double longitude;
+    @Exclude
+    private String verificationBadge;
+    private List<NearbyCampus> nearbyCampuses;
+    private List<String> nearbyCampusIds;
     private double distanceKm;
     private String distanceSource;
     private boolean isDistanceEstimate;
-    private String listingType = Constants.LISTING_EXCHANGE;
-    private String houseType;
-    private double price;
-    private double area;
     private String description;
     private List<String> images;
     private List<String> utilities;
-    private boolean isPoliceVerified;
-    private String verificationBadge;
     private String status = Constants.POST_AVAILABLE;
     private long createdAt;
     private long updatedAt;
@@ -64,9 +68,6 @@ public class AccommodationPost {
     public String getAddressVerificationStatus() { return addressVerificationStatus; }
     public void setAddressVerificationStatus(String addressVerificationStatus) { this.addressVerificationStatus = addressVerificationStatus; }
 
-    public String getRoomNumber() { return roomNumber; }
-    public void setRoomNumber(String roomNumber) { this.roomNumber = roomNumber; }
-
     public int getCityCode() { return cityCode; }
     public void setCityCode(int cityCode) { this.cityCode = cityCode; }
 
@@ -76,20 +77,46 @@ public class AccommodationPost {
     public String getCityName() { return cityName; }
     public void setCityName(String cityName) { this.cityName = cityName; }
 
-    @Exclude
-    public String getProvince() { return cityName; }
-
     public String getWardName() { return wardName; }
     public void setWardName(String wardName) { this.wardName = wardName; }
 
-    @Exclude
-    public String getWard() { return wardName; }
+    public String getStreetName() { return streetName; }
+    public void setStreetName(String streetName) { this.streetName = streetName; }
+
+    public String getHouseNumber() { return houseNumber; }
+    public void setHouseNumber(String houseNumber) { this.houseNumber = houseNumber; }
 
     public double getLatitude() { return latitude; }
     public void setLatitude(double latitude) { this.latitude = latitude; }
 
     public double getLongitude() { return longitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
+
+    public String getVerificationBadge() { return verificationBadge; }
+    public void setVerificationBadge(String verificationBadge) { this.verificationBadge = verificationBadge; }
+
+    @Exclude
+    public String getProvince() { return cityName; }
+
+    @Exclude
+    public String getWard() { return wardName; }
+
+    public List<NearbyCampus> getNearbyCampuses() { return nearbyCampuses; }
+    public void setNearbyCampuses(List<NearbyCampus> nearbyCampuses) {
+        this.nearbyCampuses = nearbyCampuses;
+        if (nearbyCampuses != null) {
+            List<String> ids = new ArrayList<>();
+            for (NearbyCampus n : nearbyCampuses) {
+                if (n.getCampusId() != null) ids.add(n.getCampusId());
+            }
+            this.nearbyCampusIds = ids;
+        } else {
+            this.nearbyCampusIds = null;
+        }
+    }
+
+    public List<String> getNearbyCampusIds() { return nearbyCampusIds; }
+    public void setNearbyCampusIds(List<String> nearbyCampusIds) { this.nearbyCampusIds = nearbyCampusIds; }
 
     public double getDistanceKm() { return distanceKm; }
     public void setDistanceKm(double distanceKm) { this.distanceKm = distanceKm; }
@@ -98,22 +125,7 @@ public class AccommodationPost {
     public void setDistanceSource(String distanceSource) { this.distanceSource = distanceSource; }
 
     public boolean isDistanceEstimate() { return isDistanceEstimate; }
-    public void setDistanceEstimate(boolean distanceEstimate) { isDistanceEstimate = distanceEstimate; }
-
-    public String getListingType() { return listingType; }
-    public void setListingType(String listingType) { this.listingType = listingType; }
-
-    public String getHouseType() { return houseType; }
-    public void setHouseType(String houseType) { this.houseType = houseType; }
-
-    @Exclude
-    public String getHousingType() { return houseType; }
-
-    public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
-
-    public double getArea() { return area; }
-    public void setArea(double area) { this.area = area; }
+    public void setDistanceEstimate(boolean isDistanceEstimate) { this.isDistanceEstimate = isDistanceEstimate; }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
@@ -124,12 +136,6 @@ public class AccommodationPost {
     public List<String> getUtilities() { return utilities; }
     public void setUtilities(List<String> utilities) { this.utilities = utilities; }
 
-    public boolean isPoliceVerified() { return isPoliceVerified; }
-    public void setPoliceVerified(boolean policeVerified) { isPoliceVerified = policeVerified; }
-
-    public String getVerificationBadge() { return verificationBadge; }
-    public void setVerificationBadge(String verificationBadge) { this.verificationBadge = verificationBadge; }
-
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
@@ -138,15 +144,4 @@ public class AccommodationPost {
 
     public long getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(long updatedAt) { this.updatedAt = updatedAt; }
-
-    @Exclude
-    public String getHouseTypeDisplay() {
-        if (houseType == null) return "";
-        switch (houseType.toUpperCase()) {
-            case "APARTMENT":    return "Căn hộ";
-            case "WHOLE_HOUSE":  return "Nhà nguyên căn";
-            case "SHARED_ROOM":  return "Phòng ở ghép";
-            default:             return houseType;
-        }
-    }
 }

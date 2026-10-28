@@ -25,7 +25,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/cd_back"
             android:src="@drawable/ic_arrow_back"
-            app:tint="@color/text_main" />
+            app:tint="@color/primary" />
 
         <TextView
             android:layout_width="0dp"
@@ -45,7 +45,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/cd_help"
             android:src="@drawable/ic_help"
-            app:tint="@color/text_main" />
+            app:tint="@color/primary" />
     </LinearLayout>
 
     <View
@@ -311,139 +311,15 @@
                                 android:layout_height="18dp"
                                 android:contentDescription="@string/cd_dropdown"
                                 android:src="@drawable/ic_chevron_down"
-                                app:tint="@color/text_main" />
+                                app:tint="@color/primary" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
 
             <!-- Uploaded Documents Section -->
-            <TextView
-                android:id="@+id/tvUploadedSectionTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="@string/residence_verification_uploaded_title"
-                android:textColor="@color/text_main"
-                android:textSize="16sp"
-                android:textStyle="bold" />
 
             <!-- Document Item Card -->
-            <LinearLayout
-                android:id="@+id/layoutDocCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_card"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="14dp">
-
-                <!-- Document Illustration Thumbnail -->
-                <RelativeLayout
-                    android:layout_width="80dp"
-                    android:layout_height="90dp"
-                    android:background="@drawable/bg_input_field"
-                    android:padding="6dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/white"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="4dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="@string/residence_verification_doc_header"
-                            android:textColor="@color/text_main"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-
-                        <View
-                            android:layout_width="32dp"
-                            android:layout_height="1dp"
-                            android:layout_marginVertical="4dp"
-                            android:background="@color/divider_line" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="@string/residence_verification_doc_sample"
-                            android:textColor="@color/text_sub"
-                            android:textSize="11sp" />
-                    </LinearLayout>
-
-                    <!-- Image Preview for Cloudinary fileUrl -->
-                    <ImageView
-                        android:id="@+id/ivDocPreview"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:visibility="gone"
-                        android:contentDescription="@string/cd_doc_preview"
-                        tools:visibility="visible" />
-
-                    <!-- Overlay Green Verified Check Badge -->
-                    <ImageView
-                        android:id="@+id/imgDocCheck"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentBottom="true"
-                        android:contentDescription="@string/cd_verified"
-                        android:src="@drawable/ic_verified_check"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
-                </RelativeLayout>
-
-                <!-- Document Details -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="14dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <!-- Filename Pill -->
-                    <TextView
-                        android:id="@+id/tvFilename"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_banner_green"
-                        android:paddingHorizontal="10dp"
-                        android:paddingVertical="5dp"
-                        android:text="@string/residence_verification_doc_filename"
-                        android:textColor="@color/text_main"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <!-- Status Line 1 -->
-                    <TextView
-                        android:id="@+id/tvDocStatus1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="@string/residence_verification_doc_status1"
-                        android:textColor="@color/primary"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <!-- Status Line 2 -->
-                    <TextView
-                        android:id="@+id/tvDocStatus2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
-                        android:text="@string/residence_verification_doc_status2"
-                        android:textColor="@color/text_sub"
-                        android:textSize="11sp" />
-                </LinearLayout>
-            </LinearLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

@@ -69,14 +69,27 @@ public class PostRepository {
         if (cb != null) cb.onSuccess(saved);
     }
 
+    public void cacheRemotePostStatus(String postId, String status) {
+        AccommodationPost cached = local.getById(postId);
+        if (cached == null) return;
+        cached.setStatus(status);
+        cached.setUpdatedAt(System.currentTimeMillis());
+        cached.setSyncStatus(Constants.SYNC_SYNCED);
+        local.upsert(cached);
+    }
+
     public void createPost(AccommodationPost p, AppCallback<String> cb) {
         if (p.getPostId() == null || p.getPostId().isEmpty()) {
             p.setPostId("temp_" + System.currentTimeMillis());
         }
 
         if (p.getAddressFingerprint() == null || p.getAddressFingerprint().isEmpty()) {
-            String fp = AddressFingerprintUtil.build(p.getCityCode(), p.getWardCode(),
-                    p.getAddress(), "", p.getRoomNumber());
+            String fp = AddressFingerprintUtil.build(
+                    p.getCityCode(),
+                    p.getWardCode(),
+                    p.getStreetName() != null ? p.getStreetName() : "",
+                    p.getHouseNumber() != null ? p.getHouseNumber() : ""
+            );
             p.setAddressFingerprint(fp);
         }
 

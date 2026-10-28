@@ -6,23 +6,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_card"
-    android:gravity="center_vertical"
     android:orientation="vertical"
     android:padding="20dp">
 
-    <!-- Trái: avatar + tên -->
+    <!-- Avatar (căn giữa theo chiều ngang) -->
     <FrameLayout
         android:layout_width="72dp"
         android:layout_height="72dp"
-        android:background="@drawable/bg_circle_olive">
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/bg_circle_olive"
+        android:importantForAccessibility="no">
 
         <ImageView
             android:id="@+id/ivProfileAvatarImg"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:contentDescription="@string/cd_avatar"
             android:scaleType="centerCrop"
-            android:visibility="gone"
-            android:contentDescription="@string/cd_avatar" />
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tvProfileAvatar"
@@ -35,10 +36,11 @@
             tools:text="A" />
     </FrameLayout>
 
+    <!-- Tên + badge xác thực + phụ đề -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="@dimen/space_md"
         android:orientation="vertical">
 
         <LinearLayout
@@ -50,12 +52,13 @@
             <TextView
                 android:id="@+id/tvProfileName"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:ellipsize="end"
+                android:gravity="center"
                 android:maxLines="2"
                 android:textColor="@color/text_main"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 tools:text="Nguyễn Văn A" />
 
@@ -63,11 +66,11 @@
                 android:id="@+id/tvProfileVerifiedBadge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
+                android:layout_marginStart="@dimen/space_xs"
                 android:contentDescription="@string/cd_verified"
                 android:src="@drawable/ic_verified_check"
-                app:tint="@color/primary"
-                android:visibility="gone" />
+                android:visibility="gone"
+                app:tint="@color/primary" />
         </LinearLayout>
 
         <TextView
@@ -76,17 +79,18 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:ellipsize="end"
+            android:gravity="center"
             android:maxLines="1"
             android:textColor="@color/text_sub"
             android:textSize="12sp"
-            tools:text="Phụ huynh · UEH" />
+            tools:text="Trường UEH" />
     </LinearLayout>
 
-    <!-- Hàng số liệu -->
+    <!-- Hàng số liệu: Bài đăng / Đánh giá / Hoán đổi -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/space_lg"
         android:baselineAligned="false"
         android:orientation="horizontal">
 
@@ -95,12 +99,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
-            android:foreground="?attr/selectableItemBackground"
-            android:gravity="center_horizontal"
+            android:gravity="center"
+            android:minHeight="48dp"
             android:orientation="vertical"
-            android:padding="8dp">
+            android:padding="@dimen/space_sm">
 
             <TextView
                 android:id="@+id/tvStatPosts"
@@ -116,7 +121,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/profile_stat_posts"
                 android:textColor="@color/text_sub"
-                android:textSize="10sp" />
+                android:textSize="12sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -124,12 +129,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
-            android:foreground="?attr/selectableItemBackground"
-            android:gravity="center_horizontal"
+            android:gravity="center"
+            android:minHeight="48dp"
             android:orientation="vertical"
-            android:padding="8dp">
+            android:padding="@dimen/space_sm">
 
             <TextView
                 android:id="@+id/tvStatReviews"
@@ -145,7 +151,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/profile_stat_reviews"
                 android:textColor="@color/text_sub"
-                android:textSize="10sp" />
+                android:textSize="12sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -153,12 +159,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
-            android:foreground="?attr/selectableItemBackground"
-            android:gravity="center_horizontal"
+            android:gravity="center"
+            android:minHeight="48dp"
             android:orientation="vertical"
-            android:padding="8dp">
+            android:padding="@dimen/space_sm">
 
             <TextView
                 android:id="@+id/tvStatExchanges"
@@ -174,7 +181,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/profile_stat_exchanges"
                 android:textColor="@color/text_sub"
-                android:textSize="10sp" />
+                android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

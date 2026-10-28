@@ -16,38 +16,37 @@
             android:contentDescription="@string/cd_back" />
 
         <TextView
-            android:layout_width="wrap_content"
+            style="@style/TextAppearance.App.Heading"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/space_sm"
-            android:text="@string/notifications_title"
-            style="@style/TextAppearance.App.Heading" />
+            android:layout_weight="1"
+            android:text="@string/notifications_title" />
+
+        <ImageView
+            android:id="@+id/btnRefreshNotifications"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="Làm mới"
+            android:focusable="true"
+            android:padding="7dp"
+            android:src="@drawable/ic_refresh"
+            app:tint="@color/primary" />
     </LinearLayout>
 
     <View style="@style/Widget.App.Divider" />
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/tvNotificationState"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="@dimen/space_lg"
-        android:paddingEnd="@dimen/space_lg"
-        android:paddingTop="@dimen/space_sm"
-        android:paddingBottom="@dimen/space_sm">
-
-        <TextView
-            android:id="@+id/tvNotificationState"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:visibility="gone" />
-
-        <Button
-            android:id="@+id/btnRefreshNotifications"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/notifications_refresh" />
-    </LinearLayout>
+        android:gravity="center"
+        android:padding="@dimen/space_md"
+        android:textColor="@color/text_sub"
+        android:textSize="13sp"
+        android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvNotifications"

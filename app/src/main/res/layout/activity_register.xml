@@ -1,155 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:clipToPadding="false"
     android:background="@color/bg_app"
-    android:fillViewport="true"
-    tools:context=".ui.auth.RegisterActivity">
+    android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+        style="@style/Widget.App.HeaderBar"
         android:paddingHorizontal="@dimen/space_xl"
-        android:paddingTop="@dimen/space_lg"
+        android:background="@color/bg_app">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            style="@style/Widget.App.HeaderBackButton"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="@string/cd_back" />
+
+        <TextView
+            android:id="@+id/tvHeaderTitle"
+            style="@style/Widget.App.HeaderTitle"
+            android:gravity="center"
+            android:text="@string/register_step1_title" />
+
+        <View
+            android:layout_width="@dimen/touch_target_min"
+            android:layout_height="@dimen/touch_target_min" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingHorizontal="@dimen/space_xl"
+        android:paddingTop="@dimen/space_md"
         android:paddingBottom="@dimen/space_xl">
 
-        <!-- Header Bar -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/toolbar_height">
-
-            <ImageView
-                android:id="@+id/btnBack"
-                android:layout_width="@dimen/touch_target_min"
-                android:layout_height="@dimen/touch_target_min"
-                android:padding="@dimen/space_md"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/cd_back"
-                android:src="@drawable/ic_arrow_back"
-                app:tint="@color/text_main" />
-
-            <TextView
-                android:id="@+id/tvHeaderTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/register_step1_title"
-                android:textColor="@color/text_main"
-                android:textSize="@dimen/text_heading"
-                android:textStyle="bold" />
-        </RelativeLayout>
-
-        <!-- Form Container -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_lg"
             android:orientation="vertical">
 
-            <!-- Field: Họ và tên -->
+            <!-- Field: Họ và Tên Phụ Huynh / Chủ nhà -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilParentName"
                 style="@style/Widget.App.FormField"
                 android:hint="@string/register_label_name"
                 app:startIconDrawable="@drawable/ic_user">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etParentName"
                     style="@style/Widget.App.FormInput"
                     android:autofillHints="name"
                     android:imeOptions="actionNext"
-                    android:inputType="textPersonName" />
+                    android:inputType="textPersonName|textCapWords" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Field: Số điện thoại liên hệ -->
+            <!-- Field: Số điện thoại -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilPhone"
                 style="@style/Widget.App.FormField"
                 android:layout_marginTop="@dimen/space_md"
                 android:hint="@string/register_label_phone"
                 app:startIconDrawable="@drawable/ic_phone">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPhone"
                     style="@style/Widget.App.FormInput"
-                    android:autofillHints="phone"
+                    android:autofillHints="phoneNumber"
                     android:imeOptions="actionNext"
                     android:inputType="phone" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Field: Địa chỉ Email -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilEmail"
-                style="@style/Widget.App.FormField"
-                android:layout_marginTop="@dimen/space_md"
-                android:hint="@string/register_label_email"
-                app:startIconDrawable="@drawable/ic_user">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etEmail"
-                    style="@style/Widget.App.FormInput"
-                    android:autofillHints="emailAddress"
-                    android:imeOptions="actionNext"
-                    android:inputType="textEmailAddress" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Field: Vai trò (Phụ huynh / Sinh viên) -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_lg"
-                android:text="@string/register_label_role"
-                android:textColor="@color/text_main"
-                android:textSize="@dimen/text_body"
-                android:textStyle="bold" />
-
-            <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/toggleRole"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_sm"
-                app:singleSelection="true"
-                app:checkedButton="@+id/btnRoleParent">
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnRoleParent"
-                    style="@style/Widget.App.Button.Outlined"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/btn_height"
-                    android:layout_weight="1"
-                    android:text="@string/register_role_parent"
-                    android:textColor="@color/text_main"
-                    app:strokeColor="@color/divider_line" />
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnRoleStudent"
-                    style="@style/Widget.App.Button.Outlined"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/btn_height"
-                    android:layout_weight="1"
-                    android:text="@string/register_role_student"
-                    android:textColor="@color/text_main"
-                    app:strokeColor="@color/divider_line" />
-            </com.google.android.material.button.MaterialButtonToggleGroup>
-
-            <!-- Field: Mã số sinh viên / MSSV -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilStudentId"
-                style="@style/Widget.App.FormField"
-                android:layout_marginTop="@dimen/space_md"
-                android:hint="@string/register_label_student_id"
-                app:startIconDrawable="@drawable/ic_id_card">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etStudentId"
-                    style="@style/Widget.App.FormInput"
-                    android:imeOptions="actionNext"
-                    android:inputType="text" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Field: Trường Đại học -->
+            <!-- Field: Trường Đại Học (Chỉ chọn) -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilUniversity"
                 style="@style/Widget.App.FormField"
@@ -158,97 +84,47 @@
                 app:endIconDrawable="@drawable/ic_chevron_down"
                 app:endIconMode="custom"
                 app:startIconDrawable="@drawable/ic_graduation_cap">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/tvUniversity"
                     style="@style/Widget.App.FormInput"
                     android:clickable="true"
-                    android:cursorVisible="false"
-                    android:focusable="false" />
+                    android:focusable="true"
+                    android:focusableInTouchMode="false"
+                    android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Field: Tạo mật khẩu -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilPassword"
-                style="@style/Widget.App.FormField"
-                android:layout_marginTop="@dimen/space_md"
-                android:hint="@string/register_label_password"
-                app:endIconMode="password_toggle"
-                app:startIconDrawable="@drawable/ic_lock">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etPassword"
-                    style="@style/Widget.App.FormInput"
-                    android:autofillHints="password"
-                    android:imeOptions="actionNext"
-                    android:inputType="textPassword" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Field: Xác nhận mật khẩu -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilConfirmPassword"
-                style="@style/Widget.App.FormField"
-                android:layout_marginTop="@dimen/space_md"
-                android:hint="@string/register_label_confirm_password"
-                app:endIconMode="password_toggle"
-                app:startIconDrawable="@drawable/ic_lock">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etConfirmPassword"
-                    style="@style/Widget.App.FormInput"
-                    android:autofillHints="password"
-                    android:imeOptions="actionDone"
-                    android:inputType="textPassword" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Terms & Conditions Checkbox -->
-            <LinearLayout
+            <!-- Điều khoản dịch vụ -->
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/cbTerms"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_lg"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-                <com.google.android.material.checkbox.MaterialCheckBox
-                    android:id="@+id/cbTerms"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:minWidth="@dimen/touch_target_min"
-                    android:minHeight="@dimen/touch_target_min"
-                    app:buttonTint="@color/primary" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/space_xs"
-                    android:text="@string/register_terms_agree"
-                    android:textColor="@color/text_muted"
-                    android:textSize="@dimen/text_body" />
-            </LinearLayout>
-        </LinearLayout>
+                android:layout_marginTop="@dimen/space_md"
+                android:text="@string/register_terms_agree"
+                android:textColor="@color/text_sub"
+                android:textSize="@dimen/text_body" />
 
-        <!-- Dynamic Spacer -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:minHeight="@dimen/space_xxl" />
-
-        <!-- Bottom Actions -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical">
+            <!-- Nút Tiếp Tục -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnContinue"
                 style="@style/Widget.App.Button.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/btn_height"
+                android:layout_marginTop="@dimen/space_lg"
                 android:text="@string/register_btn_continue" />
-            <TextView
-                android:id="@+id/tvLoginLink"
-                style="@style/Widget.App.LinkText"
-                android:layout_marginTop="@dimen/space_sm"
-                android:padding="@dimen/space_xs"
-                android:text="@string/register_has_account"
-                android:textSize="@dimen/text_body_lg" />
         </LinearLayout>
+    </ScrollView>
 
+    <!-- Nút Đã có tài khoản? Đăng nhập -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="@dimen/space_md">
+
+        <TextView
+            android:id="@+id/tvLoginLink"
+            style="@style/Widget.App.LinkText"
+            android:text="@string/register_has_account" />
     </LinearLayout>
-</ScrollView>
+</LinearLayout>

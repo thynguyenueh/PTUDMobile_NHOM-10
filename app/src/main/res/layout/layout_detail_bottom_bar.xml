@@ -2,6 +2,7 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/detailBottomBar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="12dp"
@@ -18,28 +19,6 @@
         android:paddingHorizontal="16dp"
         android:paddingVertical="10dp">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/detail_price_label"
-                android:textColor="@color/text_sub"
-                android:textSize="10sp" />
-
-            <TextView
-                android:id="@+id/tvBottomPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/primary"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                tools:text="3.5 Tr/tháng" />
-        </LinearLayout>
-
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnChat"
             style="@style/Widget.Material3.Button.OutlinedButton"
@@ -51,7 +30,7 @@
             app:cornerRadius="12dp"
             app:icon="@drawable/ic_chat"
             app:iconTint="@color/primary"
-            app:strokeColor="@color/divider_line" />
+            app:strokeColor="@color/primary" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnProposeSwap"

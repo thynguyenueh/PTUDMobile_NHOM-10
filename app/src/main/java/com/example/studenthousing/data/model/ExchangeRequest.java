@@ -12,11 +12,14 @@ public class ExchangeRequest {
     private String receiverPostId;
     private String chatRoomId;
     private String exchangePeriod;
+    private long startDate;
+    private long endDate;
     private String message;
     private String agreementText;
-    private long senderSignedAt;
-    private long receiverSignedAt;
     private String status = Constants.REQ_PENDING;
+    private String cancelRequestedBy;
+    private long cancelRequestedAt;
+    private String rejectReason;
     private long createdAt;
     private long respondedAt;
     private long completedAt;
@@ -49,20 +52,29 @@ public class ExchangeRequest {
     public String getExchangePeriod() { return exchangePeriod; }
     public void setExchangePeriod(String exchangePeriod) { this.exchangePeriod = exchangePeriod; }
 
+    public long getStartDate() { return startDate; }
+    public void setStartDate(long startDate) { this.startDate = startDate; }
+
+    public long getEndDate() { return endDate; }
+    public void setEndDate(long endDate) { this.endDate = endDate; }
+
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
 
     public String getAgreementText() { return agreementText; }
     public void setAgreementText(String agreementText) { this.agreementText = agreementText; }
 
-    public long getSenderSignedAt() { return senderSignedAt; }
-    public void setSenderSignedAt(long senderSignedAt) { this.senderSignedAt = senderSignedAt; }
-
-    public long getReceiverSignedAt() { return receiverSignedAt; }
-    public void setReceiverSignedAt(long receiverSignedAt) { this.receiverSignedAt = receiverSignedAt; }
-
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public String getCancelRequestedBy() { return cancelRequestedBy; }
+    public void setCancelRequestedBy(String cancelRequestedBy) { this.cancelRequestedBy = cancelRequestedBy; }
+
+    public long getCancelRequestedAt() { return cancelRequestedAt; }
+    public void setCancelRequestedAt(long cancelRequestedAt) { this.cancelRequestedAt = cancelRequestedAt; }
+
+    public String getRejectReason() { return rejectReason; }
+    public void setRejectReason(String rejectReason) { this.rejectReason = rejectReason; }
 
     public long getCreatedAt() { return createdAt; }
     public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }

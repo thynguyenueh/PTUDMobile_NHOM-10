@@ -3,6 +3,9 @@ package com.example.studenthousing.data.model;
 import com.example.studenthousing.util.Constants;
 import com.google.firebase.firestore.DocumentId;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Review {
     @DocumentId
     private String reviewId;
@@ -13,7 +16,7 @@ public class Review {
     private String revieweeName;
     private double rating;
     private String comment;
-    private String imageUri;
+    private List<String> imageUrls = new ArrayList<>();
     private long createdAt;
     private String syncStatus = Constants.SYNC_SYNCED;
 
@@ -46,8 +49,10 @@ public class Review {
     public String getComment() { return comment; }
     public void setComment(String comment) { this.comment = comment; }
 
-    public String getImageUri() { return imageUri; }
-    public void setImageUri(String imageUri) { this.imageUri = imageUri; }
+    public List<String> getImageUrls() { return imageUrls; }
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls != null ? new ArrayList<>(imageUrls) : new ArrayList<>();
+    }
 
     public long getCreatedAt() { return createdAt; }
     public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }

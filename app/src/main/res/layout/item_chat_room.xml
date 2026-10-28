@@ -9,26 +9,18 @@
     android:focusable="true"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingHorizontal="16dp"
-    android:paddingVertical="12dp">
+    android:paddingHorizontal="@dimen/space_lg"
+    android:paddingVertical="@dimen/space_md">
 
-    <!-- Avatar Circle -->
     <TextView
         android:id="@+id/tvChatAvatar"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
-        android:background="@drawable/bg_circle_olive"
-        android:gravity="center"
-        android:textColor="@color/white"
-        android:textSize="18sp"
-        android:textStyle="bold"
+        style="@style/Widget.App.AvatarCircle.Large"
         tools:text="M" />
 
-    <!-- Name, House Title & Last Message -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="@dimen/space_md"
         android:layout_weight="1"
         android:orientation="vertical">
 
@@ -40,54 +32,49 @@
 
             <TextView
                 android:id="@+id/tvChatTitle"
+                style="@style/TextAppearance.App.SectionTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textColor="@color/text_main"
-                android:textSize="14sp"
-                android:textStyle="bold"
+                android:textSize="@dimen/text_body_lg"
                 tools:text="Hộ gia đình đối tác" />
 
             <ImageView
-                android:id="@+id/tvVerifiedBadge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
+                android:id="@+id/ivVerifiedBadge"
+                android:layout_width="@dimen/icon_sm"
+                android:layout_height="@dimen/icon_sm"
+                android:layout_marginStart="@dimen/space_xs"
                 android:contentDescription="@string/cd_verified"
                 android:src="@drawable/ic_verified_check"
                 app:tint="@color/primary"
                 android:visibility="gone" />
-
         </LinearLayout>
 
-        <!-- House Title Context -->
         <TextView
             android:id="@+id/tvHouseTitle"
+            style="@style/TextAppearance.App.SectionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:textColor="@color/primary"
-            android:textSize="12sp"
-            android:textStyle="bold"
+            android:textSize="@dimen/text_small_lg"
             tools:text="Căn hộ cao cấp Thảo Điền" />
 
         <TextView
             android:id="@+id/tvChatLastMessage"
+            style="@style/TextAppearance.App.BodySub"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="@dimen/space_xxs"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/text_sub"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_small_lg"
             tools:text="Dạ em chào cô, tuần sau em qua xem nhà được không ạ?" />
-
     </LinearLayout>
 
-    <!-- Time & Badge -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -96,26 +83,25 @@
 
         <TextView
             android:id="@+id/tvChatTime"
+            style="@style/TextAppearance.App.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="@dimen/text_small"
             android:textColor="@color/text_muted"
-            android:textSize="11sp"
             tools:text="10:30" />
 
         <TextView
             android:id="@+id/tvUnreadBadge"
             android:layout_width="18dp"
             android:layout_height="18dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="@dimen/space_xs"
             android:background="@drawable/bg_circle_olive"
             android:gravity="center"
             android:textColor="@color/white"
-            android:textSize="10sp"
+            android:textSize="@dimen/text_caption"
             android:textStyle="bold"
             android:visibility="gone"
             tools:text="1"
             tools:visibility="visible" />
-
     </LinearLayout>
-
 </LinearLayout>

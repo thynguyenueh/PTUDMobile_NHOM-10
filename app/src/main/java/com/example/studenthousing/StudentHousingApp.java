@@ -28,6 +28,7 @@ public class StudentHousingApp extends Application {
             com.example.studenthousing.util.SyncManager syncManager = com.example.studenthousing.util.SyncManager.getInstance(this);
             syncManager.startAutoSync();
             syncManager.scheduleWorkManager();
+            com.example.studenthousing.util.AutoTransitionScheduler.schedule(this);
         } catch (Throwable ignored) {}
     }
 }

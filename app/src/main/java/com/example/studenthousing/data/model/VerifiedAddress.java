@@ -10,7 +10,6 @@ public class VerifiedAddress {
     private int wardCode;
     private String streetNormalized;
     private String houseNumberNorm;
-    private String roomNumberNorm;
     private String fullAddress;
     private String ownerUserId;
     private String verificationTicketId;
@@ -38,9 +37,6 @@ public class VerifiedAddress {
     public String getHouseNumberNorm() { return houseNumberNorm; }
     public void setHouseNumberNorm(String houseNumberNorm) { this.houseNumberNorm = houseNumberNorm; }
 
-    public String getRoomNumberNorm() { return roomNumberNorm; }
-    public void setRoomNumberNorm(String roomNumberNorm) { this.roomNumberNorm = roomNumberNorm; }
-
     public String getFullAddress() { return fullAddress; }
     public void setFullAddress(String fullAddress) { this.fullAddress = fullAddress; }
 
@@ -55,7 +51,5 @@ public class VerifiedAddress {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
-
-    public long getCachedAt() { return cachedAt; }
     public void setCachedAt(long cachedAt) { this.cachedAt = cachedAt; }
 }

@@ -23,11 +23,10 @@
 
         <TextView
             android:id="@+id/tvTotalPosts"
+            style="@style/TextAppearance.App.SectionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/primary"
-            android:textSize="@dimen/text_body"
-            android:textStyle="bold"
             tools:text="0 bài đăng" />
     </LinearLayout>
 
@@ -37,20 +36,41 @@
         android:layout_below="@id/layoutHeader" />
 
     <!-- Content Slot -->
-    <ScrollView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvMyPosts"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/dividerHeader"
         android:clipToPadding="false"
-        android:fillViewport="true"
-        android:padding="@dimen/space_lg">
+        android:padding="@dimen/space_lg" />
 
-        <LinearLayout
-            android:id="@+id/layoutPostsContainer"
-            android:layout_width="match_parent"
+    <LinearLayout
+        android:id="@+id/layoutMyPostsEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dividerHeader"
+        android:layout_centerInParent="true"
+        android:layout_marginHorizontal="@dimen/space_xxl"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <TextView
+            style="@style/TextAppearance.App.Heading"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
+            android:accessibilityHeading="true"
+            android:text="@string/my_posts_empty_title" />
+
+        <TextView
+            style="@style/TextAppearance.App.BodySub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:gravity="center"
+            android:text="@string/my_posts_empty_desc" />
+    </LinearLayout>
 
     <!-- Extended Floating Action Button -->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton

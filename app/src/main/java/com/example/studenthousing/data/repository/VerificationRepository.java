@@ -9,8 +9,6 @@ import com.example.studenthousing.util.AppCallback;
 import com.example.studenthousing.util.Constants;
 import com.example.studenthousing.util.NetworkUtils;
 
-import java.util.List;
-
 public class VerificationRepository {
     private final Context ctx;
     private final VerificationTicketDao local;
@@ -26,8 +24,8 @@ public class VerificationRepository {
                              AppCallback<VerificationTicket> cb) {
         VerificationTicket ticket = new VerificationTicket(userId, ticketType, fileUrl, metadataJson,
                 Constants.VERIF_APPROVED, System.currentTimeMillis());
-        ticket.setReviewedAt(System.currentTimeMillis());
         ticket.setTicketId("ticket_" + System.currentTimeMillis());
+        ticket.setReviewedAt(System.currentTimeMillis());
 
         local.upsert(ticket);
 
@@ -48,52 +46,6 @@ public class VerificationRepository {
             });
         } else {
             if (cb != null) cb.onSuccess(ticket);
-        }
-    }
-
-    public void getTicketsByUser(String userId, AppCallback<List<VerificationTicket>> cb) {
-        List<VerificationTicket> cached = local.getAllByUser(userId);
-        if (cb != null) cb.onSuccess(cached);
-
-        if (NetworkUtils.isOnline(ctx)) {
-            remote.getAllByUser(userId, new AppCallback<List<VerificationTicket>>() {
-                @Override
-                public void onSuccess(List<VerificationTicket> list) {
-                    for (VerificationTicket t : list) {
-                        local.upsert(t);
-                    }
-                    if (cb != null) cb.onSuccess(list);
-                }
-
-                @Override
-                public void onError(Exception e) {
-                }
-            });
-        }
-    }
-
-    public void approveTicket(String ticketId, AppCallback<Void> cb) {
-        VerificationTicket ticket = local.getById(ticketId);
-        if (ticket != null) {
-            ticket.setStatus(Constants.VERIF_APPROVED);
-            ticket.setReviewedAt(System.currentTimeMillis());
-            local.upsert(ticket);
-        }
-
-        if (NetworkUtils.isOnline(ctx)) {
-            remote.updateStatus(ticketId, Constants.VERIF_APPROVED, new AppCallback<Void>() {
-                @Override
-                public void onSuccess(Void data) {
-                    if (cb != null) cb.onSuccess(null);
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    if (cb != null) cb.onError(e);
-                }
-            });
-        } else {
-            if (cb != null) cb.onSuccess(null);
         }
     }
 }

@@ -2,7 +2,6 @@ package com.example.studenthousing.data.remote;
 
 import com.example.studenthousing.data.model.VerificationTicket;
 import com.example.studenthousing.util.AppCallback;
-import com.example.studenthousing.util.Constants;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -30,23 +29,6 @@ public class VerificationTicketRemote {
         db.collection(COLLECTION).document(ticketId)
                 .update("status", status, "reviewedAt", System.currentTimeMillis())
                 .addOnSuccessListener(a -> cb.onSuccess(null))
-                .addOnFailureListener(cb::onError);
-    }
-
-    public void getPendingByUser(String userId, AppCallback<List<VerificationTicket>> cb) {
-        db.collection(COLLECTION)
-                .whereEqualTo("userId", userId)
-                .whereEqualTo("status", Constants.VERIF_PENDING)
-                .get()
-                .addOnSuccessListener(snap -> {
-                    List<VerificationTicket> list = new ArrayList<>();
-                    for (QueryDocumentSnapshot doc : snap) {
-                        VerificationTicket t = doc.toObject(VerificationTicket.class);
-                        if (t != null) t.setTicketId(doc.getId());
-                        list.add(t);
-                    }
-                    cb.onSuccess(list);
-                })
                 .addOnFailureListener(cb::onError);
     }
 

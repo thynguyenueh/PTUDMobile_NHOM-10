@@ -13,7 +13,6 @@
         android:orientation="vertical"
         android:padding="@dimen/space_lg">
 
-        <!-- Header: Post Icon + Title + Status -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,71 +43,51 @@
 
                 <TextView
                     android:id="@+id/tvPostTitle"
-                    android:layout_width="wrap_content"
+                    style="@style/TextAppearance.App.SectionTitle"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/text_main"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="2"
                     android:textSize="@dimen/text_body_lg"
-                    android:textStyle="bold"
-                    tools:text="Nhà trọ sinh viên gần ĐHQG" />
-
-                <TextView
-                    android:id="@+id/tvPostPriceArea"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/space_xxs"
-                    android:textColor="@color/olive_accent"
-                    android:textSize="@dimen/text_body"
-                    android:textStyle="bold"
-                    tools:text="Giá: 2.5 Tr/tháng · 35 m²" />
+                    tools:text="Căn nhà sinh viên gần ĐHQG" />
 
             </LinearLayout>
 
             <TextView
                 android:id="@+id/tvPostStatus"
                 style="@style/Widget.App.Badge.Verified"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:textColor="@color/olive_accent"
                 tools:text="● Đang hiển thị" />
-
         </LinearLayout>
 
         <TextView
             android:id="@+id/tvPostAddress"
+            style="@style/TextAppearance.App.BodySub"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_sm"
-            android:textColor="@color/text_sub"
-            android:textSize="@dimen/text_body"
             tools:text="Địa chỉ: Phường Linh Trung, TP. Thủ Đức, TP. Hồ Chí Minh" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTogglePostStatus"
+            style="@style/Widget.App.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/touch_target_min"
+            android:layout_marginTop="@dimen/space_sm"
+            android:text="@string/my_post_btn_mark_rented" />
 
         <View
             style="@style/Widget.App.Divider"
-            android:layout_marginTop="@dimen/space_sm"
-            android:layout_marginBottom="@dimen/space_sm" />
+            android:layout_marginVertical="@dimen/space_sm" />
 
-        <!-- Actions Bar -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/btnToggleStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minHeight="@dimen/icon_btn_size"
-                android:background="?attr/selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center_vertical"
-                android:drawableStart="@drawable/ic_swap_horiz"
-                android:drawablePadding="@dimen/space_xs"
-                app:drawableTint="@color/status_info"
-                android:paddingHorizontal="@dimen/space_xs"
-                android:textColor="@color/status_info"
-                android:textSize="@dimen/text_small"
-                android:textStyle="bold"
-                tools:text="Đánh dấu đã thuê" />
 
             <View
                 android:layout_width="0dp"
@@ -117,61 +96,29 @@
 
             <TextView
                 android:id="@+id/btnDeletePost"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minHeight="@dimen/icon_btn_size"
-                android:background="?attr/selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center_vertical"
-                android:drawableStart="@drawable/ic_delete"
-                android:drawablePadding="@dimen/space_xs"
-                app:drawableTint="@color/status_danger"
-                android:paddingHorizontal="@dimen/space_xs"
-                android:text="@string/action_delete"
+                style="@style/Widget.App.ActionText"
                 android:textColor="@color/status_danger"
-                android:textSize="@dimen/text_body"
-                android:textStyle="bold" />
+                android:drawableStart="@drawable/ic_delete"
+                app:drawableTint="@color/status_danger"
+                android:text="@string/action_delete" />
 
             <TextView
                 android:id="@+id/btnEditPost"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/Widget.App.ActionText"
                 android:layout_marginStart="@dimen/space_xs"
-                android:minHeight="@dimen/icon_btn_size"
-                android:background="?attr/selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center_vertical"
-                android:drawableStart="@drawable/ic_edit"
-                android:drawablePadding="@dimen/space_xs"
-                app:drawableTint="@color/text_main"
-                android:paddingHorizontal="@dimen/space_xs"
-                android:text="@string/action_edit"
                 android:textColor="@color/text_main"
-                android:textSize="@dimen/text_body"
-                android:textStyle="bold" />
+                android:drawableStart="@drawable/ic_edit"
+                app:drawableTint="@color/text_main"
+                android:text="@string/action_edit" />
 
             <TextView
                 android:id="@+id/btnViewPost"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/Widget.App.ActionText"
                 android:layout_marginStart="@dimen/space_xs"
-                android:minHeight="@dimen/icon_btn_size"
-                android:background="?attr/selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center_vertical"
-                android:drawableStart="@drawable/ic_eye"
-                android:drawablePadding="@dimen/space_xs"
-                app:drawableTint="@color/olive_accent"
-                android:paddingHorizontal="@dimen/space_xs"
-                android:text="@string/action_view"
                 android:textColor="@color/olive_accent"
-                android:textSize="@dimen/text_body"
-                android:textStyle="bold" />
-
+                android:drawableStart="@drawable/ic_eye"
+                app:drawableTint="@color/olive_accent"
+                android:text="@string/action_view" />
         </LinearLayout>
-
     </LinearLayout>
 </FrameLayout>

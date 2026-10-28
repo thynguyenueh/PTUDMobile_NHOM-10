@@ -6,15 +6,18 @@
     <path
         android:pathData="M12,22 C17.5228,22 22,17.5228 22,12 C22,6.47715 17.5228,2 12,2 C6.47715,2 2,6.47715 2,12 C2,17.5228 6.47715,22 12,22 Z"
         android:strokeWidth="2"
-        android:strokeColor="#1C2415" />
+        android:strokeColor="@color/primary"
+        android:strokeLineJoin="round" />
     <path
         android:pathData="M9.09,9a3,3 0,0 1,5.83,1c0,2 -3,3 -3,3"
         android:strokeWidth="2"
-        android:strokeColor="#1C2415"
-        android:strokeLineCap="round" />
+        android:strokeColor="@color/primary"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
     <path
         android:pathData="M12,17h0.01"
-        android:strokeWidth="2.5"
-        android:strokeColor="#1C2415"
-        android:strokeLineCap="round" />
+        android:strokeWidth="2"
+        android:strokeColor="@color/primary"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
 </vector>

@@ -2,20 +2,16 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.App.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    app:cardBackgroundColor="@color/surface_card"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="1dp"
-    app:strokeColor="@color/divider_line"
-    app:strokeWidth="1dp">
+    android:layout_marginBottom="@dimen/space_md">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="@dimen/space_lg">
 
         <!-- Header: Reviewer Avatar + Name + Rating -->
         <LinearLayout
@@ -26,38 +22,37 @@
 
             <TextView
                 android:id="@+id/tvReviewerAvatar"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="@dimen/avatar_size_sm"
+                android:layout_height="@dimen/avatar_size_sm"
                 android:background="@drawable/bg_circle_olive"
                 android:gravity="center"
-                android:textColor="@color/surface_card"
-                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_body"
                 android:textStyle="bold"
                 tools:text="M" />
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="@dimen/space_sm"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/tvReviewerName"
+                    style="@style/TextAppearance.App.SectionTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/text_main"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
+                    android:textSize="@dimen/text_body"
                     tools:text="Hộ gia đình đối tác" />
 
                 <TextView
                     android:id="@+id/tvReviewDate"
+                    style="@style/TextAppearance.App.Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:textColor="@color/text_sub"
-                    android:textSize="10sp"
+                    android:layout_marginTop="@dimen/space_xxs"
+                    android:textSize="@dimen/text_caption"
                     tools:text="15/10/2026 · Học kỳ 1" />
             </LinearLayout>
 
@@ -65,45 +60,47 @@
                 android:id="@+id/tvReviewRatingStars"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawablePadding="2dp"
+                android:drawablePadding="@dimen/space_xxs"
                 android:textColor="@color/status_warning"
-                android:textSize="13sp"
+                android:textSize="@dimen/text_body"
                 android:textStyle="bold"
                 tools:text="★ 5.0" />
         </LinearLayout>
 
-        <!-- Review Comment Box -->
-        <com.google.android.material.card.MaterialCardView
+        <!-- Review Comment Box (Dùng LinearLayout thay vì nested MaterialCardView) -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            app:cardBackgroundColor="@color/bg_app"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="0dp"
-            app:strokeColor="@color/divider_line"
-            app:strokeWidth="1dp">
+            android:layout_marginTop="@dimen/space_sm"
+            android:background="@drawable/bg_comment_box"
+            android:padding="@dimen/space_md">
 
             <TextView
                 android:id="@+id/tvReviewComment"
+                style="@style/TextAppearance.App.BodySub"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:lineSpacingExtra="2dp"
-                android:padding="12dp"
+                android:lineSpacingExtra="@dimen/space_xxs"
                 android:textColor="@color/text_main"
-                android:textSize="12sp"
+                android:textSize="@dimen/text_small_lg"
                 tools:text="Gia đình rất uy tín, giữ gìn nhà cửa sạch sẽ và bàn giao đúng hẹn." />
-        </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
 
         <!-- Optional Image Attachment Preview -->
-        <ImageView
-            android:id="@+id/imgReviewAttachment"
+        <HorizontalScrollView
+            android:id="@+id/scrollReviewAttachments"
             android:layout_width="match_parent"
-            android:layout_height="160dp"
-            android:layout_marginTop="10dp"
-            android:contentDescription="@string/cd_attached_image"
-            android:scaleType="centerCrop"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:scrollbars="none"
             android:visibility="gone"
-            tools:src="@drawable/bg_image_placeholder"
-            tools:visibility="visible" />
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:id="@+id/reviewAttachmentsContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

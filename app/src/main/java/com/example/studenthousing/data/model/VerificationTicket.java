@@ -8,7 +8,6 @@ public class VerificationTicket {
     private String ticketId;
     private String userId;
     private String ticketType;   // STUDENT | CITIZEN | RESIDENCE
-    private String method;       // FILE | MANUAL
     private String fileUrl;      // Cloudinary / file URL
     private String metadataJson; // JSON metadata
     private String status;       // PENDING | APPROVED | REJECTED
@@ -38,24 +37,11 @@ public class VerificationTicket {
     public String getTicketType() { return ticketType; }
     public void setTicketType(String ticketType) { this.ticketType = ticketType; }
 
-    public String getMethod() { return method; }
-    public void setMethod(String method) { this.method = method; }
-
     public String getFileUrl() { return fileUrl; }
     public void setFileUrl(String fileUrl) { this.fileUrl = fileUrl; }
 
     public String getMetadataJson() { return metadataJson; }
     public void setMetadataJson(String metadataJson) { this.metadataJson = metadataJson; }
-
-    public String getRegNumber() {
-        if (metadataJson != null && metadataJson.contains("regNumber")) {
-            try {
-                org.json.JSONObject obj = new org.json.JSONObject(metadataJson);
-                return obj.optString("regNumber", "");
-            } catch (Exception ignored) {}
-        }
-        return "";
-    }
 
     public String getWard() {
         if (metadataJson != null && metadataJson.contains("ward")) {
@@ -79,6 +65,5 @@ public class VerificationTicket {
     public String getSyncStatus() { return syncStatus; }
     public void setSyncStatus(String syncStatus) { this.syncStatus = syncStatus; }
 
-    public long getCachedAt() { return cachedAt; }
     public void setCachedAt(long cachedAt) { this.cachedAt = cachedAt; }
 }

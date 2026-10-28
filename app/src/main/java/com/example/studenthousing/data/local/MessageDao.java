@@ -64,16 +64,31 @@ public class MessageDao {
     }
 
     public List<Message> getByRoomId(String roomId) {
+        return getByRoomId(roomId, 100);
+    }
+
+    /**
+     * Lấy tối đa {@code limit} tin nhắn mới nhất của phòng chat.
+     * Truy vấn theo thứ tự DESC (để LIMIT lấy đúng tin mới nhất) rồi đảo lại
+     * để danh sách trả về đúng thứ tự thời gian tăng dần như UI hiển thị.
+     */
+    public List<Message> getByRoomId(String roomId, int limit) {
+        List<Message> list = new ArrayList<>();
+        if (roomId == null) return list;
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor c = db.query(DatabaseHelper.TBL_MESSAGES, null,
                 DatabaseHelper.COL_ROOM_ID + "=?",
                 new String[]{roomId}, null, null,
-                DatabaseHelper.COL_SENT_AT + " ASC");
-        List<Message> list = new ArrayList<>();
-        while (c.moveToNext()) {
-            list.add(cursorToMessage(c));
+                DatabaseHelper.COL_SENT_AT + " DESC",
+                limit > 0 ? String.valueOf(limit) : null);
+        try {
+            while (c.moveToNext()) {
+                list.add(cursorToMessage(c));
+            }
+        } finally {
+            c.close();
         }
-        c.close();
+        java.util.Collections.reverse(list);
         return list;
     }
 
@@ -122,20 +137,6 @@ public class MessageDao {
         }
         c.close();
         return list;
-    }
-
-    public int countUnreadByRoom(String roomId, String currentUserId) {
-        if (roomId == null || currentUserId == null) return 0;
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        String query = "SELECT COUNT(*) FROM " + DatabaseHelper.TBL_MESSAGES +
-                " WHERE " + DatabaseHelper.COL_ROOM_ID + " = ? AND " +
-                DatabaseHelper.COL_IS_READ + " = 0 AND " +
-                DatabaseHelper.COL_SENDER_ID + " != ?";
-        try (Cursor c = db.rawQuery(query, new String[]{roomId, currentUserId})) {
-            return c.moveToFirst() ? c.getInt(0) : 0;
-        } catch (Exception e) {
-            return 0;
-        }
     }
 
     public void markAsRead(String roomId, String currentUserId) {

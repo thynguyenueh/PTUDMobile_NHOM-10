@@ -4,76 +4,50 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_app"
     android:fitsSystemWindows="true"
+    android:background="@color/bg_app"
     android:orientation="vertical">
 
-    <!-- Top Bar -->
-    <LinearLayout
-        android:id="@+id/topBar"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="@color/surface_card"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingHorizontal="16dp">
-
+    <LinearLayout style="@style/Widget.App.HeaderBar">
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:padding="10dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/cd_back"
-            android:src="@drawable/ic_arrow_back"
-            app:tint="@color/text_main" />
+            style="@style/Widget.App.HeaderBackButton" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@string/proposal_detail_title"
-            android:textColor="@color/text_main"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            style="@style/Widget.App.HeaderTitle"
+            android:text="@string/proposal_detail_title" />
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/divider_line" />
+    <View style="@style/Widget.App.Divider" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:fillViewport="true">
+        android:clipToPadding="false"
+        android:padding="@dimen/space_lg">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:orientation="vertical">
 
-            <!-- Security Certification Banner -->
+            <!-- Security Banner -->
             <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.App.Card.Tinted"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardBackgroundColor="@color/bg_input"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:strokeColor="@color/primary"
-                app:strokeWidth="1dp">
+                android:layout_height="wrap_content">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
+                    android:orientation="horizontal"
                     android:padding="14dp">
 
                     <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
+                        android:layout_width="@dimen/icon_lg"
+                        android:layout_height="@dimen/icon_lg"
                         android:contentDescription="@string/cd_security"
                         android:src="@drawable/ic_shield_check"
                         app:tint="@color/primary" />
@@ -81,109 +55,156 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginStart="@dimen/space_md"
                         android:orientation="vertical">
 
                         <TextView
+                            style="@style/TextAppearance.App.SectionTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/proposal_detail_banner_title"
-                            android:textColor="@color/text_main"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
+                            android:text="@string/proposal_detail_banner_title" />
 
                         <TextView
-                            android:id="@+id/tvTransactionId"
+                            style="@style/TextAppearance.App.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/text_sub"
-                            android:textSize="11sp"
-                            tools:text="Mã giao dịch: PROP-VN-2026-99" />
+                            android:layout_marginTop="@dimen/space_xxs"
+                            android:text="@string/proposal_detail_banner_desc" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Legal Agreement Text Section -->
-            <com.google.android.material.card.MaterialCardView
+            <!-- Houses summary section -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardBackgroundColor="@color/surface_card"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:strokeColor="@color/divider_line"
-                app:strokeWidth="1dp">
+                android:layout_marginTop="@dimen/space_lg"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/TextAppearance.App.SectionTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/proposal_detail_pair_label" />
+
+                <include layout="@layout/item_home_card" />
+
+                <ImageView
+                    android:layout_width="@dimen/icon_lg"
+                    android:layout_height="@dimen/icon_lg"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginVertical="@dimen/space_xs"
+                    android:contentDescription="@string/cd_swap"
+                    android:rotation="90"
+                    android:src="@drawable/ic_swap"
+                    app:tint="@color/primary" />
+
+                <include layout="@layout/item_home_card" />
+            </LinearLayout>
+
+            <!-- Message box -->
+            <TextView
+                style="@style/TextAppearance.App.SectionTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_lg"
+                android:text="@string/proposal_detail_message_label" />
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.App.Card.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs">
+
+                <TextView
+                    android:id="@+id/tvProposalMessage"
+                    style="@style/TextAppearance.App.Body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="14dp"
+                    tools:text="Chào bạn, gia đình mình quan tâm đến căn hộ..." />
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Transaction meta -->
+            <TextView
+                android:id="@+id/tvTransactionId"
+                style="@style/TextAppearance.App.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_lg"
+                tools:text="Mã giao dịch: EXP-2026-8891" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnExportContract"
+                style="@style/Widget.App.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_md"
+                android:text="Tải về / In mẫu hợp đồng"
+                app:icon="@drawable/ic_check"
+                app:iconGravity="textStart" />
+
+            <!-- Consent Section -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.App.Card.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_lg">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="@dimen/space_md">
 
                     <TextView
+                        style="@style/TextAppearance.App.SectionTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/proposal_detail_agreement_label"
-                        android:textColor="@color/text_main"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+                        android:text="@string/proposal_detail_agreement_label" />
 
-                    <TextView
-                        android:id="@+id/tvAgreementText"
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/cbConsent"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="@dimen/space_xs"
+                        android:text="@string/proposal_detail_consent_text"
                         android:textColor="@color/text_sub"
-                        android:textSize="13sp"
-                        android:lineSpacingExtra="4dp"
-                        tools:text="Đang tải nội dung thỏa thuận..." />
+                        android:textSize="@dimen/text_body" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
-            <!-- Legal Checklist Agreement -->
-            <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/cbSignAgreement"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:minHeight="48dp"
-                android:text="@string/proposal_detail_consent_text"
-                android:textColor="@color/text_main"
-                android:textSize="12sp"
-                app:buttonTint="@color/primary" />
         </LinearLayout>
     </ScrollView>
 
-    <!-- Bottom Dual Action Bar -->
+    <!-- Bottom Actions -->
     <LinearLayout
+        android:id="@+id/layoutActionButtons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/surface_card"
-        android:elevation="8dp"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:padding="@dimen/space_lg">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnReject"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/Widget.App.Button.Outlined"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="@dimen/btn_height"
             android:layout_weight="1"
-            android:text="@string/exchange_btn_reject"
+            android:text="@string/proposal_detail_btn_reject"
             android:textColor="@color/status_danger"
-            app:cornerRadius="12dp"
             app:strokeColor="@color/status_danger" />
 
+        <View
+            android:layout_width="@dimen/space_md"
+            android:layout_height="1dp" />
+
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDualSign"
+            android:id="@+id/btnAccept"
+            style="@style/Widget.App.Button.Primary"
             android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="12dp"
-            android:layout_weight="1.5"
-            android:backgroundTint="@color/primary"
-            android:text="@string/proposal_detail_btn_sign"
-            android:textColor="@color/surface_card"
-            android:textStyle="bold"
-            app:cornerRadius="12dp" />
+            android:layout_height="@dimen/btn_height"
+            android:layout_weight="1"
+            android:text="@string/proposal_detail_btn_accept" />
     </LinearLayout>
 </LinearLayout>

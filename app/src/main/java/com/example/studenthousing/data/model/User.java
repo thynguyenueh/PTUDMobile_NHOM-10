@@ -1,23 +1,15 @@
 package com.example.studenthousing.data.model;
 
 import com.example.studenthousing.util.Constants;
-import com.google.firebase.firestore.DocumentId;
-import java.util.List;
 
 public class User {
-    @DocumentId
     private String userId;
-    private List<String> authProviders;
     private String familyName;
-    private String email;
     private String phone;
-    private String password;
     private boolean phoneVerified;
-    private String role = "PARENT"; // STUDENT | PARENT
     private String identityType = Constants.IDENTITY_NONE;
     private boolean identityVerified;
     private long identityVerifiedAt;
-    private String studentId;
     private String universityCode;
     private String universityName;
     private String citizenIdHash;
@@ -39,26 +31,14 @@ public class User {
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
 
-    public List<String> getAuthProviders() { return authProviders; }
-    public void setAuthProviders(List<String> authProviders) { this.authProviders = authProviders; }
-
     public String getFamilyName() { return familyName; }
     public void setFamilyName(String familyName) { this.familyName = familyName; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
 
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-
     public boolean isPhoneVerified() { return phoneVerified; }
     public void setPhoneVerified(boolean phoneVerified) { this.phoneVerified = phoneVerified; }
-
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
 
     public String getIdentityType() { return identityType; }
     public void setIdentityType(String identityType) { this.identityType = identityType; }
@@ -68,9 +48,6 @@ public class User {
 
     public long getIdentityVerifiedAt() { return identityVerifiedAt; }
     public void setIdentityVerifiedAt(long identityVerifiedAt) { this.identityVerifiedAt = identityVerifiedAt; }
-
-    public String getStudentId() { return studentId; }
-    public void setStudentId(String studentId) { this.studentId = studentId; }
 
     public String getUniversityCode() { return universityCode; }
     public void setUniversityCode(String universityCode) { this.universityCode = universityCode; }

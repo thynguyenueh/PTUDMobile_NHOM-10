@@ -2,6 +2,7 @@ package com.example.studenthousing.data.model;
 
 import com.example.studenthousing.util.Constants;
 import com.google.firebase.firestore.DocumentId;
+import com.google.firebase.firestore.PropertyName;
 
 public class Message {
     @DocumentId
@@ -41,6 +42,9 @@ public class Message {
     public long getSentAt() { return sentAt; }
     public void setSentAt(long sentAt) { this.sentAt = sentAt; }
 
+    @PropertyName("read")
     public boolean isRead() { return isRead; }
+
+    @PropertyName("read")
     public void setRead(boolean read) { isRead = read; }
 }

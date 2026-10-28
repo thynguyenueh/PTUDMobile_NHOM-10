@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@color/bg_app"
+    android:orientation="vertical">
+
+    <LinearLayout style="@style/Widget.App.HeaderBar">
+        <ImageView
+            android:id="@+id/btnBack"
+            style="@style/Widget.App.HeaderBackButton" />
+
+        <TextView
+            style="@style/Widget.App.HeaderTitle"
+            android:text="@string/filter_title" />
+
+        <TextView
+            android:id="@+id/btnReset"
+            style="@style/Widget.App.LinkText"
+            android:text="@string/filter_btn_reset" />
+    </LinearLayout>
+
+    <View style="@style/Widget.App.Divider" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:paddingHorizontal="@dimen/screen_padding_wide"
+        android:paddingVertical="@dimen/space_lg">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Search Query (Tên, khu vực, từ khóa) -->
+            <TextView
+                style="@style/TextAppearance.App.SectionTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/search_query_hint" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilSearchQuery"
+                style="@style/Widget.App.FormField"
+                android:layout_marginTop="@dimen/space_xs"
+                android:layout_marginBottom="@dimen/space_lg"
+                app:startIconDrawable="@drawable/ic_search">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etSearchQuery"
+                    style="@style/Widget.App.FormInput"
+                    android:hint="@string/search_query_hint"
+                    android:inputType="text"
+                    android:imeOptions="actionSearch" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Location (Ward) -->
+            <TextView
+                style="@style/TextAppearance.App.SectionTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_label_ward" />
+
+            <LinearLayout
+                android:id="@+id/layoutSelectWard"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="@dimen/space_xs"
+                android:background="@drawable/bg_banner_green"
+                android:foreground="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="@dimen/space_lg">
+
+                <TextView
+                    android:id="@+id/tvWard"
+                    style="@style/TextAppearance.App.SectionTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="@dimen/text_body_lg2"
+                    android:textColor="@color/text_muted"
+                    android:text="@string/filter_hint_ward" />
+
+                <ImageView
+                    android:layout_width="@dimen/icon_lg"
+                    android:layout_height="@dimen/icon_lg"
+                    android:contentDescription="@string/cd_dropdown"
+                    android:src="@drawable/ic_chevron_down"
+                    app:tint="@color/text_main" />
+            </LinearLayout>
+
+            <!-- Campus / University Selection -->
+            <TextView
+                style="@style/TextAppearance.App.SectionTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_lg"
+                android:text="@string/filter_label_campus" />
+
+            <LinearLayout
+                android:id="@+id/layoutSelectCampus"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="@dimen/space_xs"
+                android:background="@drawable/bg_banner_green"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="@dimen/space_lg">
+
+                <TextView
+                    android:id="@+id/tvCampus"
+                    style="@style/TextAppearance.App.SectionTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="@dimen/text_body_lg2"
+                    android:textColor="@color/text_muted"
+                    android:text="@string/filter_hint_campus" />
+
+                <ImageView
+                    android:layout_width="@dimen/icon_lg"
+                    android:layout_height="@dimen/icon_lg"
+                    android:contentDescription="@string/cd_dropdown"
+                    android:src="@drawable/ic_chevron_down"
+                    app:tint="@color/text_main" />
+            </LinearLayout>
+
+            <!-- Max Distance Filter -->
+            <TextView
+                style="@style/TextAppearance.App.SectionTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_lg"
+                android:text="@string/filter_label_distance" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupDistance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipDistAny"
+                    style="@style/Widget.App.Chip"
+                    android:checkable="true"
+                    android:checked="true"
+                    android:text="Bất kỳ" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipDist1"
+                    style="@style/Widget.App.Chip"
+                    android:checkable="true"
+                    android:text="Dưới 1 km" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipDist2"
+                    style="@style/Widget.App.Chip"
+                    android:checkable="true"
+                    android:text="Dưới 2 km" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipDist3"
+                    style="@style/Widget.App.Chip"
+                    android:checkable="true"
+                    android:text="Dưới 3 km" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipDist5"
+                    style="@style/Widget.App.Chip"
+                    android:checkable="true"
+                    android:text="Dưới 5 km" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <!-- Utilities Filter -->
+            <TextView
+                style="@style/TextAppearance.App.SectionTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_lg"
+                android:text="@string/filter_label_utilities" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupFilterUtilities"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs">
+
+                <com.google.android.material.chip.Chip style="@style/Widget.App.Chip" android:checkable="true" android:text="Wifi" />
+                <com.google.android.material.chip.Chip style="@style/Widget.App.Chip" android:checkable="true" android:text="Máy lạnh" />
+                <com.google.android.material.chip.Chip style="@style/Widget.App.Chip" android:checkable="true" android:text="Máy giặt" />
+                <com.google.android.material.chip.Chip style="@style/Widget.App.Chip" android:checkable="true" android:text="Chỗ đậu xe" />
+                <com.google.android.material.chip.Chip style="@style/Widget.App.Chip" android:checkable="true" android:text="Tủ lạnh" />
+                <com.google.android.material.chip.Chip style="@style/Widget.App.Chip" android:checkable="true" android:text="Khóa vân tay" />
+                <com.google.android.material.chip.Chip style="@style/Widget.App.Chip" android:checkable="true" android:text="Gác lửng" />
+                <com.google.android.material.chip.Chip style="@style/Widget.App.Chip" android:checkable="true" android:text="Bếp riêng" />
+            </com.google.android.material.chip.ChipGroup>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="@dimen/space_lg">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnApplyFilter"
+            style="@style/Widget.App.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/filter_btn_apply_simple" />
+    </LinearLayout>
+</LinearLayout>

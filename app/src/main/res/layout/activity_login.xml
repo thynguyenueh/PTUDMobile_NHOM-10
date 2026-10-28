@@ -42,7 +42,7 @@
             android:textColor="@color/text_sub"
             android:textSize="@dimen/text_body" />
 
-        <!-- Form chính: SĐT + mật khẩu -->
+        <!-- Form chính: SĐT -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -53,38 +53,15 @@
                 android:id="@+id/tilPhone"
                 style="@style/Widget.App.FormField"
                 android:hint="@string/login_hint_phone"
-                app:startIconDrawable="@drawable/ic_phone">
+                app:startIconDrawable="@drawable/ic_user">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPhone"
                     style="@style/Widget.App.FormInput"
-                    android:autofillHints="phone"
-                    android:imeOptions="actionNext"
+                    android:autofillHints="phoneNumber"
+                    android:imeOptions="actionDone"
                     android:inputType="phone" />
             </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilPassword"
-                style="@style/Widget.App.FormField"
-                android:layout_marginTop="@dimen/space_md"
-                android:hint="@string/login_hint_password"
-                app:endIconMode="password_toggle"
-                app:startIconDrawable="@drawable/ic_lock">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etPassword"
-                    style="@style/Widget.App.FormInput"
-                    android:autofillHints="password"
-                    android:imeOptions="actionDone"
-                    android:inputType="textPassword" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <TextView
-                android:id="@+id/tvForgotPassword"
-                style="@style/Widget.App.LinkText"
-                android:layout_gravity="end"
-                android:layout_marginTop="@dimen/space_xs"
-                android:text="@string/login_forgot_password" />
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
@@ -93,7 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/btn_height"
             android:layout_marginTop="@dimen/space_md"
-            android:text="@string/login_btn_login" />
+            android:text="@string/login_btn_phone_otp" />
 
         <!-- Divider "Hoặc" -->
         <LinearLayout
@@ -124,25 +101,18 @@
                 android:background="@color/divider_line" />
         </LinearLayout>
 
-        <!-- 2 nút phụ hiện sẵn, ngang hàng -->
-        <LinearLayout
+        <!-- Nút Đăng nhập Google -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGoogle"
+            style="@style/Widget.App.Button.Secondary"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/btn_height_sm"
             android:layout_marginTop="@dimen/space_lg"
-            android:baselineAligned="false"
-            android:orientation="horizontal">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnGoogle"
-                style="@style/Widget.App.Button.Secondary"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/btn_height_sm"
-                android:layout_marginEnd="@dimen/space_xs"
-                android:layout_weight="1"
-                android:text="@string/login_btn_google"
-                android:textSize="@dimen/text_body_lg" />
-
-        </LinearLayout>
+            android:text="@string/login_btn_google"
+            android:textSize="@dimen/text_body_lg"
+            app:icon="@drawable/ic_google"
+            app:iconGravity="textStart"
+            app:iconTint="@null" />
 
         <LinearLayout
             android:layout_width="wrap_content"

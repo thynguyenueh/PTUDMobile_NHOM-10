@@ -53,7 +53,7 @@ public class ExchangeRepository {
 
     public void updateStatus(String requestId, String status, AppCallback<Void> cb) {
         if (!NetworkUtils.isOnline(ctx)) {
-            if (cb != null) cb.onError(new Exception("Bạn cần có kết nối mạng để phản hồi đề xuất đổi trọ."));
+            if (cb != null) cb.onError(new Exception("Bạn cần có kết nối mạng để phản hồi đề xuất đổi nhà."));
             return;
         }
 
@@ -61,23 +61,62 @@ public class ExchangeRepository {
             @Override
             public void onSuccess(Void d) {
                 ExchangeRequest r = local.getById(requestId);
+                String oldStatus = r != null ? r.getStatus() : null;
                 if (r != null) {
                     r.setStatus(status);
                     r.setRespondedAt(System.currentTimeMillis());
                     r.setSyncStatus("SYNCED");
                     local.upsert(r);
 
-                    if (Constants.REQ_COMPLETED.equals(status) || "COMPLETED".equals(status)) {
+                    if (Constants.REQ_EXCHANGING.equalsIgnoreCase(status)) {
                         PostRepository postRepo = new PostRepository(ctx);
                         if (r.getSenderPostId() != null) {
-                            postRepo.updatePostStatus(r.getSenderPostId(), Constants.POST_EXCHANGED, null);
+                            postRepo.cacheRemotePostStatus(r.getSenderPostId(), Constants.POST_EXCHANGED);
                         }
                         if (r.getReceiverPostId() != null) {
-                            postRepo.updatePostStatus(r.getReceiverPostId(), Constants.POST_EXCHANGED, null);
+                            postRepo.cacheRemotePostStatus(r.getReceiverPostId(), Constants.POST_EXCHANGED);
                         }
                     }
+                    // Theo mô hình post.md: bài đăng không quay về AVAILABLE khi exchange CANCELLED/COMPLETED.
+                    // Sau khi có EXCHANGING, bài đứng ở EXCHANGED và chỉ được đăng lại bằng bài mới.
                 }
                 if (cb != null) cb.onSuccess(null);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                if (cb != null) cb.onError(e);
+            }
+        });
+    }
+
+    /**
+     * Hủy thỏa thuận 2 bên.
+     * Yêu cầu bắt buộc phải có kết nối mạng, không ghi PENDING offline.
+     */
+    public void requestOrConfirmCancel(ExchangeRequest request, String currentUserId, AppCallback<Boolean> cb) {
+        if (!NetworkUtils.isOnline(ctx)) {
+            if (cb != null) cb.onError(new Exception("Bạn cần có kết nối mạng để thực hiện hủy thỏa thuận."));
+            return;
+        }
+
+        String oldStatus = request.getStatus();
+        remote.requestOrConfirmCancel(request, currentUserId, new AppCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean isCancelled) {
+                if (isCancelled) {
+                    request.setStatus(Constants.REQ_CANCELLED);
+                    request.setSyncStatus("SYNCED");
+                    local.upsert(request);
+
+                    // Theo post.md, bài sau CANCELLED/COMPLETED vẫn là EXCHANGED; không tự khôi phục về AVAILABLE.
+                    // Người dùng muốn đổi tiếp phải đăng bài mới.
+                } else {
+                    request.setCancelRequestedBy(currentUserId);
+                    request.setSyncStatus("SYNCED");
+                    local.upsert(request);
+                }
+                if (cb != null) cb.onSuccess(isCancelled);
             }
 
             @Override
@@ -92,7 +131,7 @@ public class ExchangeRepository {
         if (cached != null) {
             cb.onSuccess(cached);
         } else if (cb != null) {
-            cb.onError(new Exception("Không tìm thấy đề xuất đổi trọ"));
+            cb.onError(new Exception("Không tìm thấy đề xuất đổi nhà"));
         }
     }
 
@@ -198,24 +237,6 @@ public class ExchangeRepository {
             public void onSuccess(List<ExchangeRequest> list) {
                 local.upsertAll(list);
                 cb.onSuccess(list);
-            }
-
-            @Override
-            public void onError(Exception e) {
-                cb.onError(e);
-            }
-        });
-    }
-
-    public ListenerRegistration listenById(String requestId, AppCallback<ExchangeRequest> cb) {
-        ExchangeRequest cached = local.getById(requestId);
-        if (cached != null) cb.onSuccess(cached);
-
-        return remote.listenById(requestId, new AppCallback<ExchangeRequest>() {
-            @Override
-            public void onSuccess(ExchangeRequest r) {
-                if (r != null) local.upsert(r);
-                cb.onSuccess(r);
             }
 
             @Override

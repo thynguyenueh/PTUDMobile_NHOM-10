@@ -11,8 +11,6 @@ public class University {
     private double longitude;
     private boolean verified;
 
-    public University() {}
-
     public University(String code, String name, String campus, double latitude, double longitude, boolean verified) {
         this.code = code;
         this.name = name;
@@ -32,16 +30,8 @@ public class University {
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-
-    public String getCampus() { return campus; }
-    public void setCampus(String campus) { this.campus = campus; }
-
     public double getLatitude() { return latitude; }
-    public void setLatitude(double latitude) { this.latitude = latitude; }
-
     public double getLongitude() { return longitude; }
-    public void setLongitude(double longitude) { this.longitude = longitude; }
-
     public boolean isVerified() { return verified; }
     public void setVerified(boolean verified) { this.verified = verified; }
 }

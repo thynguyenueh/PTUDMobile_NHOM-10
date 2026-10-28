@@ -7,6 +7,15 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.example.studenthousing.data.local.ExchangeDao;
+import com.example.studenthousing.data.model.ExchangeRequest;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * LƯU Ý: Đây là kiểm tra phía client (chạy qua SyncWorker), không chạy khi app không mở hoàn toàn.
+ */
 public class SyncWorker extends Worker {
     private static final String TAG = "SyncWorker";
 
@@ -19,7 +28,13 @@ public class SyncWorker extends Worker {
     public Result doWork() {
         Log.d(TAG, "SyncWorker đang chạy đồng bộ nền...");
         try {
-            boolean success = SyncManager.getInstance(getApplicationContext()).syncAll();
+            Context ctx = getApplicationContext();
+            ExchangeDao exchangeDao = new ExchangeDao(ctx);
+            String currentUserId = SessionManager.getUid(ctx);
+            List<ExchangeRequest> allRequests = currentUserId != null ? exchangeDao.getAllForUser(currentUserId) : new ArrayList<>();
+            ExchangeStatusChecker.checkAndApplyExpirations(ctx, allRequests, currentUserId, null);
+
+            boolean success = SyncManager.getInstance(ctx).syncAll();
             if (!success) {
                 Log.w(TAG, "SyncWorker có tác vụ thất bại, yêu cầu retry...");
                 return Result.retry();

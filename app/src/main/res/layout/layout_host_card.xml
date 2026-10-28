@@ -12,7 +12,7 @@
     app:cardBackgroundColor="@color/surface_card"
     app:cardCornerRadius="16dp"
     app:cardElevation="1dp"
-    app:strokeColor="@color/divider_line"
+    app:strokeColor="@color/primary"
     app:strokeWidth="1dp">
 
     <LinearLayout
@@ -66,14 +66,6 @@
                     android:visibility="gone" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/tvHostMeta"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="@string/detail_host_meta"
-                android:textColor="@color/text_sub"
-                android:textSize="11sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -107,10 +99,9 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/tvHostReviewCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="(12 đánh giá)"
+                android:text="@string/detail_review_count_format"
                 android:textColor="@color/text_sub"
                 android:textSize="10sp"
                 tools:text="(12 đánh giá)" />

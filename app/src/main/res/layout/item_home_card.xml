@@ -3,18 +3,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.App.Card.Moss"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:cardBackgroundColor="@color/light_moss"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="0dp"
-    app:strokeWidth="0dp">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="12dp">
+        android:padding="@dimen/space_md">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -30,60 +27,40 @@
                 app:shapeAppearance="@style/ShapeAppearance.App.Image12" />
 
             <ImageView
-                android:id="@+id/tvHomeVerified"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:id="@+id/ivHomeVerified"
+                android:layout_width="@dimen/icon_lg"
+                android:layout_height="@dimen/icon_lg"
                 android:layout_gravity="top|start"
-                android:layout_margin="8dp"
+                android:layout_margin="@dimen/space_sm"
                 android:background="@drawable/bg_badge_verified"
-                android:padding="4dp"
                 android:contentDescription="@string/cd_verified"
+                android:padding="@dimen/space_xs"
                 android:src="@drawable/ic_verified_check"
-                app:tint="@color/primary"
-                android:visibility="gone" />
+                android:visibility="gone"
+                app:tint="@color/primary" />
         </FrameLayout>
 
         <TextView
             android:id="@+id/tvHomeLabel"
+            style="@style/TextAppearance.App.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="@dimen/space_md"
+            android:textSize="@dimen/text_small"
             android:textColor="@color/primary"
-            android:textSize="11sp"
             android:textStyle="bold"
             tools:text="NHÀ CỦA BẠN" />
 
         <TextView
             android:id="@+id/tvHomeName"
+            style="@style/TextAppearance.App.SectionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="@dimen/space_xxs"
             android:maxLines="1"
             android:ellipsize="end"
-            android:textColor="@color/text_main"
-            android:textSize="15sp"
-            android:textStyle="bold"
+            android:textSize="@dimen/text_body_lg2"
             tools:text="Căn hộ Studio Thảo Điền" />
 
-        <TextView
-            android:id="@+id/tvHomePrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:textColor="@color/primary"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            tools:text="3.5 Tr/tháng" />
-
-        <TextView
-            android:id="@+id/tvHomeArea"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textColor="@color/text_sub"
-            android:textSize="12sp"
-            tools:text="45 m²" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

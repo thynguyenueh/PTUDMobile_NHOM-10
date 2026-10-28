@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cardSwapSuggestion"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
+    android:layout_marginBottom="@dimen/space_md"
     android:clickable="true"
     android:focusable="true"
     app:cardBackgroundColor="@color/surface_card"
-    app:cardCornerRadius="20dp"
+    app:cardCornerRadius="@dimen/card_radius_xl"
     app:cardElevation="3dp"
     app:strokeColor="@color/primary"
     app:strokeWidth="1dp">
@@ -18,9 +19,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="12dp">
+        android:padding="@dimen/space_md">
 
-        <!-- Hàng trên: ảnh + thông tin nhà đối tác -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,10 +28,10 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardPartnerPhoto"
-                android:layout_width="88dp"
-                android:layout_height="88dp"
+                android:layout_width="@dimen/thumbnail_size"
+                android:layout_height="@dimen/thumbnail_size"
                 app:cardBackgroundColor="@color/light_moss"
-                app:cardCornerRadius="12dp"
+                app:cardCornerRadius="@dimen/card_radius_md"
                 app:cardElevation="0dp"
                 app:strokeWidth="0dp">
 
@@ -47,11 +47,10 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="@dimen/space_md"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <!-- Tiêu đề + điểm khớp -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -60,14 +59,13 @@
 
                     <TextView
                         android:id="@+id/tvPartnerTitle"
+                        style="@style/TextAppearance.App.SectionTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:ellipsize="end"
                         android:maxLines="1"
-                        android:textColor="@color/text_main"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
+                        android:textSize="@dimen/text_body_lg2"
                         tools:text="Phòng Linh Trung" />
 
                     <ImageView
@@ -81,109 +79,48 @@
                         app:tint="@color/primary"
                         tools:visibility="visible" />
 
-                    <TextView
-                        android:id="@+id/tvMatchScore"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:background="@drawable/bg_badge_verified_moss"
-                        android:paddingHorizontal="8dp"
-                        android:paddingVertical="3dp"
-                        android:textColor="@color/primary"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        tools:text="92%" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/tvPartnerInfo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:textColor="@color/primary"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    tools:text="3.2 Tr/tháng · 40 m²" />
-
-                <!-- Chênh lệch -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tvDiffPrice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_badge_verified_moss"
-                        android:paddingHorizontal="8dp"
-                        android:paddingVertical="2dp"
-                        android:textColor="@color/primary"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
-                        android:visibility="gone"
-                        tools:text="-0.3 Tr/tháng"
-                        tools:visibility="visible" />
-
-                    <TextView
-                        android:id="@+id/tvDiffArea"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:background="@drawable/bg_badge_verified_moss"
-                        android:paddingHorizontal="8dp"
-                        android:paddingVertical="2dp"
-                        android:textColor="@color/primary"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
-                        android:visibility="gone"
-                        tools:text="-5 m²"
-                        tools:visibility="visible" />
                 </LinearLayout>
 
                 <TextView
                     android:id="@+id/tvPartnerAddress"
+                    style="@style/TextAppearance.App.Caption"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="@dimen/space_xs"
                     android:ellipsize="end"
                     android:maxLines="1"
+                    android:textSize="@dimen/text_small_lg"
                     android:textColor="@color/text_muted"
-                    android:textSize="12sp"
                     tools:text="P. Linh Trung, TP. Thủ Đức" />
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Hàng dưới: bài của bạn + nút đề xuất -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="@dimen/space_sm"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/tvRefPost"
+                style="@style/TextAppearance.App.BodySub"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textColor="@color/text_sub"
-                android:textSize="12sp"
+                android:textSize="@dimen/text_small_lg"
                 tools:text="Cho bài: Căn hộ Thảo Điền" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnProposeSwap"
                 style="@style/Widget.App.Button.Primary"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_marginStart="8dp"
-                android:text="@string/action_propose_swap"
-                android:textAllCaps="false"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:layout_height="@dimen/touch_target_min"
+                android:layout_marginStart="@dimen/space_sm"
+                android:textSize="@dimen/text_small_lg"
+                android:text="@string/action_propose_swap" />
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

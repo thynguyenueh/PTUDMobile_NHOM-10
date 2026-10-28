@@ -9,20 +9,7 @@ import java.util.regex.Pattern;
 
 public class AddressFingerprintUtil {
 
-    public enum MatchLevel {
-        EXACT,        // Same fingerprint
-        SAME_HOUSE,   // Same house
-        SAME_STREET,  // Same street, different house number
-        SAME_WARD,    // Same ward, different street
-        SAME_CITY,    // Same city, different ward
-        DIFFERENT     // Different city
-    }
-
     public static String build(int cityCode, int wardCode, String street, String houseNumber) {
-        return build(cityCode, wardCode, street, houseNumber, null);
-    }
-
-    public static String build(int cityCode, int wardCode, String street, String houseNumber, String roomNumber) {
         String normStreet = normalize(street);
         String normHouse = normalize(houseNumber);
 
@@ -49,34 +36,11 @@ public class AddressFingerprintUtil {
         return s;
     }
 
-    public static MatchLevel compare(int cityCodeA, int wardCodeA, String streetA, String houseA,
-                                     int cityCodeB, int wardCodeB, String streetB, String houseB) {
-        if (cityCodeA != cityCodeB) {
-            return MatchLevel.DIFFERENT;
-        }
-        if (wardCodeA != wardCodeB) {
-            return MatchLevel.SAME_CITY;
-        }
 
-        String normStreetA = normalize(streetA);
-        String normStreetB = normalize(streetB);
-        if (!normStreetA.equals(normStreetB)) {
-            return MatchLevel.SAME_WARD;
-        }
-
-        String normHouseA = normalize(houseA);
-        String normHouseB = normalize(houseB);
-        if (!normHouseA.equals(normHouseB)) {
-            return MatchLevel.SAME_STREET;
-        }
-
-        return MatchLevel.EXACT;
-    }
-
-    public static String sha256(String input) {
+    private static String sha256(String base) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+            byte[] hash = digest.digest(base.getBytes(StandardCharsets.UTF_8));
             StringBuilder hexString = new StringBuilder();
             for (byte b : hash) {
                 String hex = Integer.toHexString(0xff & b);
@@ -85,7 +49,7 @@ public class AddressFingerprintUtil {
             }
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
-            return String.valueOf(input.hashCode());
+            return Integer.toHexString(base.hashCode());
         }
     }
 }

@@ -1,7 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <array name="initial_price_range">
-        <item>0</item>
-        <item>10000000</item>
-    </array>
 </resources>

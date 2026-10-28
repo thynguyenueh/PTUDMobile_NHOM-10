@@ -2,9 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Quyền truy cập Internet cho Firebase -->
+    <!-- Quyền truy cập Internet cho Firebase và thông báo -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application
         android:name=".StudentHousingApp"
@@ -19,7 +21,7 @@
 
         <!-- LoginActivity = màn hình mở đầu -->
         <activity
-            android:name=".LoginActivity"
+            android:name=".ui.auth.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,7 +37,7 @@
 
         <!-- Đăng ký -->
         <activity
-            android:name=".RegisterActivity"
+            android:name=".ui.auth.RegisterActivity"
             android:exported="false" />
 
         <activity
@@ -44,69 +46,93 @@
 
         <!-- ⚠️ TẠM đổi true để test bằng adb -->
         <activity
-            android:name=".ReviewActivity"
+            android:name=".ui.review.ReviewActivity"
             android:exported="true" />
 
         <!-- Chat Rooms List -->
         <activity
-            android:name=".ChatRoomsActivity"
+            android:name=".ui.chat.ChatListActivity"
             android:exported="false" />
 
         <!-- Chat -->
         <activity
-            android:name=".ChatActivity"
+            android:name=".ui.chat.ChatActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
         <!-- KYC -->
         <activity
-            android:name=".KycActivity"
+            android:name=".ui.verify.KycActivity"
             android:exported="false" />
 
         <!-- TV3 — studenthousing -->
         <activity
-            android:name=".HomeActivity"
+            android:name=".ui.home.HomeActivity"
             android:exported="false" />
 
         <activity
-            android:name=".DetailActivity"
+            android:name=".ui.post.DetailActivity"
             android:exported="false" />
 
         <activity
-            android:name=".ProposalActivity"
+            android:name=".ui.exchange.ProposalActivity"
             android:exported="false" />
 
         <!-- ⚠️ TẠM đổi true để test bằng adb -->
         <activity
-            android:name=".ResidenceVerificationActivity"
+            android:name=".ui.verify.ResidenceVerificationActivity"
             android:exported="true" />
 
         <activity
-            android:name=".SearchFilterActivity"
+            android:name=".ui.home.SearchFilterActivity"
             android:exported="false" />
 
         <activity
-            android:name=".SearchResultsActivity"
+            android:name=".ui.home.SearchResultsActivity"
             android:exported="false" />
 
         <activity
-            android:name=".UserReviewsActivity"
+            android:name=".ui.review.UserReviewsActivity"
             android:exported="false" />
 
         <activity
-            android:name=".ExchangeHistoryActivity"
+            android:name=".ui.exchange.ExchangeHistoryActivity"
             android:exported="false" />
 
         <activity
-            android:name=".MyPostsActivity"
+            android:name=".ui.post.MyPostsActivity"
             android:exported="false" />
 
         <activity
-            android:name=".SavedHousesActivity"
+            android:name=".ui.post.SavedHousesActivity"
             android:exported="false" />
 
         <activity
-            android:name=".SettingsActivity"
+            android:name=".ui.profile.SettingsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.profile.NotificationsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.exchange.ProposalDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.post.CreatePostActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.profile.ProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.partner.PublicHostProfileActivity"
+            android:exported="false" />
+
+        <receiver
+            android:name=".util.AutoTransitionReceiver"
             android:exported="false" />
 
     </application>

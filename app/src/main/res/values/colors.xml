@@ -2,43 +2,50 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="on_primary">#FFFFFF</color>
 
     <!-- Olive Palette -->
-    <color name="olive_green">#76962D</color>
-    <color name="olive_primary_dark">#4A6B1C</color>
-    <color name="olive_accent">#76962D</color>
+    <color name="olive_green">#536D2A</color>
+    <color name="olive_primary_dark">#344718</color>
+    <color name="olive_accent">#536D2A</color>
     <color name="pale_olive">#C0C7A2</color>
     <color name="light_moss">#D7E4D1</color>
     <color name="dusty_olive">#E1E9E2</color>
     <color name="cloud_olive">#E1E9E2</color>
 
-    <!-- Canonical Semantic Colors -->
-    <color name="primary">#76962D</color>
+    <!-- Canonical Semantic -->
+    <color name="primary">#536D2A</color>
     <color name="bg_app">#F0F4F1</color>
     <color name="bg_input">#E1E9E2</color>
     <color name="surface_card">#FFFFFF</color>
     <color name="surface_variant">#E1E9E2</color>
-    <color name="divider_line">#C0C7A2</color>
-    <color name="color_border">#C0C7A2</color>
-    <color name="color_focus">#76962D</color>
+    <color name="divider_line">#B0B99B</color>
+    <color name="color_border">#B0B99B</color>
+    <color name="color_focus">#344718</color>
 
-    <!-- Text Colors -->
+    <!-- Text -->
     <color name="text_main">#0F172A</color>
     <color name="text_dark">#0F172A</color>
-    <color name="text_sub">#64748B</color>
-    <color name="text_muted">#94A3B8</color>
+    <color name="text_sub">#475569</color>
+    <color name="text_muted">#64748B</color>
 
-    <!-- Semantic States -->
-    <color name="status_verified">#76962D</color>
+    <!-- States -->
+    <color name="status_verified">#4A6B1C</color>
     <color name="status_verified_bg">#D7E4D1</color>
     <color name="status_warning">#D97706</color>
-    <color name="status_danger">#EF4444</color>
+    <color name="status_danger">#DC2626</color>
+    <color name="status_danger_container">#FEE2E2</color>
+    <color name="status_on_danger_container">#991B1B</color>
     <color name="status_info">#2563EB</color>
 
-    <!-- Extra UI Overlays -->
+    <!-- Overlays -->
     <color name="overlay_white">#E6FFFFFF</color>
     <color name="dot_inactive">#80FFFFFF</color>
     <color name="on_olive_sub">#CCFFFFFF</color>
     <color name="scrim_translucent">#99000000</color>
     <color name="outline_soft">#E1E9E2</color>
+
+    <!-- Toggle Fallback (dùng cho MaterialSwitch) -->
+    <color name="toggle_on">@color/primary</color>
+    <color name="toggle_off">#788A60</color>
 </resources>

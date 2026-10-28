@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="0dp"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="horizontal"
@@ -10,22 +9,16 @@
 
     <ImageView
         android:id="@+id/ivAmenityIcon"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:importantForAccessibility="no"
-        android:padding="2dp"
-        app:tint="@color/primary"
-        tools:src="@drawable/ic_wifi" />
+        app:tint="@color/primary" />
 
     <TextView
         android:id="@+id/tvAmenityLabel"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_weight="1"
-        android:ellipsize="end"
-        android:maxLines="2"
         android:textColor="@color/text_main"
-        android:textSize="13sp"
-        tools:text="Wifi tốc độ cao" />
+        android:textSize="13sp" />
 </LinearLayout>

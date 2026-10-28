@@ -99,8 +99,6 @@ public class MessageRemote {
         }
         db.collection(ROOM_COLLECTION).document(roomId)
                 .collection(MSG_SUBCOLLECTION)
-                .whereNotEqualTo("senderId", currentUserId)
-                .whereEqualTo("read", false)
                 .get()
                 .addOnSuccessListener(snap -> {
                     if (snap == null || snap.isEmpty()) {
@@ -108,8 +106,22 @@ public class MessageRemote {
                         return;
                     }
                     com.google.firebase.firestore.WriteBatch batch = db.batch();
+                    boolean[] hasUnreadFromOther = {false};
                     for (QueryDocumentSnapshot doc : snap) {
-                        batch.update(doc.getReference(), "read", true);
+                        Boolean readVal = doc.getBoolean("read");
+                        Boolean isReadVal = doc.getBoolean("isRead");
+                        boolean isRead = Boolean.TRUE.equals(readVal) || Boolean.TRUE.equals(isReadVal);
+                        String senderId = doc.getString("senderId");
+
+                        if (!isRead && !currentUserId.equals(senderId)) {
+                            batch.update(doc.getReference(), "read", true);
+                            batch.update(doc.getReference(), "isRead", true);
+                            hasUnreadFromOther[0] = true;
+                        }
+                    }
+                    if (!hasUnreadFromOther[0]) {
+                        if (cb != null) cb.onSuccess(null);
+                        return;
                     }
                     batch.commit()
                             .addOnSuccessListener(a -> { if (cb != null) cb.onSuccess(null); })
@@ -120,15 +132,37 @@ public class MessageRemote {
 
     public void ensureRoom(String roomId, List<String> participantIds,
                            String postId, String postTitle, AppCallback<Void> cb) {
+        if (participantIds == null || participantIds.size() < 2) {
+            if (cb != null) cb.onError(new IllegalArgumentException("Chat room requires at least 2 participants"));
+            return;
+        }
+
+        List<String> safeParticipants = new ArrayList<>();
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        for (String participant : participantIds) {
+            if (participant == null) continue;
+            String value = participant.trim();
+            if (value.isEmpty() || !seen.add(value)) continue;
+            safeParticipants.add(value);
+        }
+        if (safeParticipants.size() < 2) {
+            if (cb != null) cb.onError(new IllegalArgumentException("Chat room requires 2 distinct participants"));
+            return;
+        }
+
+        String safeRoomId = roomId == null || roomId.trim().isEmpty()
+                ? safeParticipants.get(0) + "_" + safeParticipants.get(1)
+                : roomId.trim();
+
         Map<String, Object> data = new HashMap<>();
-        data.put("participantIds", participantIds);
+        data.put("participantIds", safeParticipants);
         if (postId != null && !postId.isEmpty()) data.put("postId", postId);
         if (postTitle != null && !postTitle.isEmpty()) data.put("postTitle", postTitle);
-        db.collection(ROOM_COLLECTION).document(roomId)
+        db.collection(ROOM_COLLECTION).document(safeRoomId)
                 .get()
                 .addOnSuccessListener(doc -> {
                     if (!doc.exists()) data.put("createdAt", System.currentTimeMillis());
-                    db.collection(ROOM_COLLECTION).document(roomId)
+                    db.collection(ROOM_COLLECTION).document(safeRoomId)
                             .set(data, SetOptions.merge())
                             .addOnSuccessListener(a -> cb.onSuccess(null))
                             .addOnFailureListener(cb::onError);

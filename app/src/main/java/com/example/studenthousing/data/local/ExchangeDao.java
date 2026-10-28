@@ -61,6 +61,16 @@ public class ExchangeDao {
         return queryBy(DatabaseHelper.COL_RECEIVER_ID, receiverId);
     }
 
+    public List<ExchangeRequest> getAllForUser(String userId) {
+        if (userId == null) return new ArrayList<>();
+        List<ExchangeRequest> sent = getBySender(userId);
+        List<ExchangeRequest> received = getByReceiver(userId);
+        java.util.Map<String, ExchangeRequest> map = new java.util.LinkedHashMap<>();
+        if (sent != null) for (ExchangeRequest r : sent) if (r.getRequestId() != null) map.put(r.getRequestId(), r);
+        if (received != null) for (ExchangeRequest r : received) if (r.getRequestId() != null) map.put(r.getRequestId(), r);
+        return new ArrayList<>(map.values());
+    }
+
     public List<ExchangeRequest> getPendingRequests() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor c = db.query(DatabaseHelper.TBL_EXCHANGE, null,
@@ -71,19 +81,6 @@ public class ExchangeDao {
         while (c.moveToNext()) list.add(cursorTo(c));
         c.close();
         return list;
-    }
-
-    public int countCompletedByUserId(String userId) {
-        if (userId == null) return 0;
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        try (Cursor c = db.rawQuery("SELECT COUNT(*) FROM " + DatabaseHelper.TBL_EXCHANGE +
-                " WHERE (" + DatabaseHelper.COL_SENDER_ID2 + " = ? OR " + DatabaseHelper.COL_RECEIVER_ID + " = ?) " +
-                "AND " + DatabaseHelper.COL_REQ_STATUS + " IN ('" + Constants.REQ_ACCEPTED + "', '" + Constants.REQ_COMPLETED + "')",
-                new String[]{userId, userId})) {
-            return c.moveToFirst() ? c.getInt(0) : 0;
-        } catch (Exception e) {
-            return 0;
-        }
     }
 
     private List<ExchangeRequest> queryBy(String column, String value) {
@@ -106,11 +103,14 @@ public class ExchangeDao {
         v.put(DatabaseHelper.COL_RECEIVER_POST_ID, r.getReceiverPostId());
         v.put(DatabaseHelper.COL_CHAT_ROOM_ID, r.getChatRoomId());
         v.put(DatabaseHelper.COL_EXCHANGE_PERIOD, r.getExchangePeriod());
+        v.put(DatabaseHelper.COL_START_DATE, r.getStartDate());
+        v.put(DatabaseHelper.COL_END_DATE, r.getEndDate());
         v.put(DatabaseHelper.COL_MESSAGE, r.getMessage());
         v.put(DatabaseHelper.COL_AGREEMENT_TEXT, r.getAgreementText());
-        v.put(DatabaseHelper.COL_SENDER_SIGNED_AT, r.getSenderSignedAt());
-        v.put(DatabaseHelper.COL_RECEIVER_SIGNED_AT, r.getReceiverSignedAt());
         v.put(DatabaseHelper.COL_REQ_STATUS, r.getStatus());
+        v.put(DatabaseHelper.COL_CANCEL_REQUESTED_BY, r.getCancelRequestedBy());
+        v.put(DatabaseHelper.COL_CANCEL_REQUESTED_AT, r.getCancelRequestedAt());
+        v.put(DatabaseHelper.COL_REJECT_REASON, r.getRejectReason());
         v.put(DatabaseHelper.COL_CREATED_AT, r.getCreatedAt());
         v.put(DatabaseHelper.COL_RESPONDED_AT, r.getRespondedAt());
         v.put(DatabaseHelper.COL_COMPLETED_AT, r.getCompletedAt());
@@ -128,11 +128,14 @@ public class ExchangeDao {
         r.setReceiverPostId(getStringOrNull(c, DatabaseHelper.COL_RECEIVER_POST_ID));
         r.setChatRoomId(getStringOrNull(c, DatabaseHelper.COL_CHAT_ROOM_ID));
         r.setExchangePeriod(getStringOrNull(c, DatabaseHelper.COL_EXCHANGE_PERIOD));
+        r.setStartDate(getLongOrDefault(c, DatabaseHelper.COL_START_DATE, 0L));
+        r.setEndDate(getLongOrDefault(c, DatabaseHelper.COL_END_DATE, 0L));
         r.setMessage(getStringOrNull(c, DatabaseHelper.COL_MESSAGE));
         r.setAgreementText(getStringOrNull(c, DatabaseHelper.COL_AGREEMENT_TEXT));
-        r.setSenderSignedAt(getLongOrDefault(c, DatabaseHelper.COL_SENDER_SIGNED_AT, 0L));
-        r.setReceiverSignedAt(getLongOrDefault(c, DatabaseHelper.COL_RECEIVER_SIGNED_AT, 0L));
         r.setStatus(getStringOrNull(c, DatabaseHelper.COL_REQ_STATUS));
+        r.setCancelRequestedBy(getStringOrNull(c, DatabaseHelper.COL_CANCEL_REQUESTED_BY));
+        r.setCancelRequestedAt(getLongOrDefault(c, DatabaseHelper.COL_CANCEL_REQUESTED_AT, 0L));
+        r.setRejectReason(getStringOrNull(c, DatabaseHelper.COL_REJECT_REASON));
         r.setCreatedAt(getLongOrDefault(c, DatabaseHelper.COL_CREATED_AT, 0L));
         r.setRespondedAt(getLongOrDefault(c, DatabaseHelper.COL_RESPONDED_AT, 0L));
         r.setCompletedAt(getLongOrDefault(c, DatabaseHelper.COL_COMPLETED_AT, 0L));

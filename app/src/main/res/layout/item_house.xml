@@ -3,17 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.App.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
-    android:layout_marginBottom="16dp"
+    android:layout_marginHorizontal="@dimen/space_sm"
+    android:layout_marginBottom="@dimen/space_lg"
     android:clickable="true"
-    android:focusable="true"
-    app:cardBackgroundColor="@color/surface_card"
-    app:cardCornerRadius="20dp"
-    app:cardElevation="3dp"
-    app:strokeColor="@color/outline_soft"
-    app:strokeWidth="1dp">
+    android:focusable="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,7 +18,7 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="220dp">
+            android:layout_height="@dimen/card_photo_lg">
 
             <ImageView
                 android:id="@+id/ivHousePhoto"
@@ -32,88 +28,86 @@
                 android:scaleType="centerCrop"
                 tools:src="@drawable/bg_image_placeholder" />
 
-            <!-- Verified Badge (Top Left) -->
-            <ImageView
-                android:id="@+id/tvHouseVerified"
-                android:layout_width="@dimen/icon_md"
-                android:layout_height="@dimen/icon_md"
-                android:layout_gravity="top|start"
-                android:layout_margin="10dp"
-                android:background="@drawable/bg_badge_verified"
-                android:contentDescription="@string/cd_verified"
-                android:padding="4dp"
-                android:src="@drawable/ic_verified_check"
-                android:visibility="gone"
-                app:tint="@color/primary"
-                tools:visibility="visible" />
-
-            <!-- Distance Badge (Top Right) -->
-            <LinearLayout
+            <TextView
+                android:id="@+id/tvHouseStatus"
+                style="@style/Widget.App.Badge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="top|start"
+                android:layout_margin="@dimen/space_md"
+                android:background="@drawable/bg_badge_verified"
+                android:textColor="@color/olive_primary_dark"
+                android:visibility="gone"
+                tools:text="@string/post_status_available"
+                tools:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/ivHouseVerified"
+                android:layout_width="@dimen/icon_lg"
+                android:layout_height="@dimen/icon_lg"
                 android:layout_gravity="top|end"
-                android:layout_margin="10dp"
-                android:background="@drawable/bg_badge_distance"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="6dp">
-
-                <ImageView
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:importantForAccessibility="no"
-                    android:src="@drawable/ic_location" />
-
-                <TextView
-                    android:id="@+id/tvHouseDistance"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:textColor="@color/text_main"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    tools:text="1.5 km" />
-            </LinearLayout>
+                android:layout_margin="@dimen/space_md"
+                android:background="@drawable/bg_badge_verified"
+                android:contentDescription="@string/post_address_verified"
+                android:padding="@dimen/space_xs"
+                android:src="@drawable/ic_verified_check"
+                android:visibility="gone"
+                app:tint="@color/olive_primary_dark"
+                tools:visibility="visible" />
         </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="@dimen/space_lg">
 
             <TextView
                 android:id="@+id/tvHouseTitle"
+                style="@style/TextAppearance.App.Heading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="2"
                 android:ellipsize="end"
-                android:textColor="@color/text_main"
-                android:textSize="18sp"
-                android:textStyle="bold"
                 tools:text="Căn hộ mini cao cấp gần ĐHQG" />
 
             <TextView
-                android:id="@+id/tvHousePrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:textColor="@color/primary"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                tools:text="3.5 Tr/tháng" />
-
-            <TextView
                 android:id="@+id/tvHouseAddress"
-                android:layout_width="wrap_content"
+                style="@style/TextAppearance.App.BodySub"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="@dimen/space_xs"
                 android:maxLines="2"
                 android:ellipsize="end"
-                android:textColor="@color/text_sub"
-                android:textSize="14sp"
                 tools:text="Phường Linh Trung, Thủ Đức" />
+
+            <TextView
+                android:id="@+id/tvHouseDistance"
+                style="@style/TextAppearance.App.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_sm"
+                android:drawablePadding="@dimen/space_xs"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:visibility="gone"
+                app:drawableStartCompat="@drawable/ic_graduation_cap"
+                app:drawableTint="@color/primary"
+                tools:text="Gần ĐHQG TP.HCM · ~1,5 km"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tvHouseUtilities"
+                style="@style/TextAppearance.App.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:visibility="gone"
+                tools:text="Wi-Fi · Máy lạnh · +2"
+                tools:visibility="visible" />
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

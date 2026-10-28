@@ -33,6 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:padding="@dimen/space_lg" />
         <TextView
             android:id="@+id/tvSuggestionsEmpty"

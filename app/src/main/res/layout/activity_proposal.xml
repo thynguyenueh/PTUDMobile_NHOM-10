@@ -25,7 +25,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/cd_back"
             android:src="@drawable/ic_arrow_back"
-            app:tint="@color/text_main" />
+            app:tint="@color/primary" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -62,7 +62,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    app:layout_constraintGuide_percent="0.5" />
+                    app:layout_constraintGuide_begin="186dp" />
 
                 <include
                     android:id="@+id/cardMyHome"
@@ -114,34 +114,47 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_md"
-                app:checkedButton="@id/btnSemester1"
-                app:selectionRequired="true"
+                app:checkedButton="@id/btn3Months"
+                app:selectionRequired="false"
                 app:singleSelection="true">
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSemester1"
+                    android:id="@+id/btn3Months"
                     style="@style/Widget.App.Button.Toggle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/proposal_period_semester_1" />
+                    android:text="@string/proposal_period_3_months" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSemester2"
+                    android:id="@+id/btn6Months"
                     style="@style/Widget.App.Button.Toggle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/proposal_period_semester_2" />
+                    android:text="@string/proposal_period_6_months" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnFullYear"
+                    android:id="@+id/btn1Year"
                     style="@style/Widget.App.Button.Toggle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/proposal_period_full_year" />
+                    android:text="@string/proposal_period_1_year" />
+
             </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilCustomPeriodInput"
+                style="@style/Widget.App.FormField"
+                android:layout_marginTop="@dimen/space_md">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etCustomPeriodInput"
+                    style="@style/Widget.App.FormInput"
+                    android:hint="@string/proposal_period_custom_hint"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Message -->
             <TextView

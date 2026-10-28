@@ -1,418 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F7F8F5">
+    android:fitsSystemWindows="true"
+    android:background="@color/bg_app"
+    android:orientation="vertical">
+
+    <!-- Header Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/surface_card"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="10dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/cd_back"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="@color/primary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Đánh giá đối tác"
+            android:textColor="@color/text_main"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider_line" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvPartnerName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_main"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="Hộ gia đình đối tác" />
+
+            <RatingBar
+                android:id="@+id/ratingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:numStars="5"
+                android:rating="5"
+                android:stepSize="1"
+                android:progressTint="@color/status_warning" />
+
+            <TextView
+                android:id="@+id/tvRatingText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Rất hài lòng"
+                android:textColor="@color/primary"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edtComment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top|start"
+                    android:hint="Nhập nhận xét của bạn về đối tác..."
+                    android:inputType="textMultiLine"
+                    android:minLines="4"
+                    android:textSize="14sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Review Photos Section -->
+            <TextView
+                style="@style/TextAppearance.App.SectionTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginTop="20dp"
+                android:text="Hình ảnh minh chứng" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAddReviewPhoto"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+ Thêm ảnh"
+                    app:icon="@drawable/ic_camera"
+                    app:iconTint="@color/primary" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvReviewPhotos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:visibility="visible" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:background="@color/surface_card"
+        android:padding="16dp">
 
-        <!-- TIÊU ĐỀ -->
-        <LinearLayout
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSubmitReview"
+            style="@style/Widget.App.Button.Primary"
             android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:gravity="center_vertical">
-
-            <TextView
-                android:id="@+id/btnBack"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="‹"
-                android:textColor="#172033"
-                android:textSize="36sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:text="Đánh giá trải nghiệm"
-                android:textColor="#172033"
-                android:textSize="21sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-
-        <!-- THÔNG TIN ĐỐI TÁC -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="105dp"
-            android:layout_marginTop="15dp"
-            android:background="@drawable/bg_partner"
-            android:gravity="center_vertical"
-            android:padding="14dp">
-
-            <TextView
-                android:id="@+id/tvPartnerAvatar"
-                android:layout_width="55dp"
-                android:layout_height="55dp"
-                android:background="@drawable/bg_partner_avatar"
-                android:gravity="center"
-                android:text="M"
-                android:textColor="#FFFFFF"
-                android:textSize="22sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tvPartnerRole"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ĐỐI TÁC ĐỔI NHÀ"
-                    android:textColor="#68716A"
-                    android:textSize="10sp" />
-
-                <TextView
-                    android:id="@+id/tvPartnerName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
-                    android:text="Gia đình Cô Mai"
-                    android:textColor="#172033"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvPartnerSubtext"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
-                    android:text="Học kỳ 1 · Đã hoàn tất"
-                    android:textColor="#4B5563"
-                    android:textSize="11sp" />
-
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_verified"
-                android:padding="6dp"
-                android:text="✓ Đã xác minh"
-                android:textColor="#719B28"
-                android:textSize="9sp" />
-
-        </LinearLayout>
-
-
-        <!-- CÂU HỎI -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:gravity="center"
-            android:text="Trải nghiệm của bạn thế nào?"
-            android:textColor="#172033"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-
-        <!-- SAO DẠNG CLICK TRỰC TIẾP -->
-        <LinearLayout
-            android:id="@+id/layoutStars"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/star1"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="★"
-                android:textColor="#FFC400"
-                android:textSize="34sp" />
-
-            <TextView
-                android:id="@+id/star2"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="★"
-                android:textColor="#FFC400"
-                android:textSize="34sp" />
-
-            <TextView
-                android:id="@+id/star3"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="★"
-                android:textColor="#FFC400"
-                android:textSize="34sp" />
-
-            <TextView
-                android:id="@+id/star4"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="★"
-                android:textColor="#FFC400"
-                android:textSize="34sp" />
-
-            <TextView
-                android:id="@+id/star5"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="★"
-                android:textColor="#FFC400"
-                android:textSize="34sp" />
-        </LinearLayout>
-
-        <!-- ĐÁNH GIÁ TEXT TƯƠNG ỨNG -->
-        <TextView
-            android:id="@+id/tvRatingLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:gravity="center"
-            android:text="Rất hài lòng"
-            android:textColor="#719B28"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-
-        <!-- ĐIỂM HÀI LÒNG (TAGS CÓ THỂ BẤM CHỌN) -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Điểm bạn hài lòng (chạm để chọn)"
-            android:textColor="#172033"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tagClean"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:background="@drawable/bg_tag"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:paddingLeft="14dp"
-                android:paddingRight="14dp"
-                android:text="✓  Sạch sẽ"
-                android:textColor="#719B28"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tagFriendly"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/bg_tag"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:paddingLeft="14dp"
-                android:paddingRight="14dp"
-                android:text="✓  Thân thiện"
-                android:textColor="#719B28"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tagSupport"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/bg_tag_unselected"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:paddingLeft="14dp"
-                android:paddingRight="14dp"
-                android:text="✓  Hỗ trợ tốt"
-                android:textColor="#6B7280"
-                android:textSize="12sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tagPunctual"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:background="@drawable/bg_tag_unselected"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:paddingLeft="14dp"
-                android:paddingRight="14dp"
-                android:text="✓  Đúng giờ"
-                android:textColor="#6B7280"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/tagSafe"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/bg_tag_unselected"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:paddingLeft="14dp"
-                android:paddingRight="14dp"
-                android:text="✓  An ninh"
-                android:textColor="#6B7280"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/btnAddCustomTag"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/bg_tag_unselected"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:paddingLeft="14dp"
-                android:paddingRight="14dp"
-                android:text="+ Thêm đặc điểm"
-                android:textColor="#719B28"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-
-        <!-- NHẬN XÉT KHÔNG BẮT BUỘC -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:text="Nhận xét (không bắt buộc)"
-            android:textColor="#172033"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/edtReview"
-            android:layout_width="match_parent"
-            android:layout_height="95dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_edittext"
-            android:gravity="top"
-            android:hint="Viết nhận xét của bạn tại đây..."
-            android:padding="14dp"
-            android:textColor="#172033"
-            android:textColorHint="#6B7280"
-            android:textSize="13sp" />
-
-
-        <!-- TẢI ẢNH ĐÍNH KÈM -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Ảnh đính kèm"
-            android:textColor="#172033"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:id="@+id/btnUploadImage"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_upload_dashed"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center">
-
-            <TextView
-                android:id="@+id/tvUploadLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="📷  Tải ảnh đính kèm (tối đa 3 ảnh)"
-                android:textColor="#719B28"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-
-        <!-- THÔNG BÁO -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginTop="8dp"
-            android:gravity="center_vertical">
-
-            <TextView
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:gravity="center"
-                android:text="◎"
-                android:textColor="#172033"
-                android:textSize="21sp" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_weight="1"
-                android:text="Đánh giá sẽ hiển thị công khai trên hồ sơ đối tác."
-                android:textColor="#374151"
-                android:textSize="11sp" />
-
-        </LinearLayout>
-
-
-        <!-- NÚT GỬI -->
-        <TextView
-            android:id="@+id/btnSubmit"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/bg_button"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
+            android:layout_height="52dp"
             android:text="Gửi đánh giá"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textStyle="bold" />
-
     </LinearLayout>
-
-</ScrollView>
+</LinearLayout>

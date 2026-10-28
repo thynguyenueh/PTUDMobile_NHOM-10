@@ -8,45 +8,20 @@
     android:background="@color/bg_app"
     android:orientation="vertical">
 
-    <!-- Top Navigation / Header -->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/surface_card"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingHorizontal="@dimen/space_lg"
+        style="@style/Widget.App.HeaderBar"
         android:paddingVertical="@dimen/space_sm">
 
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="@dimen/touch_target_min"
-            android:layout_height="@dimen/touch_target_min"
-            android:padding="@dimen/space_md"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/cd_back"
-            android:src="@drawable/ic_arrow_back"
-            app:tint="@color/text_main" />
+            style="@style/Widget.App.HeaderBackButton" />
 
-        <!-- Avatar Letter -->
-        <FrameLayout
-            android:layout_width="@dimen/avatar_size_lg"
-            android:layout_height="@dimen/avatar_size_lg"
+        <TextView
+            android:id="@+id/tvChatAvatarLetter"
+            style="@style/Widget.App.AvatarCircle.Large"
             android:layout_marginStart="@dimen/space_sm"
-            android:background="@drawable/bg_avatar_circle">
+            tools:text="M" />
 
-            <TextView
-                android:id="@+id/tvChatAvatarLetter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textColor="@color/white"
-                android:textSize="@dimen/text_subtitle"
-                android:textStyle="bold"
-                tools:text="M" />
-        </FrameLayout>
-
-        <!-- User Info Column -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -62,49 +37,48 @@
 
                 <TextView
                     android:id="@+id/tvChatHeaderName"
+                    style="@style/TextAppearance.App.Subtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/chat_header_name"
-                    android:textColor="@color/text_main"
-                    android:textSize="@dimen/text_subtitle"
-                    android:textStyle="bold" />
+                    android:text="@string/chat_header_name" />
 
                 <ImageView
-                    android:id="@+id/layoutVerifiedBadge"
+                    android:id="@+id/ivVerifiedBadge"
                     android:layout_width="@dimen/icon_sm"
                     android:layout_height="@dimen/icon_sm"
                     android:layout_marginStart="@dimen/space_xs"
                     android:contentDescription="@string/cd_verified"
                     android:src="@drawable/ic_verified_check"
-                    app:tint="@color/primary"
                     android:visibility="gone"
+                    app:tint="@color/primary"
                     tools:visibility="visible" />
             </LinearLayout>
 
             <TextView
+                style="@style/TextAppearance.App.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_xxs"
-                android:text="@string/chat_active_status"
-                android:textColor="@color/text_sub"
-                android:textSize="@dimen/text_body" />
+                android:text="@string/chat_active_status" />
         </LinearLayout>
 
-        <!-- Phone Icon -->
+        <ImageView
+            android:id="@+id/btnProposal"
+            style="@style/Widget.App.IconButton"
+            android:contentDescription="@string/cd_proposal"
+            android:src="@drawable/ic_swap"
+            app:tint="@color/primary" />
+
         <ImageView
             android:id="@+id/btnCall"
-            android:layout_width="@dimen/touch_target_min"
-            android:layout_height="@dimen/touch_target_min"
-            android:padding="@dimen/space_md"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            style="@style/Widget.App.IconButton"
             android:contentDescription="@string/cd_call"
             android:src="@drawable/ic_phone"
-            app:tint="@color/text_main" />
+            app:tint="@color/primary" />
     </LinearLayout>
 
     <View style="@style/Widget.App.Divider" />
 
-    <!-- RecyclerView for Chat Messages -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvMessages"
         android:layout_width="match_parent"
@@ -114,7 +88,6 @@
         android:paddingVertical="@dimen/space_md"
         android:clipToPadding="false" />
 
-    <!-- Bottom Input Bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -124,12 +97,11 @@
         android:paddingHorizontal="@dimen/space_lg"
         android:paddingVertical="@dimen/space_md">
 
-        <!-- Pill Input Box -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:minHeight="@dimen/touch_target_min"
             android:layout_weight="1"
+            android:minHeight="@dimen/touch_target_min"
             android:background="@drawable/bg_input_field"
             android:gravity="center_vertical"
             android:orientation="horizontal"
@@ -138,50 +110,47 @@
 
             <EditText
                 android:id="@+id/etMessageInput"
+                style="@style/Widget.App.FormInput"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:importantForAutofill="no"
                 android:background="@null"
                 android:hint="@string/chat_input_hint"
+                android:importantForAutofill="no"
                 android:inputType="textMultiLine"
                 android:maxLines="4"
-                android:textColor="@color/text_main"
-                android:textColorHint="@color/text_sub"
-                android:textSize="@dimen/text_body_lg" />
+                android:textColorHint="@color/text_sub" />
 
             <ImageView
                 android:id="@+id/btnAttach"
                 android:layout_width="@dimen/icon_lg"
                 android:layout_height="@dimen/icon_lg"
                 android:layout_marginStart="@dimen/space_sm"
-                android:padding="@dimen/space_xs"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
-                android:focusable="true"
                 android:contentDescription="@string/cd_attach"
+                android:focusable="true"
+                android:padding="@dimen/space_xs"
                 android:src="@drawable/ic_paperclip"
-                app:tint="@color/text_sub" />
+                app:tint="@color/primary" />
         </LinearLayout>
 
-        <!-- Send Button -->
         <FrameLayout
             android:id="@+id/btnSend"
             android:layout_width="@dimen/touch_target_min"
             android:layout_height="@dimen/touch_target_min"
             android:layout_marginStart="@dimen/space_md"
-            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:background="@drawable/bg_dark_circle_button"
             android:clickable="true"
             android:focusable="true"
-            android:background="@drawable/bg_dark_circle_button">
+            android:foreground="?attr/selectableItemBackgroundBorderless">
 
             <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
+                android:layout_width="@dimen/icon_display"
+                android:layout_height="@dimen/icon_display"
                 android:layout_gravity="center"
                 android:contentDescription="@string/cd_send"
                 android:src="@drawable/ic_send" />
         </FrameLayout>
     </LinearLayout>
-
 </LinearLayout>

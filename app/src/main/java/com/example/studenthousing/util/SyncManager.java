@@ -19,7 +19,6 @@ import com.example.studenthousing.data.local.MessageDao;
 import com.example.studenthousing.data.local.PostDao;
 import com.example.studenthousing.data.local.ReviewDao;
 import com.example.studenthousing.data.local.VerificationTicketDao;
-import com.example.studenthousing.data.local.VerifiedAddressDao;
 import com.example.studenthousing.data.model.AccommodationPost;
 import com.example.studenthousing.data.model.ExchangeRequest;
 import com.example.studenthousing.data.model.Message;
@@ -30,7 +29,6 @@ import com.example.studenthousing.data.remote.MessageRemote;
 import com.example.studenthousing.data.remote.PostRemote;
 import com.example.studenthousing.data.remote.ReviewRemote;
 import com.example.studenthousing.data.remote.VerificationTicketRemote;
-import com.example.studenthousing.data.remote.VerifiedAddressRemote;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -44,15 +42,12 @@ public class SyncManager {
     private final PostDao postDao;
     private final MessageDao messageDao;
     private final VerificationTicketDao ticketDao;
-    private final VerifiedAddressDao addressDao;
 
     private final ExchangeRemote exchangeRemote;
     private final ReviewRemote reviewRemote;
     private final PostRemote postRemote;
     private final MessageRemote messageRemote;
     private final VerificationTicketRemote ticketRemote;
-    private final VerifiedAddressRemote addressRemote;
-
     private final AtomicBoolean isSyncing = new AtomicBoolean(false);
     private ConnectivityManager.NetworkCallback networkCallback;
 
@@ -70,14 +65,12 @@ public class SyncManager {
         this.postDao = new PostDao(this.ctx);
         this.messageDao = new MessageDao(this.ctx);
         this.ticketDao = new VerificationTicketDao(this.ctx);
-        this.addressDao = new VerifiedAddressDao(this.ctx);
 
         this.exchangeRemote = new ExchangeRemote();
         this.reviewRemote = new ReviewRemote();
         this.postRemote = new PostRemote();
         this.messageRemote = new MessageRemote();
         this.ticketRemote = new VerificationTicketRemote();
-        this.addressRemote = new VerifiedAddressRemote();
     }
 
     public synchronized void startAutoSync() {
@@ -99,21 +92,6 @@ public class SyncManager {
         } catch (Exception e) {
             networkCallback = null;
             Log.e(TAG, "Lỗi đăng ký NetworkCallback: " + e.getMessage());
-        }
-    }
-
-    public synchronized void stopAutoSync() {
-        if (networkCallback != null) {
-            ConnectivityManager cm = (ConnectivityManager)
-                    ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (cm != null) {
-                try {
-                    cm.unregisterNetworkCallback(networkCallback);
-                } catch (Exception e) {
-                    Log.e(TAG, "Lỗi unregister NetworkCallback: " + e.getMessage());
-                }
-            }
-            networkCallback = null;
         }
     }
 
@@ -216,6 +194,8 @@ public class SyncManager {
         if (pendingCreates != null) {
             for (AccommodationPost p : pendingCreates) {
                 if (Constants.SYNC_PENDING_CREATE.equals(p.getSyncStatus()) && activeUid.equals(p.getUserId())) {
+                    p.setSyncStatus(Constants.SYNC_SYNCING);
+                    postDao.upsert(p);
                     uploadLocalImagesAndRemoteCreate(p);
                 }
             }
@@ -240,6 +220,8 @@ public class SyncManager {
 
                     @Override
                     public void onError(Exception e) {
+                        p.setSyncStatus(Constants.SYNC_PENDING_CREATE);
+                        postDao.upsert(p);
                         Log.e(TAG, "Thất bại đồng bộ Bài đăng: " + e.getMessage());
                     }
                 });
@@ -247,6 +229,8 @@ public class SyncManager {
 
             @Override
             public void onError(Exception e) {
+                p.setSyncStatus(Constants.SYNC_PENDING_CREATE);
+                postDao.upsert(p);
                 Log.e(TAG, "Lỗi upload ảnh offline cho post: " + e.getMessage());
             }
         });
@@ -304,6 +288,8 @@ public class SyncManager {
         if (pending != null) {
             for (AccommodationPost p : pending) {
                 if (Constants.SYNC_PENDING_UPDATE.equals(p.getSyncStatus()) && activeUid.equals(p.getUserId())) {
+                    p.setSyncStatus(Constants.SYNC_SYNCING);
+                    postDao.upsert(p);
                     postRemote.update(p, new AppCallback<Void>() {
                         @Override public void onSuccess(Void data) {
                             p.setSyncStatus(Constants.SYNC_SYNCED);
@@ -311,6 +297,8 @@ public class SyncManager {
                             Log.d(TAG, "Đã sync update bài đăng: " + p.getPostId());
                         }
                         @Override public void onError(Exception e) {
+                            p.setSyncStatus(Constants.SYNC_PENDING_UPDATE);
+                            postDao.upsert(p);
                             Log.e(TAG, "Lỗi sync update bài đăng: " + e.getMessage());
                         }
                     });
@@ -328,6 +316,8 @@ public class SyncManager {
         if (pendingDeletes != null) {
             for (AccommodationPost p : pendingDeletes) {
                 if (Constants.SYNC_PENDING_DELETE.equals(p.getSyncStatus()) && activeUid.equals(p.getUserId())) {
+                    p.setSyncStatus(Constants.SYNC_SYNCING);
+                    postDao.upsert(p);
                     postRemote.delete(p.getPostId(), new AppCallback<Void>() {
                         @Override
                         public void onSuccess(Void data) {
@@ -337,6 +327,8 @@ public class SyncManager {
 
                         @Override
                         public void onError(Exception e) {
+                            p.setSyncStatus(Constants.SYNC_PENDING_DELETE);
+                            postDao.upsert(p);
                             Log.e(TAG, "Lỗi sync delete bài đăng: " + e.getMessage());
                         }
                     });

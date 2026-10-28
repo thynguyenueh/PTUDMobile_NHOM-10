@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cardNotification"
+    style="@style/Widget.App.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
+    android:layout_marginBottom="@dimen/space_sm"
     android:clickable="true"
-    android:focusable="true"
-    app:cardBackgroundColor="@color/surface_card"
-    app:cardCornerRadius="14dp"
-    app:cardElevation="1dp"
-    app:strokeColor="@color/divider_line"
-    app:strokeWidth="1dp">
+    android:focusable="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,14 +19,14 @@
         android:padding="14dp">
 
         <FrameLayout
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/icon_btn_size"
+            android:layout_height="@dimen/icon_btn_size"
             android:background="@drawable/bg_gray_square_icon">
 
             <ImageView
                 android:id="@+id/ivNotifIcon"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
+                android:layout_width="@dimen/icon_lg"
+                android:layout_height="@dimen/icon_lg"
                 android:layout_gravity="center"
                 android:contentDescription="@string/cd_notification_icon"
                 android:src="@drawable/ic_notifications"
@@ -39,7 +36,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="@dimen/space_md"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -49,34 +46,32 @@
 
                 <TextView
                     android:id="@+id/tvNotifTitle"
+                    style="@style/TextAppearance.App.SectionTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:textColor="@color/text_main"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    tools:text="Đề xuất đổi trọ mới" />
+                    tools:text="Đề xuất đổi nhà mới" />
 
                 <TextView
                     android:id="@+id/tvNotifTime"
+                    style="@style/TextAppearance.App.Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:textColor="@color/text_sub"
-                    android:textSize="10sp"
+                    android:textSize="@dimen/text_caption"
                     tools:text="10 phút trước" />
             </RelativeLayout>
 
             <TextView
                 android:id="@+id/tvNotifMessage"
+                style="@style/TextAppearance.App.BodySub"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="@dimen/space_xs"
                 android:lineSpacingExtra="2dp"
-                android:textColor="@color/text_sub"
-                android:textSize="12sp"
+                android:textSize="@dimen/text_small_lg"
                 tools:text="Đối tác đã gửi đề xuất hoán đổi phòng với nhà bạn." />
         </LinearLayout>
     </LinearLayout>

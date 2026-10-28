@@ -25,7 +25,7 @@ public class VerifiedAddressRepository {
 
     public void claimAddress(int cityCode, int wardCode, String street, String houseNumber, String roomNumber,
                              String fullAddress, String userId, String ticketId, AppCallback<VerifiedAddress> cb) {
-        String fingerprint = AddressFingerprintUtil.build(cityCode, wardCode, street, houseNumber, roomNumber);
+        String fingerprint = AddressFingerprintUtil.build(cityCode, wardCode, street, houseNumber);
 
         VerifiedAddress addr = new VerifiedAddress();
         addr.setAddressId(fingerprint);
@@ -34,7 +34,6 @@ public class VerifiedAddressRepository {
         addr.setWardCode(wardCode);
         addr.setStreetNormalized(AddressFingerprintUtil.normalize(street));
         addr.setHouseNumberNorm(AddressFingerprintUtil.normalize(houseNumber));
-        addr.setRoomNumberNorm(AddressFingerprintUtil.normalize(roomNumber));
         addr.setFullAddress(fullAddress);
         addr.setOwnerUserId(userId);
         addr.setVerificationTicketId(ticketId);

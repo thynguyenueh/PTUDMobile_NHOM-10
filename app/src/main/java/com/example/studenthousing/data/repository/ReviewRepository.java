@@ -7,6 +7,7 @@ import com.example.studenthousing.data.model.Review;
 import com.example.studenthousing.data.remote.ReviewRemote;
 import com.example.studenthousing.util.AppCallback;
 import com.example.studenthousing.util.NetworkUtils;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.List;
 
@@ -22,10 +23,38 @@ public class ReviewRepository {
     }
 
     public void create(Review r, AppCallback<String> cb) {
-        if (r.getCreatedAt() == 0) r.setCreatedAt(System.currentTimeMillis());
-        if (r.getReviewId() == null || r.getReviewId().isEmpty()) {
-            r.setReviewId("temp_" + java.util.UUID.randomUUID().toString());
+        if (r == null) {
+            if (cb != null) cb.onError(new IllegalArgumentException("Review is null"));
+            return;
         }
+
+        String requestId = r.getRequestId() != null ? r.getRequestId().trim() : null;
+        String reviewerId = r.getReviewerId() != null ? r.getReviewerId().trim() : null;
+        String revieweeId = r.getRevieweeId() != null ? r.getRevieweeId().trim() : null;
+
+        if (requestId == null || requestId.isEmpty()
+                || reviewerId == null || reviewerId.isEmpty()
+                || revieweeId == null || revieweeId.isEmpty()) {
+            if (cb != null) cb.onError(new IllegalArgumentException("Review requestId, reviewerId and revieweeId are required"));
+            return;
+        }
+
+        double rating = r.getRating();
+        if (rating < 1.0 || rating > 5.0) {
+            if (cb != null) cb.onError(new IllegalArgumentException("Rating must be between 1 and 5"));
+            return;
+        }
+
+        if (reviewerId.equals(revieweeId)) {
+            if (cb != null) cb.onError(new IllegalArgumentException("Reviewer and reviewee must be different users"));
+            return;
+        }
+
+        r.setRequestId(requestId);
+        r.setReviewerId(reviewerId);
+        r.setRevieweeId(revieweeId);
+        r.setReviewId(requestId + "_" + reviewerId);
+        if (r.getCreatedAt() == 0) r.setCreatedAt(System.currentTimeMillis());
 
         if (!NetworkUtils.isOnline(ctx)) {
             r.setSyncStatus("PENDING_CREATE");
@@ -45,6 +74,11 @@ public class ReviewRepository {
 
             @Override
             public void onError(Exception e) {
+                if (e instanceof FirebaseFirestoreException
+                        && ((FirebaseFirestoreException) e).getCode() == FirebaseFirestoreException.Code.PERMISSION_DENIED) {
+                    if (cb != null) cb.onError(e);
+                    return;
+                }
                 r.setSyncStatus("PENDING_CREATE");
                 local.upsert(r);
                 if (cb != null) cb.onSuccess(r.getReviewId());
@@ -79,44 +113,23 @@ public class ReviewRepository {
         }
     }
 
-    public void getByRequest(String requestId, AppCallback<List<Review>> cb) {
-        List<Review> cached = local.getByRequest(requestId);
-
-        if (NetworkUtils.isOnline(ctx)) {
-            remote.getByRequest(requestId, new AppCallback<List<Review>>() {
-                @Override
-                public void onSuccess(List<Review> list) {
-                    local.upsertAll(list);
-                    cb.onSuccess(list);
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    if (!cached.isEmpty()) {
-                        cb.onSuccess(cached);
-                    } else {
-                        cb.onError(e);
-                    }
-                }
-            });
-        } else if (!cached.isEmpty()) {
-            cb.onSuccess(cached);
-        } else {
-            cb.onError(new Exception("Không có mạng và không có cache"));
-        }
-    }
-
     public void getAverageRating(String revieweeId, AppCallback<Double> cb) {
-        List<Review> cached = local.getByReviewee(revieweeId);
+        getByReviewee(revieweeId, new AppCallback<List<Review>>() {
+            @Override
+            public void onSuccess(List<Review> list) {
+                if (list == null || list.isEmpty()) {
+                    if (cb != null) cb.onSuccess(5.0);
+                    return;
+                }
+                double total = 0;
+                for (Review r : list) total += r.getRating();
+                if (cb != null) cb.onSuccess(total / list.size());
+            }
 
-        if (NetworkUtils.isOnline(ctx)) {
-            remote.getAverageRating(revieweeId, cb);
-        } else if (!cached.isEmpty()) {
-            double sum = 0;
-            for (Review r : cached) sum += r.getRating();
-            cb.onSuccess(sum / cached.size());
-        } else {
-            cb.onError(new Exception("Không có mạng và không có cache"));
-        }
+            @Override
+            public void onError(Exception e) {
+                if (cb != null) cb.onSuccess(5.0);
+            }
+        });
     }
 }

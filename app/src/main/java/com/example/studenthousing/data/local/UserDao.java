@@ -35,17 +35,13 @@ public class UserDao {
     }
 
     public User getByPhone(String phone) {
+        if (phone == null || phone.isEmpty()) return null;
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor c = db.query(DatabaseHelper.TBL_USERS, null,
+        try (Cursor c = db.query(DatabaseHelper.TBL_USERS, null,
                 DatabaseHelper.COL_PHONE + "=?",
-                new String[]{phone}, null, null, null);
-        if (c.moveToFirst()) {
-            User u = cursorTo(c);
-            c.close();
-            return u;
+                new String[]{phone}, null, null, null)) {
+            return c.moveToFirst() ? cursorTo(c) : null;
         }
-        c.close();
-        return null;
     }
 
     private ContentValues toValues(User u) {
@@ -53,13 +49,10 @@ public class UserDao {
         v.put(DatabaseHelper.COL_USER_ID, u.getUserId());
         v.put(DatabaseHelper.COL_FAMILY_NAME, u.getFamilyName());
         v.put(DatabaseHelper.COL_PHONE, u.getPhone());
-        v.put(DatabaseHelper.COL_EMAIL, u.getEmail());
         v.put(DatabaseHelper.COL_AVATAR_URL, u.getAvatarUrl());
-        v.put("password", u.getPassword());
         v.put(DatabaseHelper.COL_IDENTITY_TYPE, u.getIdentityType());
         v.put(DatabaseHelper.COL_IDENTITY_VERIFIED, u.isIdentityVerified() ? 1 : 0);
         v.put(DatabaseHelper.COL_IDENTITY_VERIFIED_AT, u.getIdentityVerifiedAt());
-        v.put(DatabaseHelper.COL_STUDENT_ID, u.getStudentId());
         v.put(DatabaseHelper.COL_UNIVERSITY_CODE, u.getUniversityCode());
         v.put(DatabaseHelper.COL_UNIVERSITY_NAME, u.getUniversityName());
         v.put(DatabaseHelper.COL_CITIZEN_ID_HASH, u.getCitizenIdHash());
@@ -71,7 +64,6 @@ public class UserDao {
         v.put(DatabaseHelper.COL_PERMANENT_WARD_CODE, u.getPermanentWardCode());
         v.put(DatabaseHelper.COL_PERMANENT_CITY_NAME, u.getPermanentCityName());
         v.put(DatabaseHelper.COL_PERMANENT_WARD_NAME, u.getPermanentWardName());
-        v.put(DatabaseHelper.COL_AUTH_PROVIDERS, listToJson(u.getAuthProviders()));
         v.put(DatabaseHelper.COL_PHONE_VERIFIED, u.isPhoneVerified() ? 1 : 0);
         v.put(DatabaseHelper.COL_IS_VERIFIED, u.isVerified() ? 1 : 0);
         v.put(DatabaseHelper.COL_CREATED_AT, u.getCreatedAt());
@@ -85,13 +77,10 @@ public class UserDao {
         u.setUserId(getStringOrNull(c, DatabaseHelper.COL_USER_ID));
         u.setFamilyName(getStringOrNull(c, DatabaseHelper.COL_FAMILY_NAME));
         u.setPhone(getStringOrNull(c, DatabaseHelper.COL_PHONE));
-        u.setEmail(getStringOrNull(c, DatabaseHelper.COL_EMAIL));
         u.setAvatarUrl(getStringOrNull(c, DatabaseHelper.COL_AVATAR_URL));
-        u.setPassword(getStringOrNull(c, "password"));
         u.setIdentityType(getStringOrNull(c, DatabaseHelper.COL_IDENTITY_TYPE));
         u.setIdentityVerified(getIntAsBool(c, DatabaseHelper.COL_IDENTITY_VERIFIED));
         u.setIdentityVerifiedAt(getLongOrDefault(c, DatabaseHelper.COL_IDENTITY_VERIFIED_AT, 0L));
-        u.setStudentId(getStringOrNull(c, DatabaseHelper.COL_STUDENT_ID));
         u.setUniversityCode(getStringOrNull(c, DatabaseHelper.COL_UNIVERSITY_CODE));
         u.setUniversityName(getStringOrNull(c, DatabaseHelper.COL_UNIVERSITY_NAME));
         u.setCitizenIdHash(getStringOrNull(c, DatabaseHelper.COL_CITIZEN_ID_HASH));
@@ -103,7 +92,6 @@ public class UserDao {
         u.setPermanentWardCode(getIntOrDefault(c, DatabaseHelper.COL_PERMANENT_WARD_CODE, 0));
         u.setPermanentCityName(getStringOrNull(c, DatabaseHelper.COL_PERMANENT_CITY_NAME));
         u.setPermanentWardName(getStringOrNull(c, DatabaseHelper.COL_PERMANENT_WARD_NAME));
-        u.setAuthProviders(jsonToList(getStringOrNull(c, DatabaseHelper.COL_AUTH_PROVIDERS)));
         u.setPhoneVerified(getIntAsBool(c, DatabaseHelper.COL_PHONE_VERIFIED));
         u.setVerified(getIntAsBool(c, DatabaseHelper.COL_IS_VERIFIED));
         u.setCreatedAt(getLongOrDefault(c, DatabaseHelper.COL_CREATED_AT, 0L));

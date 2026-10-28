@@ -8,58 +8,34 @@
     android:background="@color/bg_app"
     android:orientation="vertical">
 
-    <!-- Top Header Bar -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="@color/white"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="16dp">
-
+    <LinearLayout style="@style/Widget.App.HeaderBar">
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:padding="6dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/cd_back"
-            android:src="@drawable/ic_arrow_back"
-            app:tint="@color/text_main" />
+            style="@style/Widget.App.HeaderBackButton" />
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_weight="1"
-            android:text="@string/settings_title"
-            android:textColor="@color/text_main"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            style="@style/Widget.App.HeaderTitle"
+            android:text="@string/settings_title" />
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/divider_line" />
+    <View style="@style/Widget.App.Divider" />
 
-    <!-- Main Scrollable Content -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
         android:fillViewport="true"
-        android:paddingStart="20dp"
-        android:paddingTop="18dp"
-        android:paddingEnd="20dp"
-        android:paddingBottom="24dp">
+        android:paddingHorizontal="@dimen/screen_padding_wide"
+        android:paddingTop="@dimen/space_lg"
+        android:paddingBottom="@dimen/space_xxl">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Profile Summary Card -->
+            <!-- Profile Summary -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -68,8 +44,8 @@
                 android:padding="18dp">
 
                 <FrameLayout
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    android:layout_width="@dimen/touch_target_min"
+                    android:layout_height="@dimen/touch_target_min"
                     android:background="@drawable/bg_circle_olive">
 
                     <ImageView
@@ -82,193 +58,80 @@
 
                     <TextView
                         android:id="@+id/tvSettingAvatar"
+                        style="@style/Widget.App.AvatarCircle"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:textColor="@color/white"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
                         tools:text="A" />
                 </FrameLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginStart="@dimen/space_md"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/tvSettingName"
+                        style="@style/TextAppearance.App.SectionTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/text_main"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
+                        android:textSize="@dimen/text_body_lg"
                         tools:text="Hộ gia đình" />
 
                     <TextView
                         android:id="@+id/tvSettingPhone"
+                        style="@style/TextAppearance.App.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:textColor="@color/text_sub"
-                        android:textSize="12sp"
+                        android:layout_marginTop="@dimen/space_xxs"
+                        android:textSize="@dimen/text_small_lg"
                         tools:text="09xx ••• •xx · Tài khoản Đã xác minh" />
-
                 </LinearLayout>
-
             </LinearLayout>
 
-            <!-- Detailed Account Info Section -->
+            <!-- Account Info -->
             <TextView
+                style="@style/TextAppearance.App.SectionLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:layout_marginBottom="6dp"
-                android:paddingHorizontal="2dp"
-                android:text="@string/settings_section_info"
-                android:textColor="@color/text_sub"
-                android:textSize="11sp"
-                android:textStyle="bold" />
+                android:layout_marginTop="@dimen/space_lg"
+                android:layout_marginBottom="@dimen/space_xs"
+                android:paddingHorizontal="@dimen/space_xxs"
+                android:text="@string/settings_section_info" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_review_card"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="@dimen/space_lg">
 
-                <!-- Email -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingVertical="6dp">
+                    android:paddingVertical="@dimen/space_xs">
+
                     <TextView
+                        style="@style/TextAppearance.App.BodySub"
                         android:layout_width="120dp"
                         android:layout_height="wrap_content"
-                        android:text="@string/settings_label_email"
-                        android:textColor="@color/text_sub"
-                        android:textSize="13sp" />
-                    <TextView
-                        android:id="@+id/tvSettingEmail"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/settings_value_not_updated"
-                        android:textColor="@color/text_main"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        tools:text="vana@gmail.com" />
-                </LinearLayout>
+                        android:text="@string/settings_label_university" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginVertical="8dp"
-                    android:background="@color/divider_line" />
-
-                <!-- Role -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingVertical="6dp">
-                    <TextView
-                        android:layout_width="120dp"
-                        android:layout_height="wrap_content"
-                        android:text="@string/settings_label_role"
-                        android:textColor="@color/text_sub"
-                        android:textSize="13sp" />
-                    <TextView
-                        android:id="@+id/tvSettingRole"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textColor="@color/text_main"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        tools:text="Phụ huynh" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginVertical="8dp"
-                    android:background="@color/divider_line" />
-
-                <!-- Student ID / MSSV -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingVertical="6dp">
-                    <TextView
-                        android:layout_width="120dp"
-                        android:layout_height="wrap_content"
-                        android:text="@string/settings_label_student_id"
-                        android:textColor="@color/text_sub"
-                        android:textSize="13sp" />
-                    <TextView
-                        android:id="@+id/tvSettingStudentId"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/settings_value_not_updated"
-                        android:textColor="@color/text_main"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        tools:text="3121560001" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginVertical="8dp"
-                    android:background="@color/divider_line" />
-
-                <!-- University -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingVertical="6dp">
-                    <TextView
-                        android:layout_width="120dp"
-                        android:layout_height="wrap_content"
-                        android:text="@string/settings_label_university"
-                        android:textColor="@color/text_sub"
-                        android:textSize="13sp" />
                     <TextView
                         android:id="@+id/tvSettingUniversity"
+                        style="@style/TextAppearance.App.SectionTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/settings_value_not_updated"
-                        android:textColor="@color/text_main"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
                         tools:text="ĐH Bách Khoa TP.HCM" />
                 </LinearLayout>
-
             </LinearLayout>
 
-            <!-- Group 1: Account & Security -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:layout_marginBottom="6dp"
-                android:paddingHorizontal="2dp"
-                android:text="@string/settings_section_account"
-                android:textColor="@color/text_sub"
-                android:textSize="11sp"
-                android:textStyle="bold" />
+            <!-- Group: Account & Security -->
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -276,98 +139,40 @@
                 android:background="@drawable/bg_review_card"
                 android:orientation="vertical">
 
-                <!-- KYC & Residence Status -->
-                <LinearLayout
-                    android:id="@+id/btnKycVerification"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp">
+                <!-- KYC Status -->
 
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:contentDescription="@null"
-                        android:src="@drawable/ic_shield_check"
-                        app:tint="@color/text_main" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:text="@string/settings_btn_kyc"
-                        android:textColor="@color/text_main"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:contentDescription="@null"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/text_muted" />
-
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/divider_line" />
+                <View style="@style/Widget.App.Divider" />
 
                 <!-- Edit Profile -->
                 <LinearLayout
                     android:id="@+id/btnEditProfile"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp">
+                    style="@style/Widget.App.SettingsRow">
 
                     <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
+                        android:layout_width="@dimen/icon_md"
+                        android:layout_height="@dimen/icon_md"
                         android:contentDescription="@null"
                         android:src="@drawable/ic_edit"
-                        app:tint="@color/text_main" />
+                        app:tint="@color/primary" />
 
                     <TextView
+                        style="@style/TextAppearance.App.SectionTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginStart="@dimen/space_md"
                         android:layout_weight="1"
-                        android:text="@string/settings_btn_edit_profile"
-                        android:textColor="@color/text_main"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
+                        android:text="@string/settings_btn_edit_profile" />
 
                     <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
+                        android:layout_width="@dimen/icon_md"
+                        android:layout_height="@dimen/icon_md"
                         android:contentDescription="@null"
                         android:src="@drawable/ic_chevron_right"
                         app:tint="@color/text_muted" />
-
                 </LinearLayout>
-
             </LinearLayout>
 
-            <!-- Group 2: App & Notifications -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:layout_marginBottom="6dp"
-                android:paddingHorizontal="2dp"
-                android:text="@string/settings_section_app"
-                android:textColor="@color/text_sub"
-                android:textSize="11sp"
-                android:textStyle="bold" />
+            <!-- Group: App & Notifications -->
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -375,96 +180,19 @@
                 android:background="@drawable/bg_review_card"
                 android:orientation="vertical">
 
-                <LinearLayout
-                    android:id="@+id/btnNotificationSettings"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp">
-
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:contentDescription="@null"
-                        android:src="@drawable/ic_notifications"
-                        app:tint="@color/text_main" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:text="@string/settings_btn_notifications"
-                        android:textColor="@color/text_main"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:contentDescription="@null"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/text_muted" />
-
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/divider_line" />
-
-                <LinearLayout
-                    android:id="@+id/btnLanguageSettings"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp">
-
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:contentDescription="@null"
-                        android:src="@drawable/ic_help"
-                        app:tint="@color/text_main" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:text="@string/settings_btn_language"
-                        android:textColor="@color/text_main"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/settings_language_current"
-                        android:textColor="@color/text_muted"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
+                <View style="@style/Widget.App.Divider" />
 
             </LinearLayout>
 
-            <!-- Group 3: Support & Legal -->
+            <!-- Group: Support & Legal -->
             <TextView
+                style="@style/TextAppearance.App.SectionLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:layout_marginBottom="6dp"
-                android:paddingHorizontal="2dp"
-                android:text="@string/settings_section_support"
-                android:textColor="@color/text_sub"
-                android:textSize="11sp"
-                android:textStyle="bold" />
+                android:layout_marginTop="@dimen/space_lg"
+                android:layout_marginBottom="@dimen/space_xs"
+                android:paddingHorizontal="@dimen/space_xxs"
+                android:text="@string/settings_section_support" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -474,90 +202,68 @@
 
                 <LinearLayout
                     android:id="@+id/btnTerms"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp">
+                    style="@style/Widget.App.SettingsRow">
 
                     <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
+                        android:layout_width="@dimen/icon_md"
+                        android:layout_height="@dimen/icon_md"
                         android:contentDescription="@null"
                         android:src="@drawable/ic_id_card"
                         app:tint="@color/text_main" />
 
                     <TextView
+                        style="@style/TextAppearance.App.SectionTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginStart="@dimen/space_md"
                         android:layout_weight="1"
-                        android:text="@string/settings_btn_terms"
-                        android:textColor="@color/text_main"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
+                        android:text="@string/settings_btn_terms" />
 
                     <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
+                        android:layout_width="@dimen/icon_md"
+                        android:layout_height="@dimen/icon_md"
                         android:contentDescription="@null"
                         android:src="@drawable/ic_chevron_right"
                         app:tint="@color/text_muted" />
-
                 </LinearLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/divider_line" />
+                <View style="@style/Widget.App.Divider" />
 
                 <LinearLayout
                     android:id="@+id/btnPrivacy"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp">
+                    style="@style/Widget.App.SettingsRow">
 
                     <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
+                        android:layout_width="@dimen/icon_md"
+                        android:layout_height="@dimen/icon_md"
                         android:contentDescription="@null"
                         android:src="@drawable/ic_lock"
                         app:tint="@color/text_main" />
 
                     <TextView
+                        style="@style/TextAppearance.App.SectionTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginStart="@dimen/space_md"
                         android:layout_weight="1"
-                        android:text="@string/settings_btn_privacy"
-                        android:textColor="@color/text_main"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
+                        android:text="@string/settings_btn_privacy" />
 
                     <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
+                        android:layout_width="@dimen/icon_md"
+                        android:layout_height="@dimen/icon_md"
                         android:contentDescription="@null"
                         android:src="@drawable/ic_chevron_right"
                         app:tint="@color/text_muted" />
-
                 </LinearLayout>
-
             </LinearLayout>
 
-            <!-- Logout Button -->
+            <!-- Logout -->
             <LinearLayout
                 android:id="@+id/btnLogout"
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
+                android:layout_height="@dimen/btn_height"
                 android:layout_marginTop="28dp"
-                android:layout_marginBottom="32dp"
+                android:layout_marginBottom="@dimen/space_xxxl"
                 android:background="@drawable/bg_button_danger"
                 android:clickable="true"
                 android:focusable="true"
@@ -566,24 +272,20 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
+                    android:layout_width="@dimen/icon_md"
+                    android:layout_height="@dimen/icon_md"
                     android:contentDescription="@null"
                     android:src="@drawable/ic_logout"
                     app:tint="@color/white" />
 
                 <TextView
+                    style="@style/TextAppearance.App.SectionTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="@string/settings_btn_logout"
+                    android:layout_marginStart="@dimen/space_sm"
                     android:textColor="@color/white"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
+                    android:text="@string/settings_btn_logout" />
             </LinearLayout>
-
         </LinearLayout>
-
     </androidx.core.widget.NestedScrollView>
-
 </LinearLayout>
