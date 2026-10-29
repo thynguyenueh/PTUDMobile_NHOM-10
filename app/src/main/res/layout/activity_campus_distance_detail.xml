@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@color/bg_app"
+    android:orientation="vertical">
+
+    <LinearLayout style="@style/Widget.App.HeaderBar">
+        <ImageView
+            android:id="@+id/btnBack"
+            style="@style/Widget.App.HeaderBackButton" />
+
+        <TextView
+            style="@style/Widget.App.HeaderTitle"
+            android:text="Khoảng cách đến các trường" />
+    </LinearLayout>
+
+    <View style="@style/Widget.App.Divider" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvCampusDistances"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:padding="@dimen/space_md"
+        tools:listitem="@layout/item_campus_distance" />
+
+</LinearLayout>

@@ -19,7 +19,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_TITLE = "title";
     public static final String COL_ADDRESS = "address";
     public static final String COL_ADDRESS_FINGERPRINT = "address_fingerprint";
-    public static final String COL_ADDRESS_VERIFICATION_STATUS = "address_verification_status";
+    public static final String COL_ADDRESS_VALIDATION_STATUS = "address_validation_status";
     public static final String COL_CITY_CODE = "city_code";
     public static final String COL_WARD_CODE = "ward_code";
     public static final String COL_CITY_NAME = "city_name";
@@ -69,7 +69,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Table: reviews_cache
     public static final String TBL_REVIEWS = "reviews_cache";
     public static final String COL_REVIEW_ID = "review_id";
-    public static final String COL_REQUEST_ID = "request_id";
     public static final String COL_REVIEWER_ID = "reviewer_id";
     public static final String COL_REVIEWER_NAME = "reviewer_name";
     public static final String COL_REVIEWEE_ID = "reviewee_id";
@@ -81,24 +80,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Table: users_cache
     public static final String TBL_USERS = "users_cache";
     public static final String COL_PHONE = "phone";
-    public static final String COL_PASSWORD = "password";
     public static final String COL_AVATAR_URL = "avatar_url";
     public static final String COL_IDENTITY_TYPE = "identity_type";
     public static final String COL_IDENTITY_VERIFIED = "identity_verified";
     public static final String COL_IDENTITY_VERIFIED_AT = "identity_verified_at";
     public static final String COL_UNIVERSITY_CODE = "university_code";
     public static final String COL_UNIVERSITY_NAME = "university_name";
-    public static final String COL_CITIZEN_ID_HASH = "citizen_id_hash";
     public static final String COL_RESIDENCE_VERIFIED = "residence_verified";
     public static final String COL_RESIDENCE_VERIFIED_AT = "residence_verified_at";
-    public static final String COL_FULLY_VERIFIED = "fully_verified";
     public static final String COL_PERMANENT_ADDRESS = "permanent_address";
     public static final String COL_PERMANENT_CITY_CODE = "permanent_city_code";
     public static final String COL_PERMANENT_WARD_CODE = "permanent_ward_code";
     public static final String COL_PERMANENT_CITY_NAME = "permanent_city_name";
     public static final String COL_PERMANENT_WARD_NAME = "permanent_ward_name";
     public static final String COL_PHONE_VERIFIED = "phone_verified";
-    public static final String COL_IS_VERIFIED = "is_verified";
     public static final String COL_CREATED_AT = "created_at";
 
     // Table: chat_rooms_cache
@@ -126,24 +121,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COL_USER_ID + " TEXT PRIMARY KEY, " +
                 COL_FAMILY_NAME + " TEXT, " +
                 COL_PHONE + " TEXT UNIQUE, " +
-                COL_PASSWORD + " TEXT, " +
                 COL_AVATAR_URL + " TEXT, " +
                 COL_IDENTITY_TYPE + " TEXT DEFAULT 'NONE', " +
                 COL_IDENTITY_VERIFIED + " INTEGER DEFAULT 0, " +
                 COL_IDENTITY_VERIFIED_AT + " INTEGER DEFAULT 0, " +
                 COL_UNIVERSITY_CODE + " TEXT, " +
                 COL_UNIVERSITY_NAME + " TEXT, " +
-                COL_CITIZEN_ID_HASH + " TEXT, " +
                 COL_RESIDENCE_VERIFIED + " INTEGER DEFAULT 0, " +
                 COL_RESIDENCE_VERIFIED_AT + " INTEGER DEFAULT 0, " +
-                COL_FULLY_VERIFIED + " INTEGER DEFAULT 0, " +
                 COL_PERMANENT_ADDRESS + " TEXT, " +
                 COL_PERMANENT_CITY_CODE + " INTEGER DEFAULT 79, " +
                 COL_PERMANENT_WARD_CODE + " INTEGER DEFAULT 0, " +
                 COL_PERMANENT_CITY_NAME + " TEXT, " +
                 COL_PERMANENT_WARD_NAME + " TEXT, " +
                 COL_PHONE_VERIFIED + " INTEGER DEFAULT 0, " +
-                COL_IS_VERIFIED + " INTEGER DEFAULT 0, " +
                 COL_CREATED_AT + " INTEGER, " +
                 COL_UPDATED_AT + " INTEGER, " +
                 COL_CACHED_AT + " INTEGER" +
@@ -184,7 +175,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COL_TITLE + " TEXT, " +
                 COL_ADDRESS + " TEXT, " +
                 COL_ADDRESS_FINGERPRINT + " TEXT, " +
-                COL_ADDRESS_VERIFICATION_STATUS + " TEXT DEFAULT 'UNVERIFIED', " +
+                COL_ADDRESS_VALIDATION_STATUS + " TEXT DEFAULT 'UNVERIFIED', " +
                 COL_CITY_CODE + " INTEGER DEFAULT 79, " +
                 COL_WARD_CODE + " INTEGER, " +
                 COL_CITY_NAME + " TEXT DEFAULT 'TP. Hồ Chí Minh', " +
@@ -235,7 +226,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.execSQL("CREATE TABLE " + TBL_REVIEWS + " (" +
                 COL_REVIEW_ID + " TEXT PRIMARY KEY, " +
-                COL_REQUEST_ID + " TEXT, " +
                 COL_REVIEWER_ID + " TEXT, " +
                 COL_REVIEWER_NAME + " TEXT, " +
                 COL_REVIEWEE_ID + " TEXT, " +
@@ -244,9 +234,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COL_COMMENT + " TEXT, " +
                 COL_IMAGE_URLS + " TEXT, " +
                 COL_CREATED_AT + " INTEGER, " +
+                COL_UPDATED_AT + " INTEGER, " +
                 COL_SYNC_STATUS + " TEXT DEFAULT 'SYNCED', " +
-                COL_CACHED_AT + " INTEGER, " +
-                "UNIQUE (" + COL_REQUEST_ID + ", " + COL_REVIEWER_ID + ")" +
+                COL_CACHED_AT + " INTEGER" +
                 ")");
 
         db.execSQL("CREATE TABLE " + TBL_SAVED_HOUSES + " (" +

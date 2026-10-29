@@ -26,7 +26,6 @@
             android:paddingBottom="24dp">
 
             <!-- ================= HEADER TITLE ================= -->
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/toolbar_height"
@@ -34,216 +33,346 @@
 
                 <TextView
                     style="@style/TextAppearance.App.Heading"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:textSize="@dimen/text_display"
                     android:text="@string/profile_title" />
-
-                <FrameLayout
-                    android:id="@+id/btnSettings"
-                    android:layout_width="@dimen/touch_target_min"
-                    android:layout_height="@dimen/touch_target_min"
-                    android:background="@drawable/bg_icon"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground">
-
-                    <ImageView
-                        android:layout_width="@dimen/icon_lg"
-                        android:layout_height="@dimen/icon_lg"
-                        android:layout_gravity="center"
-                        android:contentDescription="@string/cd_settings"
-                        android:src="@drawable/ic_settings"
-                        app:tint="@color/text_main" />
-                </FrameLayout>
-
             </LinearLayout>
 
-
-            <!-- ================= CV PROFILE HEADER ================= -->
-            <include
-                android:id="@+id/includeProfileHeader"
-                layout="@layout/layout_profile_header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp" />
-
-
-            <!-- ================= PHONE & VERIFIED STATUS ================= -->
-
+            <!-- ================= USER INFO (Avatar + Name + University) ================= -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_card"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="16dp">
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingVertical="16dp">
+
+                <FrameLayout
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:background="@drawable/bg_circle_olive">
+
+                    <ImageView
+                        android:id="@+id/ivProfileAvatarImg"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="@string/cd_avatar"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/tvProfileAvatar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:textColor="@color/surface_card"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        tools:text="A" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvProfileName"
+                        style="@style/TextAppearance.App.Heading"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        tools:text="Nguyễn Văn A" />
+
+                    <ImageView
+                        android:id="@+id/tvProfileVerifiedBadge"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="6dp"
+                        android:contentDescription="@string/cd_verified"
+                        android:src="@drawable/ic_verified_check"
+                        android:visibility="gone"
+                        app:tint="@color/primary" />
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/tvProfilePhone"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textColor="@color/text_main"
-                    android:textSize="13sp"
-                    tools:text="09xx ••• •xx · TP. Hồ Chí Minh" />
-
-                <ImageView
-                    android:id="@+id/tvVerifiedStatusTag"
+                    android:id="@+id/tvProfileSub"
+                    style="@style/TextAppearance.App.Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:contentDescription="@string/cd_verified"
-                    android:src="@drawable/ic_verified_check"
-                    app:tint="@color/olive_accent"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
+                    android:layout_marginTop="2dp"
+                    tools:text="Đại học Quốc gia TP.HCM" />
+            </LinearLayout>
+
+            <!-- ================= VERIFICATION STATUS SECTION ================= -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/TextAppearance.App.SectionTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="8dp"
+                    android:text="Trạng thái xác thực" />
+
+                <!-- Identity Status Row (Danh tính) -->
+                <RelativeLayout
+                    android:id="@+id/btnKyc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingVertical="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:baselineAligned="false"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextAppearance.App.SectionTitle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Danh tính" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnKycAction"
+                            style="@style/Widget.App.Button.Outlined"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            android:text="Xác thực"
+                            android:textSize="12sp" />
+
+                        <ImageView
+                            android:id="@+id/ivKycVerified"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:contentDescription="@string/cd_verified"
+                            android:src="@drawable/ic_verified_check"
+                            android:visibility="gone"
+                            app:tint="@color/olive_accent" />
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <View style="@style/Widget.App.Divider" />
+
+                <!-- Residence Status Row (Cư trú) -->
+                <RelativeLayout
+                    android:id="@+id/btnResidenceAuth"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingVertical="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:baselineAligned="false"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextAppearance.App.SectionTitle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Cư trú" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnResidenceAction"
+                            style="@style/Widget.App.Button.Outlined"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            android:text="Xác thực"
+                            android:textSize="12sp" />
+
+                        <ImageView
+                            android:id="@+id/ivResidenceVerified"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:contentDescription="@string/cd_verified"
+                            android:src="@drawable/ic_verified_check"
+                            android:visibility="gone"
+                            app:tint="@color/olive_accent" />
+                    </LinearLayout>
+                </RelativeLayout>
 
             </LinearLayout>
 
-
-            <!-- ================= MENU ================= -->
-
+            <!-- ================= NAVIGATION ROWS (RelativeLayouts) ================= -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:background="@drawable/bg_review_card"
                 android:orientation="vertical">
 
-                <!-- KYC -->
-                <LinearLayout
-                    android:id="@+id/btnKyc"
+                <View style="@style/Widget.App.Divider" />
+
+                <RelativeLayout
+                    android:id="@+id/rowMyPosts"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:foreground="?attr/selectableItemBackground"
+                    android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
-                    android:gravity="center_vertical"
-                    android:padding="12dp">
+                    android:paddingVertical="14dp">
 
-                    <FrameLayout
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
-                        android:background="@drawable/bg_circle_olive">
-
-                        <ImageView
-                            android:layout_width="22dp"
-                            android:layout_height="22dp"
-                            android:layout_gravity="center"
-                            android:contentDescription="@string/kyc_verified_badge"
-                            android:src="@drawable/ic_check"
-                            app:tint="@color/white" />
-                    </FrameLayout>
+                    <TextView
+                        style="@style/TextAppearance.App.Body"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="Bài đăng của tôi" />
 
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/tvStatPosts"
+                            style="@style/TextAppearance.App.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/profile_kyc_title"
-                            android:textColor="@color/text_main"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:layout_marginEnd="8dp"
+                            android:textStyle="bold"
+                            tools:text="12" />
 
-                        <TextView
-                            android:id="@+id/tvKycStatusSub"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="Chưa xác minh"
-                            android:textColor="@color/text_sub"
-                            android:textSize="12sp" />
-
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="@color/text_main"
+                            android:contentDescription="@string/cd_dropdown" />
                     </LinearLayout>
+                </RelativeLayout>
+
+                <View style="@style/Widget.App.Divider" />
+
+                <RelativeLayout
+                    android:id="@+id/rowSaved"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingVertical="14dp">
+
+                    <TextView
+                        style="@style/TextAppearance.App.Body"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="Nhà đã lưu" />
 
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
                         android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/text_main" />
+                        app:tint="@color/text_main"
+                        android:contentDescription="@string/cd_dropdown" />
+                </RelativeLayout>
 
-                </LinearLayout>
+                <View style="@style/Widget.App.Divider" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/divider_line" />
-
-                <!-- XÁC THỰC CƯ TRÚ -->
-                <LinearLayout
-                    android:id="@+id/btnResidenceAuth"
+                <RelativeLayout
+                    android:id="@+id/rowReviewsAboutMe"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:foreground="?attr/selectableItemBackground"
+                    android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
-                    android:gravity="center_vertical"
-                    android:padding="12dp">
+                    android:paddingVertical="14dp">
 
-                    <FrameLayout
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
-                        android:background="@drawable/bg_circle_olive">
-
-                        <ImageView
-                            android:layout_width="22dp"
-                            android:layout_height="22dp"
-                            android:layout_gravity="center"
-                            android:contentDescription="@string/residence_verification_title"
-                            android:src="@drawable/ic_shield_check"
-                            app:tint="@color/white" />
-                    </FrameLayout>
+                    <TextView
+                        style="@style/TextAppearance.App.Body"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="Đánh giá về tôi" />
 
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/tvStatReviews"
+                            style="@style/TextAppearance.App.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/profile_residence_title"
-                            android:textColor="@color/text_main"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:layout_marginEnd="8dp"
+                            android:textStyle="bold"
+                            tools:text="8" />
 
-                        <TextView
-                            android:id="@+id/tvResidenceAuthSub"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="Chưa gửi hồ sơ đối soát"
-                            android:textColor="@color/text_sub"
-                            android:textSize="12sp" />
-
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="@color/text_main"
+                            android:contentDescription="@string/cd_dropdown" />
                     </LinearLayout>
+                </RelativeLayout>
+
+                <View style="@style/Widget.App.Divider" />
+
+                <RelativeLayout
+                    android:id="@+id/rowSettings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingVertical="14dp">
+
+                    <TextView
+                        style="@style/TextAppearance.App.Body"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="Cài đặt" />
 
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
                         android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/text_main" />
+                        app:tint="@color/text_main"
+                        android:contentDescription="@string/cd_dropdown" />
+                </RelativeLayout>
 
-                </LinearLayout>
+                <View style="@style/Widget.App.Divider" />
 
             </LinearLayout>
 
         </LinearLayout>
-
     </ScrollView>
 
-
     <!-- ================= FIXED BOTTOM NAVIGATION ================= -->
-
     <include layout="@layout/layout_bottom_nav" />
 
 </LinearLayout>

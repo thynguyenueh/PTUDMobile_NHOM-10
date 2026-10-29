@@ -14,17 +14,17 @@ public class ReviewRemote {
     private static final String COLLECTION = "reviews";
 
     public void create(Review r, AppCallback<String> cb) {
-        if (r == null || r.getRequestId() == null || r.getRequestId().trim().isEmpty()
-                || r.getReviewerId() == null || r.getReviewerId().trim().isEmpty()) {
-            if (cb != null) cb.onError(new IllegalArgumentException("Review requestId and reviewerId are required"));
+        if (r == null || r.getReviewerId() == null || r.getReviewerId().trim().isEmpty()
+                || r.getRevieweeId() == null || r.getRevieweeId().trim().isEmpty()) {
+            if (cb != null) cb.onError(new IllegalArgumentException("Review reviewerId and revieweeId are required"));
             return;
         }
 
-        String requestId = r.getRequestId().trim();
         String reviewerId = r.getReviewerId().trim();
-        String id = requestId + "_" + reviewerId;
-        r.setRequestId(requestId);
+        String revieweeId = r.getRevieweeId().trim();
+        String id = revieweeId + "_" + reviewerId;
         r.setReviewerId(reviewerId);
+        r.setRevieweeId(revieweeId);
         r.setReviewId(id);
         final String reviewId = id;
         db.collection(COLLECTION).document(reviewId)
@@ -55,22 +55,6 @@ public class ReviewRemote {
         db.collection(COLLECTION)
                 .whereEqualTo("revieweeId", revieweeId)
                 .orderBy("createdAt", Query.Direction.DESCENDING)
-                .get()
-                .addOnSuccessListener(snap -> {
-                    List<Review> list = new ArrayList<>();
-                    for (QueryDocumentSnapshot doc : snap) {
-                        Review r = doc.toObject(Review.class);
-                        r.setReviewId(doc.getId());
-                        list.add(r);
-                    }
-                    cb.onSuccess(list);
-                })
-                .addOnFailureListener(cb::onError);
-    }
-
-    public void getByRequest(String requestId, AppCallback<List<Review>> cb) {
-        db.collection(COLLECTION)
-                .whereEqualTo("requestId", requestId)
                 .get()
                 .addOnSuccessListener(snap -> {
                     List<Review> list = new ArrayList<>();

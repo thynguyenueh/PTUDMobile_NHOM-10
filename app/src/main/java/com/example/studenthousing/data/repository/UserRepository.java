@@ -29,8 +29,6 @@ public class UserRepository {
             return;
         }
 
-        recomputeFullyVerified(user);
-
         if (!NetworkUtils.isOnline(ctx)) {
             local.upsert(user);
             session.createLoginSession(user);
@@ -65,7 +63,6 @@ public class UserRepository {
             u.setIdentityVerified(true);
             u.setIdentityType(identityType != null ? identityType : Constants.IDENTITY_STUDENT);
             u.setIdentityVerifiedAt(System.currentTimeMillis());
-            u.setVerified(true);
             if (frontUrl != null) u.setCitizenIdFrontUrl(frontUrl);
             if (backUrl != null) u.setCitizenIdBackUrl(backUrl);
             if (studentCardUrl != null) u.setStudentCardUrl(studentCardUrl);
@@ -84,12 +81,6 @@ public class UserRepository {
         } else if (cb != null) {
             cb.onError(new Exception("User not found in cache"));
         }
-    }
-
-    public void recomputeFullyVerified(User u) {
-        if (u == null) return;
-        boolean fully = u.isIdentityVerified() && u.isResidenceVerified();
-        u.setFullyVerified(fully);
     }
 
     public void upsertAuthProfile(User partial, AppCallback<User> cb) {
@@ -125,9 +116,52 @@ public class UserRepository {
     }
 
     private void merge(User target, User src) {
-        if (src.getAvatarUrl() != null && !src.getAvatarUrl().isEmpty()) target.setAvatarUrl(src.getAvatarUrl());
-        if ((target.getFamilyName() == null || target.getFamilyName().isEmpty()) && src.getFamilyName() != null)
+        if (src == null) return;
+        if (src.getFamilyName() != null && !src.getFamilyName().isEmpty()) {
             target.setFamilyName(src.getFamilyName());
+        }
+        if (src.getPhone() != null && !src.getPhone().isEmpty()) {
+            target.setPhone(src.getPhone());
+        }
+        if (src.getIdentityType() != null && !src.getIdentityType().isEmpty() && !src.getIdentityType().equals(Constants.IDENTITY_NONE)) {
+            target.setIdentityType(src.getIdentityType());
+        }
+        if (src.getUniversityCode() != null && !src.getUniversityCode().isEmpty()) {
+            target.setUniversityCode(src.getUniversityCode());
+            if (src.getUniversityName() != null && !src.getUniversityName().isEmpty()) {
+                target.setUniversityName(src.getUniversityName());
+            }
+        }
+        if (src.getAvatarUrl() != null && !src.getAvatarUrl().isEmpty()) {
+            target.setAvatarUrl(src.getAvatarUrl());
+        }
+        if (src.getPermanentAddress() != null && !src.getPermanentAddress().isEmpty()) {
+            target.setPermanentAddress(src.getPermanentAddress());
+            target.setPermanentCityCode(src.getPermanentCityCode());
+            target.setPermanentWardCode(src.getPermanentWardCode());
+            if (src.getPermanentCityName() != null) target.setPermanentCityName(src.getPermanentCityName());
+            if (src.getPermanentWardName() != null) target.setPermanentWardName(src.getPermanentWardName());
+        }
+        if (src.getCitizenIdFrontUrl() != null && !src.getCitizenIdFrontUrl().isEmpty()) {
+            target.setCitizenIdFrontUrl(src.getCitizenIdFrontUrl());
+        }
+        if (src.getCitizenIdBackUrl() != null && !src.getCitizenIdBackUrl().isEmpty()) {
+            target.setCitizenIdBackUrl(src.getCitizenIdBackUrl());
+        }
+        if (src.getStudentCardUrl() != null && !src.getStudentCardUrl().isEmpty()) {
+            target.setStudentCardUrl(src.getStudentCardUrl());
+        }
+        if (src.isIdentityVerified()) {
+            target.setIdentityVerified(true);
+            target.setIdentityVerifiedAt(src.getIdentityVerifiedAt());
+        }
+        if (src.isResidenceVerified()) {
+            target.setResidenceVerified(true);
+            target.setResidenceVerifiedAt(src.getResidenceVerifiedAt());
+        }
+        if (src.getCreatedAt() > 0 && target.getCreatedAt() == 0) {
+            target.setCreatedAt(src.getCreatedAt());
+        }
         target.setUpdatedAt(System.currentTimeMillis());
     }
 

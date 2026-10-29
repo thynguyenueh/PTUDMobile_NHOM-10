@@ -6,28 +6,22 @@ public class User {
     private String userId;
     private String familyName;
     private String phone;
-    private boolean phoneVerified;
     private String identityType = Constants.IDENTITY_NONE;
     private boolean identityVerified;
     private long identityVerifiedAt;
     private String universityCode;
     private String universityName;
-    private String citizenIdHash;
     private String citizenIdFrontUrl;
     private String citizenIdBackUrl;
     private String studentCardUrl;
     private boolean residenceVerified;
     private long residenceVerifiedAt;
-    private boolean fullyVerified;
     private String permanentAddress;
-    private int permanentCityCode;
+    private int permanentCityCode = Constants.TPHCM_CITY_CODE;
     private int permanentWardCode;
     private String permanentCityName;
     private String permanentWardName;
-    private boolean isVerified;
     private String avatarUrl;
-    private String password;
-    private String role = "PARENT";
     private long createdAt;
     private long updatedAt;
 
@@ -41,9 +35,6 @@ public class User {
 
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
-
-    public boolean isPhoneVerified() { return phoneVerified; }
-    public void setPhoneVerified(boolean phoneVerified) { this.phoneVerified = phoneVerified; }
 
     public String getIdentityType() { return identityType; }
     public void setIdentityType(String identityType) { this.identityType = identityType; }
@@ -60,9 +51,6 @@ public class User {
     public String getUniversityName() { return universityName; }
     public void setUniversityName(String universityName) { this.universityName = universityName; }
 
-    public String getCitizenIdHash() { return citizenIdHash; }
-    public void setCitizenIdHash(String citizenIdHash) { this.citizenIdHash = citizenIdHash; }
-
     public String getCitizenIdFrontUrl() { return citizenIdFrontUrl; }
     public void setCitizenIdFrontUrl(String citizenIdFrontUrl) { this.citizenIdFrontUrl = citizenIdFrontUrl; }
 
@@ -77,9 +65,6 @@ public class User {
 
     public long getResidenceVerifiedAt() { return residenceVerifiedAt; }
     public void setResidenceVerifiedAt(long residenceVerifiedAt) { this.residenceVerifiedAt = residenceVerifiedAt; }
-
-    public boolean isFullyVerified() { return fullyVerified; }
-    public void setFullyVerified(boolean fullyVerified) { this.fullyVerified = fullyVerified; }
 
     public String getPermanentAddress() { return permanentAddress; }
     public void setPermanentAddress(String permanentAddress) { this.permanentAddress = permanentAddress; }
@@ -96,17 +81,8 @@ public class User {
     public String getPermanentWardName() { return permanentWardName; }
     public void setPermanentWardName(String permanentWardName) { this.permanentWardName = permanentWardName; }
 
-    public boolean isVerified() { return isVerified; }
-    public void setVerified(boolean verified) { isVerified = verified; }
-
     public String getAvatarUrl() { return avatarUrl; }
     public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
-
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
 
     public long getCreatedAt() { return createdAt; }
     public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }

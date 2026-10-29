@@ -182,8 +182,6 @@ public class PostDao {
         v.put(DatabaseHelper.COL_FAMILY_NAME, p.getFamilyName());
         v.put(DatabaseHelper.COL_TITLE, p.getTitle());
         v.put(DatabaseHelper.COL_ADDRESS, p.getAddress());
-        v.put(DatabaseHelper.COL_ADDRESS_FINGERPRINT, p.getAddressFingerprint());
-        v.put(DatabaseHelper.COL_ADDRESS_VERIFICATION_STATUS, p.getAddressVerificationStatus());
         v.put(DatabaseHelper.COL_CITY_CODE, p.getCityCode() > 0 ? p.getCityCode() : Constants.TPHCM_CITY_CODE);
         v.put(DatabaseHelper.COL_WARD_CODE, p.getWardCode());
         v.put(DatabaseHelper.COL_CITY_NAME, p.getCityName() != null ? p.getCityName() : Constants.TPHCM_CITY_NAME);
@@ -211,8 +209,6 @@ public class PostDao {
             int idxFamilyName = c.getColumnIndex(DatabaseHelper.COL_FAMILY_NAME);
             int idxTitle = c.getColumnIndex(DatabaseHelper.COL_TITLE);
             int idxAddress = c.getColumnIndex(DatabaseHelper.COL_ADDRESS);
-            int idxFp = c.getColumnIndex(DatabaseHelper.COL_ADDRESS_FINGERPRINT);
-            int idxVerStatus = c.getColumnIndex(DatabaseHelper.COL_ADDRESS_VERIFICATION_STATUS);
             int idxCityCode = c.getColumnIndex(DatabaseHelper.COL_CITY_CODE);
             int idxWardCode = c.getColumnIndex(DatabaseHelper.COL_WARD_CODE);
             int idxCityName = c.getColumnIndex(DatabaseHelper.COL_CITY_NAME);
@@ -235,8 +231,6 @@ public class PostDao {
                 if (idxFamilyName != -1 && !c.isNull(idxFamilyName)) p.setFamilyName(c.getString(idxFamilyName));
                 if (idxTitle != -1 && !c.isNull(idxTitle)) p.setTitle(c.getString(idxTitle));
                 if (idxAddress != -1 && !c.isNull(idxAddress)) p.setAddress(c.getString(idxAddress));
-                if (idxFp != -1 && !c.isNull(idxFp)) p.setAddressFingerprint(c.getString(idxFp));
-                if (idxVerStatus != -1 && !c.isNull(idxVerStatus)) p.setAddressVerificationStatus(c.getString(idxVerStatus));
                 if (idxCityCode != -1 && !c.isNull(idxCityCode)) p.setCityCode(c.getInt(idxCityCode));
                 if (idxWardCode != -1 && !c.isNull(idxWardCode)) p.setWardCode(c.getInt(idxWardCode));
                 if (idxCityName != -1 && !c.isNull(idxCityName)) p.setCityName(c.getString(idxCityName));
@@ -267,8 +261,6 @@ public class PostDao {
         p.setFamilyName(getStringOrNull(c, DatabaseHelper.COL_FAMILY_NAME));
         p.setTitle(getStringOrNull(c, DatabaseHelper.COL_TITLE));
         p.setAddress(getStringOrNull(c, DatabaseHelper.COL_ADDRESS));
-        p.setAddressFingerprint(getStringOrNull(c, DatabaseHelper.COL_ADDRESS_FINGERPRINT));
-        p.setAddressVerificationStatus(getStringOrNull(c, DatabaseHelper.COL_ADDRESS_VERIFICATION_STATUS));
         p.setCityCode(getIntOrDefault(c, DatabaseHelper.COL_CITY_CODE, Constants.TPHCM_CITY_CODE));
         p.setWardCode(getIntOrDefault(c, DatabaseHelper.COL_WARD_CODE, 0));
         p.setCityName(getStringOrNull(c, DatabaseHelper.COL_CITY_NAME));

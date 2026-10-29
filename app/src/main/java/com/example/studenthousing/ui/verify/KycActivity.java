@@ -14,19 +14,19 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.studenthousing.R;
+import com.example.studenthousing.data.local.UserDao;
+import com.example.studenthousing.data.model.User;
 import com.example.studenthousing.ui.viewmodel.KycViewModel;
+import com.example.studenthousing.util.SessionManager;
 import com.example.studenthousing.util.UiState;
 import com.google.android.material.button.MaterialButton;
 
 public class KycActivity extends AppCompatActivity {
 
-    public static final String PREFS_NAME = "kyc_prefs";
-    public static final String KEY_STATUS = "kyc_status_";
-    public static final String KEY_SUBMITTED_AT = "kyc_submitted_at_";
-
     private Uri parentFrontUri;
     private Uri parentBackUri;
-    private Uri studentIdUri;
+    private Uri studentFrontUri;
+    private Uri studentBackUri;
 
     private TextView tvParentIdStatus;
     private TextView tvStudentIdStatus;
@@ -38,13 +38,20 @@ public class KycActivity extends AppCompatActivity {
     private ImageView ivParentBackPreview;
 
     private View layoutStudentIdPreviews;
-    private View layoutStudentIdPreview;
-    private ImageView ivStudentIdPreview;
+    private View layoutStudentFrontPreview;
+    private View layoutStudentBackPreview;
+    private ImageView ivStudentFrontPreview;
+    private ImageView ivStudentBackPreview;
+
+    private View addParentButton, addStudentButton;
+    private MaterialButton btnSubmitKyc;
+    private com.google.android.material.checkbox.MaterialCheckBox cbConsent;
 
     private KycViewModel viewModel;
     private ActivityResultLauncher<String> parentFrontPicker;
     private ActivityResultLauncher<String> parentBackPicker;
-    private ActivityResultLauncher<String> studentIdPicker;
+    private ActivityResultLauncher<String> studentFrontPicker;
+    private ActivityResultLauncher<String> studentBackPicker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,22 +59,16 @@ public class KycActivity extends AppCompatActivity {
         setContentView(R.layout.activity_kyc);
 
         parentFrontPicker = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-            if (uri != null) {
-                parentFrontUri = uri;
-                updateDocumentStatus();
-            }
+            if (uri != null) { parentFrontUri = uri; updateDocumentStatus(); }
         });
         parentBackPicker = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-            if (uri != null) {
-                parentBackUri = uri;
-                updateDocumentStatus();
-            }
+            if (uri != null) { parentBackUri = uri; updateDocumentStatus(); }
         });
-        studentIdPicker = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-            if (uri != null) {
-                studentIdUri = uri;
-                updateDocumentStatus();
-            }
+        studentFrontPicker = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+            if (uri != null) { studentFrontUri = uri; updateDocumentStatus(); }
+        });
+        studentBackPicker = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+            if (uri != null) { studentBackUri = uri; updateDocumentStatus(); }
         });
 
         viewModel = new ViewModelProvider(this).get(KycViewModel.class);
@@ -87,38 +88,28 @@ public class KycActivity extends AppCompatActivity {
         ivParentBackPreview = findViewById(R.id.ivParentBackPreview);
 
         layoutStudentIdPreviews = findViewById(R.id.layoutStudentIdPreviews);
-        layoutStudentIdPreview = findViewById(R.id.layoutStudentIdPreview);
-        ivStudentIdPreview = findViewById(R.id.ivStudentIdPreview);
+        layoutStudentFrontPreview = findViewById(R.id.layoutStudentFrontPreview);
+        layoutStudentBackPreview = findViewById(R.id.layoutStudentBackPreview);
+        ivStudentFrontPreview = findViewById(R.id.ivStudentFrontPreview);
+        ivStudentBackPreview = findViewById(R.id.ivStudentBackPreview);
 
         View btnRemoveParentFront = findViewById(R.id.btnRemoveParentFront);
         View btnRemoveParentBack = findViewById(R.id.btnRemoveParentBack);
-        View btnRemoveStudentId = findViewById(R.id.btnRemoveStudentId);
+        View btnRemoveStudentFront = findViewById(R.id.btnRemoveStudentFront);
+        View btnRemoveStudentBack = findViewById(R.id.btnRemoveStudentBack);
 
-        if (btnRemoveParentFront != null) {
-            btnRemoveParentFront.setOnClickListener(v -> {
-                parentFrontUri = null;
-                updateDocumentStatus();
-            });
-        }
-        if (btnRemoveParentBack != null) {
-            btnRemoveParentBack.setOnClickListener(v -> {
-                parentBackUri = null;
-                updateDocumentStatus();
-            });
-        }
-        if (btnRemoveStudentId != null) {
-            btnRemoveStudentId.setOnClickListener(v -> {
-                studentIdUri = null;
-                updateDocumentStatus();
-            });
-        }
+        if (btnRemoveParentFront != null) btnRemoveParentFront.setOnClickListener(v -> { parentFrontUri = null; updateDocumentStatus(); });
+        if (btnRemoveParentBack != null) btnRemoveParentBack.setOnClickListener(v -> { parentBackUri = null; updateDocumentStatus(); });
+        if (btnRemoveStudentFront != null) btnRemoveStudentFront.setOnClickListener(v -> { studentFrontUri = null; updateDocumentStatus(); });
+        if (btnRemoveStudentBack != null) btnRemoveStudentBack.setOnClickListener(v -> { studentBackUri = null; updateDocumentStatus(); });
 
-        com.google.android.material.checkbox.MaterialCheckBox cbConsent = findViewById(R.id.cbConsent);
-        MaterialButton btnSubmitKyc = findViewById(R.id.btnSubmitKyc);
+        cbConsent = findViewById(R.id.cbConsent);
+        btnSubmitKyc = findViewById(R.id.btnSubmitKyc);
+        addParentButton = findViewById(R.id.btnAddParentId);
+        addStudentButton = findViewById(R.id.btnAddStudentId);
 
-        View parentButton = findViewById(R.id.btnAddParentId);
-        if (parentButton != null) {
-            parentButton.setOnClickListener(v -> new androidx.appcompat.app.AlertDialog.Builder(this)
+        if (addParentButton != null) {
+            addParentButton.setOnClickListener(v -> new androidx.appcompat.app.AlertDialog.Builder(this)
                     .setTitle("Chọn ảnh CCCD phụ huynh")
                     .setItems(new String[]{"Mặt trước", "Mặt sau"}, (dialog, which) -> {
                         if (which == 0) parentFrontPicker.launch("image/*");
@@ -126,17 +117,54 @@ public class KycActivity extends AppCompatActivity {
                     }).show());
         }
 
-        View studentButton = findViewById(R.id.btnAddStudentId);
-        if (studentButton != null) studentButton.setOnClickListener(v -> studentIdPicker.launch("image/*"));
+        if (addStudentButton != null) {
+            addStudentButton.setOnClickListener(v -> new androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle("Chọn ảnh Thẻ sinh viên")
+                    .setItems(new String[]{"Mặt trước", "Mặt sau"}, (dialog, which) -> {
+                        if (which == 0) studentFrontPicker.launch("image/*");
+                        else studentBackPicker.launch("image/*");
+                    }).show());
+        }
 
         if (btnSubmitKyc != null) {
             btnSubmitKyc.setOnClickListener(v -> {
                 boolean consent = cbConsent != null && cbConsent.isChecked();
-                viewModel.submitKyc(parentFrontUri, parentBackUri, studentIdUri, consent);
+                viewModel.submitKyc(parentFrontUri, parentBackUri, studentFrontUri, studentBackUri, consent);
             });
         }
 
+        loadExistingUserData();
         updateDocumentStatus();
+    }
+
+    private void loadExistingUserData() {
+        SessionManager session = new SessionManager(this);
+        String userId = session.getUserId();
+        if (userId == null) return;
+        UserDao userDao = new UserDao(this);
+        User user = userDao.getById(userId);
+        if (user != null) {
+            if (user.getCitizenIdFrontUrl() != null) parentFrontUri = Uri.parse(user.getCitizenIdFrontUrl());
+            if (user.getCitizenIdBackUrl() != null) parentBackUri = Uri.parse(user.getCitizenIdBackUrl());
+            if (user.getStudentCardUrl() != null) {
+                String card = user.getStudentCardUrl();
+                if (card.contains("|")) {
+                    String[] parts = card.split("\\|");
+                    if (parts.length > 0 && !parts[0].isEmpty()) studentFrontUri = Uri.parse(parts[0]);
+                    if (parts.length > 1 && !parts[1].isEmpty()) studentBackUri = Uri.parse(parts[1]);
+                } else {
+                    studentFrontUri = Uri.parse(card);
+                }
+            }
+            if (user.isIdentityVerified()) {
+                if (btnSubmitKyc != null) {
+                    btnSubmitKyc.setEnabled(false);
+                    btnSubmitKyc.setText("Đã xác thực danh tính (KYC)");
+                }
+                if (addParentButton != null) addParentButton.setVisibility(View.GONE);
+                if (addStudentButton != null) addStudentButton.setVisibility(View.GONE);
+            }
+        }
     }
 
     private void updateDocumentStatus() {
@@ -148,8 +176,11 @@ public class KycActivity extends AppCompatActivity {
             tvParentIdStatus.setTextColor(getResources().getColor(complete ? R.color.primary : R.color.text_sub, getTheme()));
         }
         if (tvStudentIdStatus != null) {
-            tvStudentIdStatus.setText(studentIdUri != null ? "Đã chọn ảnh thẻ sinh viên" : getString(R.string.kyc_status_not_uploaded));
-            tvStudentIdStatus.setTextColor(getResources().getColor(studentIdUri != null ? R.color.primary : R.color.text_sub, getTheme()));
+            boolean complete = studentFrontUri != null && studentBackUri != null;
+            tvStudentIdStatus.setText(complete ? "Đã chọn đủ 2 mặt Thẻ sinh viên" :
+                    (studentFrontUri != null ? "Đã chọn mặt trước · Còn thiếu mặt sau" :
+                            (studentBackUri != null ? "Đã chọn mặt sau · Còn thiếu mặt trước" : getString(R.string.kyc_status_not_uploaded))));
+            tvStudentIdStatus.setTextColor(getResources().getColor(complete ? R.color.primary : R.color.text_sub, getTheme()));
         }
 
         // Cập nhật ảnh xem trước CCCD Phụ huynh
@@ -160,25 +191,26 @@ public class KycActivity extends AppCompatActivity {
         }
         if (layoutParentFrontPreview != null && ivParentFrontPreview != null) {
             layoutParentFrontPreview.setVisibility(hasParentFront ? View.VISIBLE : View.GONE);
-            if (hasParentFront) {
-                Glide.with(this).load(parentFrontUri).centerCrop().into(ivParentFrontPreview);
-            }
+            if (hasParentFront) Glide.with(this).load(parentFrontUri).centerCrop().into(ivParentFrontPreview);
         }
         if (layoutParentBackPreview != null && ivParentBackPreview != null) {
             layoutParentBackPreview.setVisibility(hasParentBack ? View.VISIBLE : View.GONE);
-            if (hasParentBack) {
-                Glide.with(this).load(parentBackUri).centerCrop().into(ivParentBackPreview);
-            }
+            if (hasParentBack) Glide.with(this).load(parentBackUri).centerCrop().into(ivParentBackPreview);
         }
 
         // Cập nhật ảnh xem trước Thẻ Sinh viên
-        boolean hasStudentId = studentIdUri != null;
-        if (layoutStudentIdPreviews != null && layoutStudentIdPreview != null && ivStudentIdPreview != null) {
-            layoutStudentIdPreviews.setVisibility(hasStudentId ? View.VISIBLE : View.GONE);
-            layoutStudentIdPreview.setVisibility(hasStudentId ? View.VISIBLE : View.GONE);
-            if (hasStudentId) {
-                Glide.with(this).load(studentIdUri).centerCrop().into(ivStudentIdPreview);
-            }
+        boolean hasStudentFront = studentFrontUri != null;
+        boolean hasStudentBack = studentBackUri != null;
+        if (layoutStudentIdPreviews != null) {
+            layoutStudentIdPreviews.setVisibility((hasStudentFront || hasStudentBack) ? View.VISIBLE : View.GONE);
+        }
+        if (layoutStudentFrontPreview != null && ivStudentFrontPreview != null) {
+            layoutStudentFrontPreview.setVisibility(hasStudentFront ? View.VISIBLE : View.GONE);
+            if (hasStudentFront) Glide.with(this).load(studentFrontUri).centerCrop().into(ivStudentFrontPreview);
+        }
+        if (layoutStudentBackPreview != null && ivStudentBackPreview != null) {
+            layoutStudentBackPreview.setVisibility(hasStudentBack ? View.VISIBLE : View.GONE);
+            if (hasStudentBack) Glide.with(this).load(studentBackUri).centerCrop().into(ivStudentBackPreview);
         }
     }
 

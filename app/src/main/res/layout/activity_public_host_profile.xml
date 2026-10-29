@@ -102,35 +102,6 @@
                         android:layout_marginTop="@dimen/space_xxs"
                         android:textSize="@dimen/text_small_lg"
                         tools:text="Sinh viên ĐH Bách Khoa TP.HCM" />
-
-                    <!-- Verification Trust Banner -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/space_lg"
-                        android:background="@drawable/bg_badge_verified_moss"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:paddingHorizontal="@dimen/space_md"
-                        android:paddingVertical="@dimen/space_sm">
-
-                        <ImageView
-                            android:layout_width="@dimen/icon_md"
-                            android:layout_height="@dimen/icon_md"
-                            android:contentDescription="@string/cd_shield"
-                            android:src="@drawable/ic_shield_check"
-                            app:tint="@color/primary" />
-
-                        <TextView
-                            style="@style/TextAppearance.App.Caption"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/space_sm"
-                            android:textColor="@color/primary"
-                            android:textSize="@dimen/text_small"
-                            android:textStyle="bold"
-                            android:text="@string/public_host_trust_text" />
-                    </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -156,6 +127,7 @@
 
                     <!-- Status 1: Thẻ SV -->
                     <LinearLayout
+                        android:id="@+id/layoutStudentVerifyRow"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
@@ -168,26 +140,14 @@
                             android:src="@drawable/ic_school_cap"
                             app:tint="@color/primary" />
 
-                        <LinearLayout
+                        <TextView
+                            style="@style/TextAppearance.App.SectionTitle"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/space_md"
                             android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                style="@style/TextAppearance.App.SectionTitle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textSize="@dimen/text_body"
-                                android:text="@string/public_host_verify_student" />
-
-                            <TextView
-                                style="@style/TextAppearance.App.Caption"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/public_host_verify_student_id" />
-                        </LinearLayout>
+                            android:textSize="@dimen/text_body"
+                            android:text="@string/public_host_verify_student" />
 
                         <TextView
                             android:id="@+id/tvStudentVerifyStatus"
@@ -205,6 +165,7 @@
 
                     <!-- Status 3: Xác thực CCCD -->
                     <LinearLayout
+                        android:id="@+id/layoutCccdVerifyRow"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
@@ -217,26 +178,14 @@
                             android:src="@drawable/ic_shield_check"
                             app:tint="@color/primary" />
 
-                        <LinearLayout
+                        <TextView
+                            style="@style/TextAppearance.App.SectionTitle"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/space_md"
                             android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                style="@style/TextAppearance.App.SectionTitle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textSize="@dimen/text_body"
-                                android:text="@string/public_host_verify_cccd_title" />
-
-                            <TextView
-                                style="@style/TextAppearance.App.Caption"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/public_host_verify_cccd_sub" />
-                        </LinearLayout>
+                            android:textSize="@dimen/text_body"
+                            android:text="@string/public_host_verify_cccd_title" />
 
                         <TextView
                             android:id="@+id/tvCccdVerifyStatus"
@@ -254,6 +203,7 @@
 
                     <!-- Status 2: Xác thực Công an -->
                     <LinearLayout
+                        android:id="@+id/layoutPoliceVerifyRow"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
@@ -266,26 +216,14 @@
                             android:src="@drawable/ic_shield_check"
                             app:tint="@color/primary" />
 
-                        <LinearLayout
+                        <TextView
+                            style="@style/TextAppearance.App.SectionTitle"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/space_md"
                             android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                style="@style/TextAppearance.App.SectionTitle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textSize="@dimen/text_body"
-                                android:text="@string/public_host_verify_police" />
-
-                            <TextView
-                                style="@style/TextAppearance.App.Caption"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/public_host_verify_police_sub" />
-                        </LinearLayout>
+                            android:textSize="@dimen/text_body"
+                            android:text="@string/public_host_verify_police" />
 
                         <TextView
                             android:id="@+id/tvPoliceVerifyStatus"

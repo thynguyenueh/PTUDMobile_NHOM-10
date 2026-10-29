@@ -39,10 +39,6 @@ public final class PostDisplayFormatter {
         return getStatusLabel(post);
     }
 
-    public static boolean isAddressVerified(AccommodationPost post) {
-        return Constants.ADDR_VERIFIED.equalsIgnoreCase(post.getAddressVerificationStatus());
-    }
-
     public static String getNearestCampusSummary(Context context, AccommodationPost post) {
         List<NearbyCampus> campuses = post.getNearbyCampuses();
         if (campuses == null || campuses.isEmpty()) return null;

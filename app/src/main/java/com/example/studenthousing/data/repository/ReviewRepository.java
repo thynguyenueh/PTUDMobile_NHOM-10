@@ -28,14 +28,12 @@ public class ReviewRepository {
             return;
         }
 
-        String requestId = r.getRequestId() != null ? r.getRequestId().trim() : null;
         String reviewerId = r.getReviewerId() != null ? r.getReviewerId().trim() : null;
         String revieweeId = r.getRevieweeId() != null ? r.getRevieweeId().trim() : null;
 
-        if (requestId == null || requestId.isEmpty()
-                || reviewerId == null || reviewerId.isEmpty()
+        if (reviewerId == null || reviewerId.isEmpty()
                 || revieweeId == null || revieweeId.isEmpty()) {
-            if (cb != null) cb.onError(new IllegalArgumentException("Review requestId, reviewerId and revieweeId are required"));
+            if (cb != null) cb.onError(new IllegalArgumentException("Review reviewerId and revieweeId are required"));
             return;
         }
 
@@ -50,11 +48,12 @@ public class ReviewRepository {
             return;
         }
 
-        r.setRequestId(requestId);
         r.setReviewerId(reviewerId);
         r.setRevieweeId(revieweeId);
-        r.setReviewId(requestId + "_" + reviewerId);
-        if (r.getCreatedAt() == 0) r.setCreatedAt(System.currentTimeMillis());
+        r.setReviewId(revieweeId + "_" + reviewerId);
+        long now = System.currentTimeMillis();
+        if (r.getCreatedAt() == 0) r.setCreatedAt(now);
+        r.setUpdatedAt(now);
 
         if (!NetworkUtils.isOnline(ctx)) {
             r.setSyncStatus("PENDING_CREATE");
@@ -74,10 +73,16 @@ public class ReviewRepository {
 
             @Override
             public void onError(Exception e) {
-                if (e instanceof FirebaseFirestoreException
-                        && ((FirebaseFirestoreException) e).getCode() == FirebaseFirestoreException.Code.PERMISSION_DENIED) {
-                    if (cb != null) cb.onError(e);
-                    return;
+                if (e instanceof FirebaseFirestoreException) {
+                    FirebaseFirestoreException.Code code = ((FirebaseFirestoreException) e).getCode();
+                    if (code == FirebaseFirestoreException.Code.PERMISSION_DENIED
+                            || code == FirebaseFirestoreException.Code.INVALID_ARGUMENT
+                            || code == FirebaseFirestoreException.Code.ALREADY_EXISTS
+                            || code == FirebaseFirestoreException.Code.FAILED_PRECONDITION
+                            || code == FirebaseFirestoreException.Code.UNAUTHENTICATED) {
+                        if (cb != null) cb.onError(e);
+                        return;
+                    }
                 }
                 r.setSyncStatus("PENDING_CREATE");
                 local.upsert(r);

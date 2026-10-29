@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.studenthousing.R;
 import com.example.studenthousing.data.local.DatabaseHelper;
-import com.example.studenthousing.data.model.User;
 import com.example.studenthousing.ui.home.HomeActivity;
 import com.example.studenthousing.ui.viewmodel.AuthViewModel;
 import com.example.studenthousing.util.DemoDataSeeder;
@@ -34,10 +33,9 @@ public class LoginActivity extends AppCompatActivity {
     private static final String WEB_CLIENT_ID =
             "643135707324-45gf2nbr40nhaubqa9a1jm547j19fqtl.apps.googleusercontent.com";
 
-    private TextInputLayout tilPhone, tilPassword;
-    private EditText etPhone, etPassword;
+    private TextInputLayout tilPhone;
+    private EditText etPhone;
     private MaterialButton btnLogin, btnGoogle;
-    private android.widget.TextView tvRegister;
     private AuthViewModel viewModel;
     private SessionManager session;
 
@@ -87,11 +85,8 @@ public class LoginActivity extends AppCompatActivity {
     private void initViews() {
         tilPhone = findViewById(R.id.tilPhone);
         etPhone = findViewById(R.id.etPhone);
-        tilPassword = findViewById(R.id.tilPassword);
-        etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
         btnGoogle = findViewById(R.id.btnGoogle);
-        tvRegister = findViewById(R.id.tvRegister);
     }
 
     private void setupEvents() {
@@ -100,62 +95,50 @@ public class LoginActivity extends AppCompatActivity {
         btnGoogle.setOnClickListener(v ->
                 googleClient.signOut().addOnCompleteListener(t ->
                         googleSignInLauncher.launch(googleClient.getSignInIntent())));
-
-        tvRegister.setOnClickListener(v ->
-                startActivity(new Intent(this, RegisterActivity.class)));
     }
 
     private void handleLogin() {
-        tilPhone.setError(null);
-        if (tilPassword != null) tilPassword.setError(null);
+        if (tilPhone != null) tilPhone.setError(null);
 
-        String rawPhone = etPhone.getText() != null ? etPhone.getText().toString().trim() : "";
-        String password = etPassword != null && etPassword.getText() != null ? etPassword.getText().toString().trim() : "";
+        String rawPhone = etPhone != null && etPhone.getText() != null ? etPhone.getText().toString().trim() : "";
 
         if (rawPhone.isEmpty()) {
-            tilPhone.setError("Vui lòng nhập số điện thoại");
-            etPhone.requestFocus();
+            if (tilPhone != null) tilPhone.setError("Vui lòng nhập số điện thoại");
+            if (etPhone != null) etPhone.requestFocus();
             return;
         }
         if (!OtpHelper.isValidVnPhone(rawPhone)) {
-            tilPhone.setError("Số điện thoại không hợp lệ (10 số, bắt đầu bằng 0)");
-            etPhone.requestFocus();
-            return;
-        }
-        if (password.isEmpty()) {
-            if (tilPassword != null) tilPassword.setError("Vui lòng nhập mật khẩu");
-            if (etPassword != null) etPassword.requestFocus();
+            if (tilPhone != null) tilPhone.setError("Số điện thoại không hợp lệ (10 số, bắt đầu bằng 0)");
+            if (etPhone != null) etPhone.requestFocus();
             return;
         }
 
         String phone = OtpHelper.toLocal(rawPhone);
-        com.example.studenthousing.data.local.UserDao userDao = new com.example.studenthousing.data.local.UserDao(this);
-        User user = userDao.getByPhone(phone);
+        btnLogin.setEnabled(false);
+        btnLogin.setText("Đang gửi mã...");
 
-        if (user == null) {
-            Toast.makeText(this, "Số điện thoại chưa được đăng ký tài khoản!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (user.getPassword() != null && !user.getPassword().isEmpty() && !user.getPassword().equals(password)) {
-            if (tilPassword != null) tilPassword.setError("Mật khẩu không chính xác");
-            if (etPassword != null) etPassword.requestFocus();
-            return;
-        }
-
-        com.google.firebase.auth.FirebaseAuth.getInstance().signInAnonymously().addOnCompleteListener(authTask -> {
-            com.google.firebase.auth.FirebaseUser fbUser = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
-            if (user.getUserId() == null || user.getUserId().trim().isEmpty()) {
-                if (fbUser != null) {
-                    user.setUserId(fbUser.getUid());
-                } else {
-                    user.setUserId("user_" + phone);
-                }
+        OtpHelper.send(this, phone, new OtpHelper.SendCallback() {
+            @Override
+            public void onCodeSent(String verificationId) {
+                runOnUiThread(() -> {
+                    btnLogin.setEnabled(true);
+                    btnLogin.setText("Tiếp tục (Gửi mã OTP)");
+                    Intent intent = new Intent(LoginActivity.this, OtpActivity.class);
+                    intent.putExtra(OtpActivity.EXTRA_VERIFICATION_ID, verificationId);
+                    intent.putExtra(OtpActivity.EXTRA_PHONE, phone);
+                    intent.putExtra(OtpActivity.EXTRA_MODE, OtpActivity.MODE_LOGIN);
+                    startActivity(intent);
+                });
             }
-            userDao.upsert(user);
-            session.createLoginSession(user);
-            Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-            goToHome();
+
+            @Override
+            public void onFailed(String message) {
+                runOnUiThread(() -> {
+                    btnLogin.setEnabled(true);
+                    btnLogin.setText("Tiếp tục (Gửi mã OTP)");
+                    Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
+                });
+            }
         });
     }
 

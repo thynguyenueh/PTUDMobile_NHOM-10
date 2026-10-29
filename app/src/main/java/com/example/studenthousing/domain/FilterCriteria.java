@@ -56,7 +56,7 @@ public class FilterCriteria implements Serializable {
         }
 
         if (campusId != null && !campusId.isEmpty()) {
-            if (p.getNearbyCampusIds() == null || !p.getNearbyCampusIds().contains(campusId)) {
+            if (p.getNearbyCampusCodes() == null || !p.getNearbyCampusCodes().contains(campusId)) {
                 return false;
             }
             if (maxDistanceKm > 0.0 && p.getNearbyCampuses() != null) {
@@ -89,7 +89,7 @@ public class FilterCriteria implements Serializable {
         return true;
     }
 
-    static String normalize(String s) {
+    public static String normalize(String s) {
         if (s == null) return "";
         String n = Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("\\p{M}+", "");
         n = n.replace('đ', 'd').replace('Đ', 'D');

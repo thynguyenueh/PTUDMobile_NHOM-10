@@ -140,7 +140,7 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        viewModel.initChat(currentUserId, targetUserId, passedRoomId, postId, roomName);
+        viewModel.initChat(currentUserId, targetUserId, passedRoomId, null, roomName);
 
         // ============ 6. Buttons ============
         View btnSend = findViewById(R.id.btnSend);

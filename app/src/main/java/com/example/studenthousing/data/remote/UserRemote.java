@@ -33,16 +33,12 @@ public class UserRemote {
         publicData.put("universityName", user.getUniversityName());
         publicData.put("residenceVerified", user.isResidenceVerified());
         publicData.put("residenceVerifiedAt", user.getResidenceVerifiedAt());
-        publicData.put("fullyVerified", user.isFullyVerified());
         publicData.put("createdAt", user.getCreatedAt());
         publicData.put("updatedAt", System.currentTimeMillis());
-        publicData.put("phoneVerified", user.isPhoneVerified());
-        publicData.put("isVerified", user.isVerified());
 
         // 2. Tách thông tin riêng tư nhạy cảm ghi vào subcollection users/{uid}/private/sensitive_data
         Map<String, Object> sensitiveData = new HashMap<>();
         if (user.getPhone() != null) sensitiveData.put("phone", user.getPhone());
-        if (user.getCitizenIdHash() != null) sensitiveData.put("citizenIdHash", user.getCitizenIdHash());
         if (user.getCitizenIdFrontUrl() != null) sensitiveData.put("citizenIdFrontUrl", user.getCitizenIdFrontUrl());
         if (user.getCitizenIdBackUrl() != null) sensitiveData.put("citizenIdBackUrl", user.getCitizenIdBackUrl());
         if (user.getStudentCardUrl() != null) sensitiveData.put("studentCardUrl", user.getStudentCardUrl());
@@ -90,7 +86,6 @@ public class UserRemote {
                                 .addOnSuccessListener(privDoc -> {
                                     if (privDoc != null && privDoc.exists() && user != null) {
                                         if (privDoc.contains("phone")) user.setPhone(privDoc.getString("phone"));
-                                        if (privDoc.contains("citizenIdHash")) user.setCitizenIdHash(privDoc.getString("citizenIdHash"));
                                         if (privDoc.contains("permanentAddress")) user.setPermanentAddress(privDoc.getString("permanentAddress"));
                                     }
                                     if (cb != null) cb.onSuccess(user);

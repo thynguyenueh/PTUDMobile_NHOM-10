@@ -1,6 +1,10 @@
 package com.example.studenthousing.data.model;
 
-public class NearbyCampus {
+import java.io.Serializable;
+
+public class NearbyCampus implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String campusId;
     private double km;
     private boolean estimate;

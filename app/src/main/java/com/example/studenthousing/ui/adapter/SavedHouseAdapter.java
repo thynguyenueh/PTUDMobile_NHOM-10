@@ -27,17 +27,15 @@ public class SavedHouseAdapter extends RecyclerView.Adapter<SavedHouseAdapter.Sa
     public static class SavedHouseItem {
         public final String postId, title, address, imageUrl, campusSummary;
         public final int statusLabel;
-        public final boolean addressVerified;
 
         public SavedHouseItem(String postId, String title, String address, String imageUrl,
-                              String campusSummary, int statusLabel, boolean addressVerified) {
+                              String campusSummary, int statusLabel) {
             this.postId = postId;
             this.title = title;
             this.address = address;
             this.imageUrl = imageUrl;
             this.campusSummary = campusSummary;
             this.statusLabel = statusLabel;
-            this.addressVerified = addressVerified;
         }
 
         public static SavedHouseItem fromPost(Context context, AccommodationPost post) {
@@ -45,8 +43,7 @@ public class SavedHouseAdapter extends RecyclerView.Adapter<SavedHouseAdapter.Sa
             String address = PostDisplayFormatter.getPublicArea(context, post);
             return new SavedHouseItem(post.getPostId(), title, address, firstImage(post),
                     PostDisplayFormatter.getNearestCampusSummary(context, post),
-                    PostDisplayFormatter.getCompactStatusLabel(post),
-                    PostDisplayFormatter.isAddressVerified(post));
+                    PostDisplayFormatter.getCompactStatusLabel(post));
         }
 
         private static String firstImage(AccommodationPost post) {
@@ -97,7 +94,6 @@ public class SavedHouseAdapter extends RecyclerView.Adapter<SavedHouseAdapter.Sa
             tvAddress.setText(item.address);
             tvStatus.setVisibility(item.statusLabel == 0 ? View.GONE : View.VISIBLE);
             if (item.statusLabel != 0) tvStatus.setText(item.statusLabel);
-            ivVerified.setVisibility(item.addressVerified ? View.VISIBLE : View.GONE);
             tvDistance.setText(item.campusSummary == null ? "" : item.campusSummary);
             tvDistance.setVisibility(item.campusSummary == null ? View.GONE : View.VISIBLE);
             if (ivSavedPhoto != null) {

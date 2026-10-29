@@ -3,11 +3,14 @@ package com.example.studenthousing.ui.profile;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
 import com.example.studenthousing.R;
 import com.example.studenthousing.databinding.ActivityProfileBinding;
 import com.example.studenthousing.ui.auth.LoginActivity;
@@ -46,25 +49,20 @@ public class ProfileActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
         viewModel.getProfileState().observe(this, this::renderProfile);
 
-        bind(R.id.btnSettings, SettingsActivity.class);
+        bind(R.id.rowMyPosts, MyPostsActivity.class);
+        bind(R.id.rowSaved, SavedHousesActivity.class);
+        bind(R.id.rowSettings, SettingsActivity.class);
 
-        View reviewsButton = binding.includeProfileHeader.getRoot().findViewById(R.id.btnStatReviews);
-        if (reviewsButton != null) {
-            reviewsButton.setOnClickListener(v -> {
+        View rowReviewsMe = findViewById(R.id.rowReviewsAboutMe);
+        if (rowReviewsMe != null) {
+            rowReviewsMe.setOnClickListener(v -> {
                 Intent intent = new Intent(ProfileActivity.this, UserReviewsActivity.class);
                 intent.putExtra(UserReviewsActivity.EXTRA_TARGET_USER_ID, session.getUserId());
-                TextView name = binding.includeProfileHeader.getRoot().findViewById(R.id.tvProfileName);
+                TextView name = findViewById(R.id.tvProfileName);
                 intent.putExtra(UserReviewsActivity.EXTRA_TARGET_USER_NAME, name != null ? name.getText().toString() : "");
                 startActivity(intent);
             });
         }
-        View btnExchanges = binding.includeProfileHeader.getRoot().findViewById(R.id.btnStatExchanges);
-        if (btnExchanges != null) btnExchanges.setVisibility(View.GONE);
-
-        bindInHeader(R.id.btnStatPosts, MyPostsActivity.class);
-
-        bind(R.id.btnKyc, KycActivity.class);
-        bind(R.id.btnResidenceAuth, ResidenceVerificationActivity.class);
 
         setupBottomNav();
     }
@@ -84,43 +82,80 @@ public class ProfileActivity extends AppCompatActivity {
         com.example.studenthousing.data.model.User user = data.user;
         String familyName = user == null || user.getFamilyName() == null ? "Thành viên" : user.getFamilyName();
         String avatarUrl = user == null ? null : user.getAvatarUrl();
-        String phone = user == null ? null : user.getPhone();
-
-        TextView tvProfilePhone = binding.tvProfilePhone;
-        if (tvProfilePhone != null && phone != null && !phone.isEmpty()) {
-            String maskedPhone = phone.length() >= 6
-                    ? phone.substring(0, 3) + " ••• ••" + phone.substring(phone.length() - 2) : phone;
-            tvProfilePhone.setText(maskedPhone + " · TP. Hồ Chí Minh");
-        }
 
         String uni = user != null && user.getUniversityName() != null ? user.getUniversityName() : "Đại học Quốc gia TP.HCM";
-        View headerRoot = binding.includeProfileHeader.getRoot();
-        if (headerRoot != null) {
-            ProfileHeader.bind(headerRoot, familyName, uni, avatarUrl,
-                    user != null && user.isResidenceVerified(), data.postCount, data.reviewCount, data.exchangeCount);
+
+        boolean identityVerified = user != null && (user.isIdentityVerified() || "APPROVED".equalsIgnoreCase(data.kycStatus));
+        boolean residenceVerified = user != null && (user.isResidenceVerified() || "APPROVED".equalsIgnoreCase(data.residenceStatus));
+        boolean anyVerified = identityVerified || residenceVerified;
+
+        // Bind profile header elements directly
+        TextView tvName = findViewById(R.id.tvProfileName);
+        if (tvName != null) tvName.setText(familyName);
+
+        TextView tvSub = findViewById(R.id.tvProfileSub);
+        if (tvSub != null) {
+            tvSub.setText(uni);
+            tvSub.setVisibility(uni.isEmpty() ? View.GONE : View.VISIBLE);
         }
 
-        boolean residenceVerified = user != null && user.isResidenceVerified();
-        View verifiedTag = binding.tvVerifiedStatusTag;
-        if (verifiedTag != null) verifiedTag.setVisibility(residenceVerified ? View.VISIBLE : View.GONE);
-        TextView residenceSub = binding.tvResidenceAuthSub;
-        if (residenceSub != null) {
-            if (residenceVerified) setStatus(residenceSub, "✓ Đã xác thực cư trú", "#719B28");
-            else if ("PENDING".equalsIgnoreCase(data.residenceStatus)) setStatus(residenceSub, "⏳ Đang chờ Công an Phường đối soát", "#EAB308");
-            else setStatus(residenceSub, "Chưa gửi hồ sơ đối soát (CT07/VNeID)", "#6B7280");
+        ImageView ivAvatarImg = findViewById(R.id.ivProfileAvatarImg);
+        TextView tvAvatar = findViewById(R.id.tvProfileAvatar);
+        if (avatarUrl != null && !avatarUrl.isEmpty()) {
+            if (ivAvatarImg != null) {
+                ivAvatarImg.setVisibility(View.VISIBLE);
+                Glide.with(this).load(avatarUrl).circleCrop().into(ivAvatarImg);
+            }
+            if (tvAvatar != null) tvAvatar.setVisibility(View.GONE);
+        } else {
+            if (ivAvatarImg != null) ivAvatarImg.setVisibility(View.GONE);
+            if (tvAvatar != null) {
+                tvAvatar.setVisibility(View.VISIBLE);
+                tvAvatar.setText(initialOf(familyName));
+            }
         }
 
-        TextView kycSub = binding.tvKycStatusSub;
-        if (kycSub != null) {
-            if ((user != null && user.isVerified()) || "APPROVED".equalsIgnoreCase(data.kycStatus)) setStatus(kycSub, "✓ Đã xác minh Tích xanh", "#719B28");
-            else if ("PENDING".equalsIgnoreCase(data.kycStatus)) setStatus(kycSub, "⏳ Đang chờ đối soát trong 24h", "#EAB308");
-            else setStatus(kycSub, "Chưa xác minh", "#6B7280");
-        }
-    }
+        ImageView badge = findViewById(R.id.tvProfileVerifiedBadge);
+        if (badge != null) badge.setVisibility(anyVerified ? View.VISIBLE : View.GONE);
 
-    private void setStatus(TextView view, String text, String color) {
-        view.setText(text);
-        view.setTextColor(android.graphics.Color.parseColor(color));
+        TextView tvStatPosts = findViewById(R.id.tvStatPosts);
+        if (tvStatPosts != null) tvStatPosts.setText(String.valueOf(data.postCount));
+
+        TextView tvStatReviews = findViewById(R.id.tvStatReviews);
+        if (tvStatReviews != null) tvStatReviews.setText(String.valueOf(data.reviewCount));
+
+        // Verification buttons & status
+        View btnKyc = findViewById(R.id.btnKyc);
+        View btnKycAction = findViewById(R.id.btnKycAction);
+        View ivKycVerified = findViewById(R.id.ivKycVerified);
+        if (identityVerified) {
+            if (btnKycAction != null) btnKycAction.setVisibility(View.GONE);
+            if (ivKycVerified != null) ivKycVerified.setVisibility(View.VISIBLE);
+            if (btnKyc != null) btnKyc.setOnClickListener(v -> Toast.makeText(this, "Danh tính đã được xác thực", Toast.LENGTH_SHORT).show());
+        } else {
+            if (btnKycAction != null) {
+                btnKycAction.setVisibility(View.VISIBLE);
+                btnKycAction.setOnClickListener(v -> startActivity(new Intent(this, KycActivity.class)));
+            }
+            if (ivKycVerified != null) ivKycVerified.setVisibility(View.GONE);
+            if (btnKyc != null) btnKyc.setOnClickListener(v -> startActivity(new Intent(this, KycActivity.class)));
+        }
+
+        View btnResidence = findViewById(R.id.btnResidenceAuth);
+        View btnResidenceAction = findViewById(R.id.btnResidenceAction);
+        View ivResidenceVerified = findViewById(R.id.ivResidenceVerified);
+        if (residenceVerified) {
+            if (btnResidenceAction != null) btnResidenceAction.setVisibility(View.GONE);
+            if (ivResidenceVerified != null) ivResidenceVerified.setVisibility(View.VISIBLE);
+            if (btnResidence != null) btnResidence.setOnClickListener(v -> Toast.makeText(this, "Cư trú đã được xác thực", Toast.LENGTH_SHORT).show());
+        } else {
+            if (btnResidenceAction != null) {
+                btnResidenceAction.setVisibility(View.VISIBLE);
+                btnResidenceAction.setOnClickListener(v -> startActivity(new Intent(this, ResidenceVerificationActivity.class)));
+            }
+            if (ivResidenceVerified != null) ivResidenceVerified.setVisibility(View.GONE);
+            if (btnResidence != null) btnResidence.setOnClickListener(v -> startActivity(new Intent(this, ResidenceVerificationActivity.class)));
+        }
     }
 
     private void goToLogin() {
@@ -137,14 +172,11 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-    private void bindInHeader(int viewId, Class<?> target) {
-        View header = findViewById(R.id.includeProfileHeader);
-        if (header != null) {
-            View v = header.findViewById(viewId);
-            if (v != null) {
-                v.setOnClickListener(x -> startActivity(new Intent(ProfileActivity.this, target)));
-            }
-        }
+    private static String initialOf(String name) {
+        if (name == null || name.trim().isEmpty()) return "?";
+        String[] words = name.trim().split("\\s+");
+        String last = words[words.length - 1];
+        return last.substring(0, 1).toUpperCase(java.util.Locale.ROOT);
     }
 
     private void navigateTo(Class<?> targetActivity) {
@@ -165,7 +197,7 @@ public class ProfileActivity extends AppCompatActivity {
         com.google.android.material.badge.BadgeDrawable badge = nav.getOrCreateBadge(R.id.nav_messages);
         String userId = session.getUserId();
         new com.example.studenthousing.data.repository.ChatRepository(this).getUserRooms(userId,
-                new com.example.studenthousing.util.AppCallback<java.util.List<com.example.studenthousing.data.model.ChatRoom>>() {
+                new com.example.studenthousing.util.AppCallback<>() {
                     @Override public void onSuccess(java.util.List<com.example.studenthousing.data.model.ChatRoom> rooms) {
                         runOnUiThread(() -> {
                             int count = 0;

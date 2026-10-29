@@ -109,6 +109,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".ui.post.CampusDistanceDetailActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".ui.profile.ProfileActivity"
             android:exported="false" />
 

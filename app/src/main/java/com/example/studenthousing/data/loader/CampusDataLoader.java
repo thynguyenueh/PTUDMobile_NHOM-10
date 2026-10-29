@@ -18,15 +18,14 @@ public class CampusDataLoader {
     private static List<Campus> cachedCampuses = null;
 
     public static synchronized List<Campus> loadCampuses(Context context) {
-        if (cachedCampuses != null) {
-            return cachedCampuses;
-        }
+        if (cachedCampuses != null) return cachedCampuses;
         cachedCampuses = new ArrayList<>();
-        try {
-            InputStream is = context.getAssets().open("campuses.json");
+        if (context == null) return cachedCampuses;
+
+        try (InputStream is = context.getAssets().open("campuses.json")) {
             byte[] buffer = new byte[is.available()];
+            //noinspection ResultOfMethodCallIgnored
             is.read(buffer);
-            is.close();
 
             String jsonStr = new String(buffer, StandardCharsets.UTF_8);
             JSONArray array = new JSONArray(jsonStr);
@@ -37,12 +36,13 @@ public class CampusDataLoader {
                 c.setCampusCode(obj.optString("campusCode"));
                 c.setName(obj.optString("name"));
                 c.setFullName(obj.optString("fullName"));
-                c.setType(obj.optString("type"));
-                c.setSatellite(obj.optBoolean("isSatellite", false));
-                c.setCategory(obj.optString("category"));
                 c.setDistrict(obj.optString("district"));
                 c.setLat(obj.optDouble("lat", 0.0));
                 c.setLon(obj.optDouble("lon", 0.0));
+                // Bổ sung các field trước đây bị bỏ sót:
+                c.setType(obj.optString("type"));
+                c.setSatellite(obj.optBoolean("isSatellite", false));
+                c.setCategory(obj.optString("category"));
                 c.setOsmId(obj.optLong("osmId", 0L));
                 c.setOsmType(obj.optString("osmType"));
                 cachedCampuses.add(c);
@@ -61,5 +61,10 @@ public class CampusDataLoader {
             }
         }
         return null;
+    }
+
+    /** Xoá cache — hữu ích cho unit test hoặc khi hot-reload asset. */
+    public static synchronized void invalidateCache() {
+        cachedCampuses = null;
     }
 }

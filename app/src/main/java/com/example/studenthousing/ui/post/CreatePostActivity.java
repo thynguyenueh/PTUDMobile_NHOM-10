@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.studenthousing.R;
 import com.example.studenthousing.ui.adapter.SelectedPhotoAdapter;
 import com.example.studenthousing.ui.viewmodel.CreatePostViewModel;
-import com.example.studenthousing.util.AddressFingerprintUtil;
 import com.example.studenthousing.util.AppCallback;
 import com.example.studenthousing.util.UiState;
 import com.google.android.material.button.MaterialButton;
@@ -117,7 +116,7 @@ public class CreatePostActivity extends AppCompatActivity {
         btnSubmitPost = findViewById(R.id.btnSubmitPost);
         tvPhotoCount = findViewById(R.id.tvPhotoCount);
         tvPhotoHint = findViewById(R.id.tvPhotoHint);
-        rvSelectedPhotos = null;
+        rvSelectedPhotos = findViewById(R.id.rvSelectedPhotos);
         progressBar = findViewById(R.id.progressBar);
         chipGroupUtilities = findViewById(R.id.chipGroupUtilities);
         setupUtilitiesFromAsset();
@@ -162,6 +161,7 @@ public class CreatePostActivity extends AppCompatActivity {
         String houseNumber = getIntent().getStringExtra("POST_HOUSE_NUMBER");
         String administrativeAddress = getIntent().getStringExtra("POST_ADMIN_ADDRESS");
         ArrayList<String> utilities = getIntent().getStringArrayListExtra("POST_UTILITIES");
+        ArrayList<String> images = getIntent().getStringArrayListExtra("POST_IMAGES");
 
         if (etTitle != null && title != null) etTitle.setText(title);
         if (etAdminAddress != null) {
@@ -175,9 +175,38 @@ public class CreatePostActivity extends AppCompatActivity {
         String wardName = getIntent().getStringExtra("POST_WARD_NAME");
         if (wardName != null) selectedWardName = wardName;
 
-        if (chipGroupUtilities != null && utilities != null) {
-            for (String util : utilities) {
-                addUtilityChip(util, true);
+        if (images != null) {
+            for (String img : images) {
+                if (img != null && !img.trim().isEmpty()) {
+                    Uri uri = Uri.parse(img);
+                    if (!selectedImageUris.contains(uri)) {
+                        selectedImageUris.add(uri);
+                    }
+                }
+            }
+            updatePhotoPreview();
+        }
+
+        if (chipGroupUtilities != null) {
+            setupUtilitiesFromAsset();
+            if (utilities != null) {
+                for (String util : utilities) {
+                    boolean found = false;
+                    for (int i = 0; i < chipGroupUtilities.getChildCount(); i++) {
+                        View child = chipGroupUtilities.getChildAt(i);
+                        if (child instanceof Chip) {
+                            Chip c = (Chip) child;
+                            if (c.getText().toString().trim().equalsIgnoreCase(util.trim())) {
+                                c.setChecked(true);
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!found) {
+                        addUtilityChip(util, true, "ic_check");
+                    }
+                }
             }
         }
         if (tvPhotoHint != null) tvPhotoHint.setText("Bấm để chọn hoặc chỉnh sửa ảnh");
@@ -189,36 +218,61 @@ public class CreatePostActivity extends AppCompatActivity {
         if (etCustomUtility == null) return;
         String text = etCustomUtility.getText() != null ? etCustomUtility.getText().toString().trim() : "";
         if (!text.isEmpty()) {
-            addUtilityChip(text, true);
+            addUtilityChip(text, true, "ic_check");
             etCustomUtility.setText("");
         }
     }
 
     private void setupUtilitiesFromAsset() {
         if (chipGroupUtilities == null) return;
+        chipGroupUtilities.removeAllViews();
         List<com.example.studenthousing.data.model.Utility> utilities =
                 com.example.studenthousing.data.loader.UtilitiesDataLoader.loadUtilities(this);
         for (com.example.studenthousing.data.model.Utility u : utilities) {
-            addUtilityChip(u.getLabel(), false);
+            addUtilityChip(u.getLabel(), false, u.getIcon());
         }
     }
 
-    private void addUtilityChip(String text, boolean checked) {
-        if (chipGroupUtilities == null) return;
+    private int getIconResId(String iconName) {
+        if (iconName == null || iconName.trim().isEmpty()) {
+            return R.drawable.ic_check;
+        }
+        switch (iconName.trim().toLowerCase(java.util.Locale.ROOT)) {
+            case "ic_wifi": return R.drawable.ic_wifi;
+            case "ic_parking": return R.drawable.ic_parking_car;
+            case "ic_ac": return R.drawable.ic_air_conditioner;
+            case "ic_washer": return R.drawable.ic_check;
+            case "ic_fridge": return R.drawable.ic_kitchen;
+            case "ic_bath": return R.drawable.ic_check;
+            case "ic_security": return R.drawable.ic_shield_check;
+            case "ic_elevator": return R.drawable.ic_check;
+            case "ic_pet": return R.drawable.ic_check;
+            default: return R.drawable.ic_check;
+        }
+    }
+
+    private void addUtilityChip(String text, boolean checked, String iconName) {
+        if (chipGroupUtilities == null || text == null || text.trim().isEmpty()) return;
+        String trimmedText = text.trim();
         for (int i = 0; i < chipGroupUtilities.getChildCount(); i++) {
             View child = chipGroupUtilities.getChildAt(i);
             if (child instanceof Chip) {
                 Chip c = (Chip) child;
-                if (c.getText().toString().equalsIgnoreCase(text)) {
-                    c.setChecked(checked);
+                if (c.getText().toString().trim().equalsIgnoreCase(trimmedText)) {
+                    if (checked) c.setChecked(true);
                     return;
                 }
             }
         }
         Chip chip = new Chip(new android.view.ContextThemeWrapper(this, R.style.Widget_App_Chip), null, 0);
-        chip.setText(text);
+        chip.setText(trimmedText);
         chip.setCheckable(true);
         chip.setChecked(checked);
+
+        int iconRes = getIconResId(iconName);
+        chip.setChipIcon(androidx.core.content.ContextCompat.getDrawable(this, iconRes));
+        chip.setChipIconVisible(true);
+
         chipGroupUtilities.addView(chip);
     }
 
@@ -264,8 +318,7 @@ public class CreatePostActivity extends AppCompatActivity {
         }
 
         String fullAddress = houseNum + " " + streetAddr + ", " + adminAddr;
-        String fingerprint = AddressFingerprintUtil.build(selectedCityCode, selectedWardCode, streetAddr, houseNum);
-        viewModel.updatePost(editPostId, selectedImageUris, title, fullAddress, desc, utilities, selectedCityCode, selectedWardCode, selectedWardName, 2, fingerprint, houseNum, streetAddr);
+        viewModel.updatePost(editPostId, selectedImageUris, title, fullAddress, desc, utilities, selectedCityCode, selectedWardCode, selectedWardName, houseNum, streetAddr);
     }
 
     private void updatePhotoPreview() {
@@ -316,8 +369,10 @@ public class CreatePostActivity extends AppCompatActivity {
             return;
         }
         if (adminAddr.isEmpty()) {
-            if (tilAdminAddress != null) tilAdminAddress.setError("Vui lòng chọn Tỉnh/Thành, Phường/Xã");
-            else Toast.makeText(this, "Vui lòng chọn Tỉnh/Thành, Phường/Xã", Toast.LENGTH_SHORT).show();
+            if (tilAdminAddress != null)
+                tilAdminAddress.setError("Vui lòng chọn Tỉnh/Thành, Phường/Xã");
+            else
+                Toast.makeText(this, "Vui lòng chọn Tỉnh/Thành, Phường/Xã", Toast.LENGTH_SHORT).show();
             return;
         }
         if (houseNum.isEmpty()) {
@@ -348,39 +403,14 @@ public class CreatePostActivity extends AppCompatActivity {
             }
         }
 
-        String fingerprint = AddressFingerprintUtil.build(selectedCityCode, selectedWardCode, streetAddr, houseNum);
         final int fCityCode = selectedCityCode;
         final int fWardCode = selectedWardCode;
         final String finalTitle = title;
         final String finalFullAddress = fullAddress;
         final String finalDesc = desc;
         final List<String> finalUtilities = utilities;
-        final String finalFingerprint = fingerprint;
         final String finalHouseNum = houseNum;
         final String finalStreetName = streetAddr;
-
-        Runnable submitAction = () -> viewModel.submitPost(selectedImageUris, finalTitle, finalFullAddress, finalDesc, finalUtilities, fCityCode, fWardCode, selectedWardName, 2, finalFingerprint, finalHouseNum, finalStreetName);
-
-        viewModel.checkFirestoreDuplicate(finalFingerprint, new AppCallback<Boolean>() {
-            @Override
-            public void onSuccess(Boolean isDuplicate) {
-                if (Boolean.TRUE.equals(isDuplicate)) {
-                    runOnUiThread(() -> new AlertDialog.Builder(CreatePostActivity.this)
-                            .setTitle("Cảnh báo trùng lặp địa chỉ")
-                            .setMessage("Địa chỉ này trùng khớp với một bài đăng khác đã tồn tại trên hệ thống. Bạn có chắc chắn muốn tiếp tục đăng bài?")
-                            .setPositiveButton("Vẫn đăng", (dialog, which) -> submitAction.run())
-                            .setNegativeButton("Hủy", null)
-                            .show());
-                } else {
-                    submitAction.run();
-                }
-            }
-
-            @Override
-            public void onError(Exception e) {
-                submitAction.run();
-            }
-        });
     }
 
     private void openAddressPicker() {

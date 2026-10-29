@@ -16,12 +16,7 @@ public class CloudinaryUploader {
     private static final String CLOUD_NAME = "gomspy8v";
     private static final String UPLOAD_PRESET = "studenthousing_unsigned";
 
-    public interface UploadCallback {
-        void onSuccess(String imageUrl);
-        void onError(Exception e);
-    }
-
-    public static void uploadImage(File imageFile, UploadCallback callback) {
+    public static void uploadImage(File imageFile, AppCallback<String> callback) {
         OkHttpClient client = new OkHttpClient();
 
         String url = "https://api.cloudinary.com/v1_1/" + CLOUD_NAME + "/image/upload";

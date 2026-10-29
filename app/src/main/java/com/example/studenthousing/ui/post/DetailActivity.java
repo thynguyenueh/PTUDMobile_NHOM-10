@@ -47,7 +47,7 @@ public class DetailActivity extends AppCompatActivity {
             tvStatusBadge, tvHostRating, tvAreaMeta;
     private View tvHostVerified;
     private View cardHost, cardDistance, cardDescription, detailBottomBar;
-    private View btnChat, btnProposeSwap;
+    private View btnChat;
     private ImageView ivStar;
     private GridLayout gridAmenities;
     private TextView tvAmenitiesEmpty;
@@ -136,15 +136,9 @@ public class DetailActivity extends AppCompatActivity {
             if (currentPost != null) {
                 intent.putExtra("target_user_id", currentPost.getUserId());
                 intent.putExtra("ROOM_NAME", currentPost.getFamilyName());
-                intent.putExtra("POST_ID", currentPost.getPostId());
             }
             startActivity(intent);
         });
-
-        btnProposeSwap = findViewById(R.id.btnProposeSwap);
-        if (btnProposeSwap != null) {
-            btnProposeSwap.setVisibility(View.GONE);
-        }
     }
 
     private void renderPostImmediately(AccommodationPost post) {
@@ -153,7 +147,6 @@ public class DetailActivity extends AppCompatActivity {
         if (tvTitle != null && post.getTitle() != null) tvTitle.setText(post.getTitle());
         if (tvLocation != null) tvLocation.setText(formatPublicAddress(post, false));
         if (tvHostName != null && post.getFamilyName() != null) tvHostName.setText(post.getFamilyName());
-        bindPostMetadata(post);
         bindDescription(post.getDescription());
         setupAmenities(post.getUtilities());
         String currentUid = SessionManager.getUid(this);
@@ -175,25 +168,6 @@ public class DetailActivity extends AppCompatActivity {
         if (!ward.isEmpty()) return ward;
         if (!city.isEmpty()) return city;
         return "Đang ẩn địa chỉ chi tiết";
-    }
-
-    private void bindPostMetadata(AccommodationPost post) {
-        if (tvAreaMeta != null) {
-            boolean addressVerified = PostDisplayFormatter.isAddressVerified(post);
-            if (addressVerified) tvAreaMeta.setText("Đã xác thực địa chỉ");
-            tvAreaMeta.setVisibility(addressVerified ? View.VISIBLE : View.GONE);
-        }
-        if (tvStatusBadge != null) {
-            boolean available = Constants.POST_AVAILABLE.equalsIgnoreCase(post.getStatus());
-            tvStatusBadge.setText(available ? "Sẵn sàng" : "Đã cho thuê");
-            tvStatusBadge.setBackgroundResource(available
-                    ? R.drawable.bg_badge_verified
-                    : R.drawable.bg_badge_distance);
-            tvStatusBadge.setTextColor(getColor(available
-                    ? R.color.olive_primary_dark
-                    : R.color.text_sub));
-            tvStatusBadge.setVisibility(View.VISIBLE);
-        }
     }
 
     private void bindDescription(String description) {
@@ -225,11 +199,9 @@ public class DetailActivity extends AppCompatActivity {
                     intent.putExtra("POST_WARD_CODE", post.getWardCode());
                     intent.putExtra("POST_WARD_NAME", post.getWardName());
                     intent.putStringArrayListExtra("POST_UTILITIES", post.getUtilities() != null ? new ArrayList<>(post.getUtilities()) : new ArrayList<>());
+                    intent.putStringArrayListExtra("POST_IMAGES", post.getImages() != null ? new ArrayList<>(post.getImages()) : new ArrayList<>());
                     startActivity(intent);
                 });
-            }
-            if (btnProposeSwap != null) {
-                btnProposeSwap.setVisibility(View.GONE);
             }
         } else {
             boolean available = Constants.POST_AVAILABLE.equalsIgnoreCase(post.getStatus());
@@ -241,13 +213,9 @@ public class DetailActivity extends AppCompatActivity {
                     if (currentPost != null) {
                         intent.putExtra("target_user_id", currentPost.getUserId());
                         intent.putExtra("ROOM_NAME", currentPost.getFamilyName());
-                        intent.putExtra("POST_ID", currentPost.getPostId());
                     }
                     startActivity(intent);
                 });
-            }
-            if (btnProposeSwap != null) {
-                btnProposeSwap.setVisibility(View.GONE);
             }
         }
     }
@@ -274,7 +242,6 @@ public class DetailActivity extends AppCompatActivity {
         if (tvLocation != null) {
             tvLocation.setText(formatPublicAddress(post, isOwner));
         }
-        bindPostMetadata(post);
         updateActionAvailability(isOwner, post);
         if (tvHostName != null && post.getFamilyName() != null && !post.getFamilyName().isEmpty()) {
             tvHostName.setText(post.getFamilyName());
@@ -319,26 +286,39 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void setupNearbyCampuses(List<NearbyCampus> nearby) {
-        LinearLayout container = null;
-        if (container == null) return;
+        View cardDist = findViewById(R.id.cardDistance);
+        LinearLayout container = findViewById(R.id.containerNearbyUnis);
+        if (container == null || cardDist == null) return;
         container.removeAllViews();
-        if (nearby != null) {
-            for (NearbyCampus campus : nearby) {
-                if (campus == null || campus.getCampusId() == null || campus.getKm() <= 0) continue;
-                Campus campusModel = CampusRepository.getInstance(this).findByCode(campus.getCampusId());
-                String name = campusModel == null ? campus.getCampusId() : campusModel.getDisplayName();
-                String distance = String.format(java.util.Locale.getDefault(), "%.1f km", campus.getKm());
-                TextView item = new TextView(this);
-                item.setText("Cách " + name + ": " + (campus.isEstimate() ? "~" + distance : distance));
-                item.setTextColor(getColor(R.color.surface_card));
-                item.setTextSize(13);
-                item.setPadding(48, 4, 0, 4);
-                container.addView(item);
-            }
+        if (nearby == null || nearby.isEmpty()) {
+            cardDist.setVisibility(View.GONE);
+            return;
         }
-        if (cardDistance != null) {
-            cardDistance.setVisibility(container.getChildCount() > 0 ? View.VISIBLE : View.GONE);
+
+        List<NearbyCampus> sorted = new ArrayList<>(nearby);
+        sorted.sort((a, b) -> Double.compare(a.getKm(), b.getKm()));
+        int limit = Math.min(5, sorted.size());
+
+        for (int i = 0; i < limit; i++) {
+            NearbyCampus campus = sorted.get(i);
+            if (campus == null || campus.getCampusId() == null || campus.getKm() <= 0) continue;
+            Campus campusModel = CampusRepository.getInstance(this).findByCode(campus.getCampusId());
+            String name = campusModel == null ? campus.getCampusId() : campusModel.getDisplayName();
+            String distance = String.format(java.util.Locale.getDefault(), "%.1f km", campus.getKm());
+            TextView item = new TextView(this);
+            item.setText("• Cách " + name + ": " + (campus.isEstimate() ? "~" + distance : distance));
+            item.setTextColor(getColor(R.color.surface_card));
+            item.setTextSize(13);
+            item.setPadding(0, 4, 0, 4);
+            container.addView(item);
         }
+
+        cardDist.setVisibility(container.getChildCount() > 0 ? View.VISIBLE : View.GONE);
+        cardDist.setOnClickListener(v -> {
+            Intent intent = new Intent(this, CampusDistanceDetailActivity.class);
+            intent.putExtra("NEARBY_CAMPUSES", new ArrayList<>(sorted));
+            startActivity(intent);
+        });
     }
 
     private void setupAmenities(List<String> utilities) {

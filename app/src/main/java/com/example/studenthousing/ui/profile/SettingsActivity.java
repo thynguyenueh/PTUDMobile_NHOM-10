@@ -39,8 +39,7 @@ public class SettingsActivity extends AppCompatActivity {
                 startActivity(intent);
             });
         }
-        bind(R.id.btnTerms, "Điều khoản dịch vụ");
-        bind(R.id.btnPrivacy, "Chính sách bảo mật");
+
 
         View btnLogout = findViewById(R.id.btnLogout);
         if (btnLogout != null) {
@@ -106,13 +105,6 @@ public class SettingsActivity extends AppCompatActivity {
                     tvSettingUniversity.setText(u.getUniversityName() != null && !u.getUniversityName().isEmpty() ? u.getUniversityName() : (u.getUniversityCode() != null ? u.getUniversityCode() : "Chưa cập nhật"));
                 }
             }
-        }
-    }
-
-    private void bind(int viewId, String toastMsg) {
-        View v = findViewById(viewId);
-        if (v != null) {
-            v.setOnClickListener(x -> Toast.makeText(SettingsActivity.this, toastMsg, Toast.LENGTH_SHORT).show());
         }
     }
 }

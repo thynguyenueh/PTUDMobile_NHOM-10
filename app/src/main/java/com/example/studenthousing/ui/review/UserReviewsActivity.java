@@ -89,21 +89,6 @@ public class UserReviewsActivity extends AppCompatActivity {
             return;
         }
         boolean isOtherUser = currentUserId != null && !targetUserId.equals(currentUserId);
-
-        if (binding.layoutBottomAction != null) {
-            binding.layoutBottomAction.setVisibility(isOtherUser ? View.VISIBLE : View.GONE);
-        }
-
-        if (binding.btnWriteReview != null) {
-            binding.btnWriteReview.setOnClickListener(v -> {
-                if (targetUserId == null || targetUserId.trim().isEmpty() || targetUserId.equals(currentUserId)) return;
-                Intent intent = new Intent(UserReviewsActivity.this, ReviewActivity.class);
-                intent.putExtra(ReviewActivity.EXTRA_REQUEST_ID, "req_general");
-                intent.putExtra(ReviewActivity.EXTRA_TARGET_USER_ID, targetUserId);
-                intent.putExtra(ReviewActivity.EXTRA_TARGET_USER_NAME, targetUserName != null ? targetUserName : "Đối tác đổi nhà");
-                startActivity(intent);
-            });
-        }
     }
 
     @Override

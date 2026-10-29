@@ -3,31 +3,29 @@ package com.example.studenthousing.data.repository;
 import android.content.Context;
 
 import com.example.studenthousing.data.local.PostDao;
-import com.example.studenthousing.data.local.VerifiedAddressDao;
 import com.example.studenthousing.data.model.AccommodationPost;
-import com.example.studenthousing.data.model.VerifiedAddress;
 import com.example.studenthousing.data.remote.PostRemote;
-import com.example.studenthousing.util.AddressFingerprintUtil;
 import com.example.studenthousing.util.AppCallback;
 import com.example.studenthousing.util.Constants;
 import com.example.studenthousing.util.NetworkUtils;
 import com.example.studenthousing.util.SessionManager;
-import com.example.studenthousing.util.VerificationBadge;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class PostRepository {
     private final Context ctx;
     private final PostDao local;
-    private final VerifiedAddressDao addressDao;
     private final PostRemote remote;
 
     public PostRepository(Context ctx) {
         this.ctx = ctx.getApplicationContext();
         this.local = new PostDao(this.ctx);
-        this.addressDao = new VerifiedAddressDao(this.ctx);
         this.remote = new PostRemote();
     }
 
@@ -39,7 +37,20 @@ public class PostRepository {
                 @Override
                 public void onSuccess(List<AccommodationPost> posts) {
                     local.replaceServerSnapshot(posts);
-                    cb.onSuccess(posts);
+                    // Merge remote + pending local để không mất bài chưa sync
+                    Map<String, AccommodationPost> merged = new LinkedHashMap<>();
+                    if (posts != null) {
+                        for (AccommodationPost p : posts) {
+                            if (p.getPostId() != null) merged.put(p.getPostId(), p);
+                        }
+                    }
+                    for (AccommodationPost p : local.getAll()) {
+                        String id = p.getPostId();
+                        if (id != null && !merged.containsKey(id)) {
+                            merged.put(id, p);
+                        }
+                    }
+                    cb.onSuccess(new ArrayList<>(merged.values()));
                 }
 
                 @Override
@@ -81,32 +92,9 @@ public class PostRepository {
     public void createPost(AccommodationPost p, AppCallback<String> cb) {
         String oldTempId = p.getPostId();
         if (oldTempId == null || oldTempId.isEmpty() || !oldTempId.startsWith("temp_")) {
-            oldTempId = "temp_" + System.currentTimeMillis();
+            oldTempId = "temp_" + UUID.randomUUID();
             p.setPostId(oldTempId);
         }
-
-        if (p.getAddressFingerprint() == null || p.getAddressFingerprint().isEmpty()) {
-            String fp = AddressFingerprintUtil.build(
-                    p.getCityCode(),
-                    p.getWardCode(),
-                    p.getStreetName() != null ? p.getStreetName() : "",
-                    p.getHouseNumber() != null ? p.getHouseNumber() : ""
-            );
-            p.setAddressFingerprint(fp);
-        }
-
-        VerifiedAddress verifiedAddr = addressDao.findByFingerprint(p.getAddressFingerprint());
-        if (verifiedAddr != null) {
-            if (p.getUserId() != null && p.getUserId().equals(verifiedAddr.getOwnerUserId())) {
-                p.setAddressVerificationStatus(Constants.ADDR_VERIFIED);
-            } else {
-                p.setAddressVerificationStatus(Constants.ADDR_DISPUTED);
-            }
-        } else {
-            p.setAddressVerificationStatus(Constants.ADDR_UNVERIFIED);
-        }
-
-        p.setVerificationBadge(VerificationBadge.addressBadgeText(p.getAddressVerificationStatus()));
         p.setSyncStatus(Constants.SYNC_PENDING_CREATE);
         local.upsert(p);
 
@@ -249,32 +237,29 @@ public class PostRepository {
         AccommodationPost cached = local.getById(postId);
 
         if (NetworkUtils.isOnline(ctx)) {
-            FirebaseFirestore.getInstance()
-                    .collection("accommodation_posts")
-                    .document(postId)
-                    .get()
-                    .addOnSuccessListener(doc -> {
-                        if (doc.exists()) {
-                            AccommodationPost post = doc.toObject(AccommodationPost.class);
-                            if (post != null) {
-                                post.setPostId(doc.getId());
-                                post.setSyncStatus(Constants.SYNC_SYNCED);
-                                local.upsert(post);
-                            }
-                            if (cb != null) cb.onSuccess(post);
-                        } else if (cached != null) {
-                            if (cb != null) cb.onSuccess(cached);
-                        } else if (cb != null) {
-                            cb.onError(new Exception("Không tìm thấy bài đăng"));
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        if (cached != null) {
-                            if (cb != null) cb.onSuccess(cached);
-                        } else if (cb != null) {
-                            cb.onError(e);
-                        }
-                    });
+            remote.getById(postId, new AppCallback<AccommodationPost>() {
+                @Override
+                public void onSuccess(AccommodationPost post) {
+                    if (post != null) {
+                        post.setSyncStatus(Constants.SYNC_SYNCED);
+                        local.upsert(post);
+                        if (cb != null) cb.onSuccess(post);
+                    } else if (cached != null) {
+                        if (cb != null) cb.onSuccess(cached);
+                    } else if (cb != null) {
+                        cb.onError(new Exception("Không tìm thấy bài đăng"));
+                    }
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    if (cached != null) {
+                        if (cb != null) cb.onSuccess(cached);
+                    } else if (cb != null) {
+                        cb.onError(e);
+                    }
+                }
+            });
         } else if (cached != null) {
             if (cb != null) cb.onSuccess(cached);
         } else if (cb != null) {

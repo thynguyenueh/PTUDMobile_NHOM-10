@@ -23,7 +23,6 @@ import com.example.studenthousing.util.OtpHelper;
 import com.example.studenthousing.ui.dialog.SearchListDialog;
 import com.example.studenthousing.util.SessionManager;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -32,10 +31,9 @@ import java.util.List;
 public class RegisterActivity extends AppCompatActivity {
 
     private ImageView btnBack;
-    private TextInputLayout tilParentName, tilPhone, tilPassword, tilUniversity;
-    private TextInputEditText etParentName, etPhone, etPassword, tvUniversity;
-    private TextView tvLoginLink, tvHeaderTitle;
-    private MaterialCheckBox cbTerms;
+    private TextInputLayout tilParentName, tilPhone, tilUniversity;
+    private TextInputEditText etParentName, etPhone, tvUniversity;
+    private TextView tvHeaderTitle;
     private MaterialButton btnContinue;
 
     private boolean isEditMode = false;
@@ -65,21 +63,15 @@ public class RegisterActivity extends AppCompatActivity {
         etParentName = findViewById(R.id.etParentName);
         tilPhone = findViewById(R.id.tilPhone);
         etPhone = findViewById(R.id.etPhone);
-        tilPassword = findViewById(R.id.tilPassword);
-        etPassword = findViewById(R.id.etPassword);
         tilUniversity = findViewById(R.id.tilUniversity);
         tvUniversity = findViewById(R.id.tvUniversity);
-        cbTerms = findViewById(R.id.cbTerms);
         btnContinue = findViewById(R.id.btnContinue);
-        tvLoginLink = findViewById(R.id.tvLoginLink);
     }
 
     private void setupMode() {
         if (isEditMode) {
             tvHeaderTitle.setText("Chỉnh sửa thông tin");
             btnContinue.setText("Lưu thay đổi");
-            tvLoginLink.setVisibility(View.GONE);
-            cbTerms.setChecked(true);
 
             if (session.getUserPhone() != null && etPhone != null) etPhone.setText(session.getUserPhone());
             if (session.getUserFamilyName() != null && etParentName != null) etParentName.setText(session.getUserFamilyName());
@@ -115,7 +107,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void setupEvents() {
         if (btnBack != null) btnBack.setOnClickListener(v -> finish());
-        if (tvLoginLink != null) tvLoginLink.setOnClickListener(v -> finish());
         if (btnContinue != null) btnContinue.setOnClickListener(v -> handleContinueOrSave());
 
         View.OnClickListener selectUniListener = v -> {
@@ -141,7 +132,6 @@ public class RegisterActivity extends AppCompatActivity {
     private void clearErrors() {
         if (tilParentName != null) tilParentName.setError(null);
         if (tilPhone != null) tilPhone.setError(null);
-        if (tilPassword != null) tilPassword.setError(null);
         if (tilUniversity != null) tilUniversity.setError(null);
     }
 
@@ -154,7 +144,6 @@ public class RegisterActivity extends AppCompatActivity {
     private void handleContinueOrSave() {
         String parentName = etParentName != null && etParentName.getText() != null ? etParentName.getText().toString().trim() : "";
         String rawPhone = etPhone != null && etPhone.getText() != null ? etPhone.getText().toString().trim() : "";
-        String password = etPassword != null && etPassword.getText() != null ? etPassword.getText().toString().trim() : "";
 
         clearErrors();
 
@@ -168,7 +157,7 @@ public class RegisterActivity extends AppCompatActivity {
             String phoneEdit = !TextUtils.isEmpty(rawPhone) ? OtpHelper.toLocal(rawPhone) : session.getUserPhone();
             String universityEdit = tvUniversity != null && tvUniversity.getText() != null
                     ? cleanSelectedText(tvUniversity.getText().toString()) : "";
-            registerOrUpdateUser(parentName, phoneEdit, universityEdit, session.getUserId(), null);
+            registerOrUpdateUser(parentName, phoneEdit, universityEdit, session.getUserId());
             return;
         }
 
@@ -182,20 +171,10 @@ public class RegisterActivity extends AppCompatActivity {
             if (etPhone != null) etPhone.requestFocus();
             return;
         }
-        if (TextUtils.isEmpty(password) || password.length() < 6) {
-            if (tilPassword != null) tilPassword.setError("Mật khẩu phải có ít nhất 6 ký tự");
-            if (etPassword != null) etPassword.requestFocus();
-            return;
-        }
-
-        if (cbTerms != null && !cbTerms.isChecked()) {
-            Toast.makeText(this, "Vui lòng đồng ý với Điều khoản dịch vụ", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
         final String phone = OtpHelper.toLocal(rawPhone);
         UserDao userDao = new UserDao(this);
-        if (userDao.getByPhone(phone) != null) {
+        if (!isEditMode && userDao.getByPhone(phone) != null && (verifiedPhone == null || !verifiedPhone.equals(phone))) {
             if (tilPhone != null) tilPhone.setError("Số điện thoại này đã được đăng ký");
             if (etPhone != null) etPhone.requestFocus();
             Toast.makeText(this, "Số điện thoại này đã được đăng ký!", Toast.LENGTH_SHORT).show();
@@ -203,11 +182,11 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         final String university = tvUniversity != null && tvUniversity.getText() != null ? cleanSelectedText(tvUniversity.getText().toString()) : "";
-        String newUid = "user_" + System.currentTimeMillis();
-        registerOrUpdateUser(parentName, phone, university, newUid, password);
+        String newUid = googleUid != null && !googleUid.isEmpty() ? googleUid : ("user_" + System.currentTimeMillis());
+        registerOrUpdateUser(parentName, phone, university, newUid);
     }
 
-    private void registerOrUpdateUser(String parentName, String phone, String university, String customUid, String password) {
+    private void registerOrUpdateUser(String parentName, String phone, String university, String customUid) {
         long now = System.currentTimeMillis();
         UserDao userDao = new UserDao(this);
         final User user;
@@ -228,13 +207,9 @@ public class RegisterActivity extends AppCompatActivity {
         }
         if (phone != null) user.setPhone(phone);
         user.setFamilyName(parentName);
-        if (password != null && !password.isEmpty()) {
-            user.setPassword(password);
-        }
         if (university != null && !university.isEmpty()) {
             user.setUniversityName(university);
         }
-        user.setPhoneVerified(true);
         user.setUpdatedAt(now);
 
         userDao.upsert(user);

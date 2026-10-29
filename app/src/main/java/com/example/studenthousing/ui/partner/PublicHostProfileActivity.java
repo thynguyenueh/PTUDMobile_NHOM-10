@@ -127,8 +127,20 @@ public class PublicHostProfileActivity extends AppCompatActivity {
             if (ivHostAvatarImg != null) ivHostAvatarImg.setVisibility(View.GONE);
         }
 
+        boolean isStudentVerified = user.isIdentityVerified() || (user.getIdentityType() != null && "STUDENT".equalsIgnoreCase(user.getIdentityType()));
+        boolean isCccdVerified = user.isIdentityVerified() || (user.getIdentityType() != null && "CITIZEN".equalsIgnoreCase(user.getIdentityType()));
+        boolean isPoliceVerified = user.isResidenceVerified();
+
+        View rowStudent = findViewById(R.id.layoutStudentVerifyRow);
+        View rowCccd = findViewById(R.id.layoutCccdVerifyRow);
+        View rowPolice = findViewById(R.id.layoutPoliceVerifyRow);
+
+        if (rowStudent != null) rowStudent.setVisibility(isStudentVerified ? View.VISIBLE : View.GONE);
+        if (rowCccd != null) rowCccd.setVisibility(isCccdVerified ? View.VISIBLE : View.GONE);
+        if (rowPolice != null) rowPolice.setVisibility(isPoliceVerified ? View.VISIBLE : View.GONE);
+
         if (ivVerifiedBadge != null) {
-            ivVerifiedBadge.setVisibility(user.isResidenceVerified() || user.isVerified() ? View.VISIBLE : View.GONE);
+            ivVerifiedBadge.setVisibility(isStudentVerified || isCccdVerified || isPoliceVerified ? View.VISIBLE : View.GONE);
         }
         if (tvStudentInfo != null) {
             String role = "Thành viên";
@@ -137,21 +149,17 @@ public class PublicHostProfileActivity extends AppCompatActivity {
             tvStudentInfo.setText(role + uni);
         }
 
-        boolean isStudentVerified = user.isVerified() || (user.getIdentityType() != null && !"NONE".equalsIgnoreCase(user.getIdentityType()));
-        boolean isCccdVerified = user.isVerified() || user.isIdentityVerified();
-        boolean isPoliceVerified = user.isResidenceVerified();
-
         if (tvStudentVerifyStatus != null) {
-            tvStudentVerifyStatus.setText(isStudentVerified ? "Đã xác thực" : "Chưa xác thực");
-            tvStudentVerifyStatus.setTextColor(getColor(isStudentVerified ? R.color.primary : R.color.text_sub));
+            tvStudentVerifyStatus.setText("Đã xác thực");
+            tvStudentVerifyStatus.setTextColor(getColor(R.color.primary));
         }
         if (tvCccdVerifyStatus != null) {
-            tvCccdVerifyStatus.setText(isCccdVerified ? "Đã xác thực" : "Chưa xác thực");
-            tvCccdVerifyStatus.setTextColor(getColor(isCccdVerified ? R.color.primary : R.color.text_sub));
+            tvCccdVerifyStatus.setText("Đã xác thực");
+            tvCccdVerifyStatus.setTextColor(getColor(R.color.primary));
         }
         if (tvPoliceVerifyStatus != null) {
-            tvPoliceVerifyStatus.setText(isPoliceVerified ? "Đã xác thực" : "Chưa xác thực");
-            tvPoliceVerifyStatus.setTextColor(getColor(isPoliceVerified ? R.color.primary : R.color.text_sub));
+            tvPoliceVerifyStatus.setText("Đã xác thực");
+            tvPoliceVerifyStatus.setTextColor(getColor(R.color.primary));
         }
     }
 

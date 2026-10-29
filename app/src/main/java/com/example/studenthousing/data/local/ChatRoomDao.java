@@ -97,8 +97,6 @@ public class ChatRoomDao {
         v.put("participants", participantsToFormattedString(r.getParticipantIds()));
         v.put(DatabaseHelper.COL_LAST_MESSAGE, r.getLastMessage());
         v.put(DatabaseHelper.COL_LAST_MESSAGE_AT, r.getLastMessageTime());
-        v.put("post_id", r.getPostId());
-        v.put("post_title", r.getPostTitle());
         v.put("last_sender_id", r.getLastSenderId());
         v.put("created_at", r.getCreatedAt());
         v.put(DatabaseHelper.COL_CACHED_AT, System.currentTimeMillis());
@@ -111,8 +109,6 @@ public class ChatRoomDao {
         r.setParticipantIds(formattedStringToParticipants(c.getString(c.getColumnIndexOrThrow("participants"))));
         r.setLastMessage(c.getString(c.getColumnIndexOrThrow(DatabaseHelper.COL_LAST_MESSAGE)));
         r.setLastMessageTime(c.getLong(c.getColumnIndexOrThrow(DatabaseHelper.COL_LAST_MESSAGE_AT)));
-        r.setPostId(c.getString(c.getColumnIndexOrThrow("post_id")));
-        r.setPostTitle(c.getString(c.getColumnIndexOrThrow("post_title")));
         r.setLastSenderId(c.getString(c.getColumnIndexOrThrow("last_sender_id")));
         r.setCreatedAt(c.getLong(c.getColumnIndexOrThrow("created_at")));
         return r;

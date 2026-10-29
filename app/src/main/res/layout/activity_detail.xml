@@ -149,6 +149,14 @@
 
                 <include layout="@layout/layout_host_card" />
 
+                <TextView
+                    style="@style/TextAppearance.App.SectionTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xl"
+                    android:textSize="@dimen/text_body_lg2"
+                    android:text="@string/label_nearby_schools" />
+
                 <include layout="@layout/layout_distance_card" />
 
                 <TextView

@@ -25,6 +25,7 @@ public class MessageRemote {
             return;
         }
         msg.setRoomId(roomId);
+        msg.setRead(false);
         db.collection(ROOM_COLLECTION).document(roomId)
                 .collection(MSG_SUBCOLLECTION).document(messageId)
                 .set(msg)
@@ -115,7 +116,6 @@ public class MessageRemote {
 
                         if (!isRead && !currentUserId.equals(senderId)) {
                             batch.update(doc.getReference(), "read", true);
-                            batch.update(doc.getReference(), "isRead", true);
                             hasUnreadFromOther[0] = true;
                         }
                     }

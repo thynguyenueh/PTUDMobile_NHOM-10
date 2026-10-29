@@ -57,8 +57,6 @@ public class ChatRepository {
         ChatRoom room = new ChatRoom();
         room.setRoomId(safeRoomId);
         room.setParticipantIds(normalizedParticipants);
-        room.setPostId(postId);
-        room.setPostTitle(postTitle);
         room.setCreatedAt(System.currentTimeMillis());
         localRooms.upsert(room);
 
@@ -109,9 +107,13 @@ public class ChatRepository {
         }
         msg.setRoomId(roomId);
 
-        ChatRoom room = new ChatRoom();
-        room.setRoomId(roomId);
-        room.setLastMessage("IMAGE".equals(msg.getType()) ? "[Hình ảnh]" : msg.getContent());
+        ChatRoom existingRoom = localRooms.getById(roomId);
+        ChatRoom room = existingRoom != null ? existingRoom : new ChatRoom();
+        if (existingRoom == null) {
+            room.setRoomId(roomId);
+            room.setCreatedAt(System.currentTimeMillis());
+        }
+        room.setLastMessage("IMAGE".equals(msg.getType()) ? "[Hình ảnh]" : (msg.getContent() != null ? msg.getContent() : ""));
         room.setLastMessageTime(msg.getSentAt());
         room.setLastSenderId(msg.getSenderId());
         localRooms.upsert(room);

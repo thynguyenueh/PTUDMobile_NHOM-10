@@ -58,5 +58,4 @@ public class MyPostsViewModel extends AndroidViewModel {
     }
 
     public void delete(String postId, AppCallback<Void> callback) { repository.deletePost(postId, callback); }
-    public void updateStatus(String postId, String status, AppCallback<Void> callback) { repository.updatePostStatus(postId, status, callback); }
 }

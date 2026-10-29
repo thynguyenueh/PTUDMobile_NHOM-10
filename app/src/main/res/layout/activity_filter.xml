@@ -39,28 +39,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Search Query (Tên, khu vực, từ khóa) -->
-            <TextView
-                style="@style/TextAppearance.App.SectionTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/search_query_hint" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilSearchQuery"
-                style="@style/Widget.App.FormField"
-                android:layout_marginTop="@dimen/space_xs"
-                android:layout_marginBottom="@dimen/space_lg"
-                app:startIconDrawable="@drawable/ic_search">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etSearchQuery"
-                    style="@style/Widget.App.FormInput"
-                    android:hint="@string/search_query_hint"
-                    android:inputType="text"
-                    android:imeOptions="actionSearch" />
-            </com.google.android.material.textfield.TextInputLayout>
-
             <!-- Location (Ward) -->
             <TextView
                 style="@style/TextAppearance.App.SectionTitle"
@@ -197,17 +175,7 @@
                 android:id="@+id/chipGroupFilterUtilities"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_xs">
-
-                <com.google.android.material.chip.Chip style="@style/Widget.App.Chip" android:checkable="true" android:text="Wifi" />
-                <com.google.android.material.chip.Chip style="@style/Widget.App.Chip" android:checkable="true" android:text="Máy lạnh" />
-                <com.google.android.material.chip.Chip style="@style/Widget.App.Chip" android:checkable="true" android:text="Máy giặt" />
-                <com.google.android.material.chip.Chip style="@style/Widget.App.Chip" android:checkable="true" android:text="Chỗ đậu xe" />
-                <com.google.android.material.chip.Chip style="@style/Widget.App.Chip" android:checkable="true" android:text="Tủ lạnh" />
-                <com.google.android.material.chip.Chip style="@style/Widget.App.Chip" android:checkable="true" android:text="Khóa vân tay" />
-                <com.google.android.material.chip.Chip style="@style/Widget.App.Chip" android:checkable="true" android:text="Gác lửng" />
-                <com.google.android.material.chip.Chip style="@style/Widget.App.Chip" android:checkable="true" android:text="Bếp riêng" />
-            </com.google.android.material.chip.ChipGroup>
+                android:layout_marginTop="@dimen/space_xs" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

@@ -14,23 +14,19 @@ public class AccommodationPost {
     private String familyName;
     private String title;
     private String address;
-    private String addressFingerprint;
-    private String addressVerificationStatus = Constants.ADDR_UNVERIFIED;
+    private String addressValidationStatus = Constants.ADDR_UNCHECKED;
     private int cityCode = Constants.TPHCM_CITY_CODE;
     private int wardCode;
     private String cityName = Constants.TPHCM_CITY_NAME;
     private String wardName;
     private String streetName;
-    @Exclude
     private String houseNumber;
-    @Exclude
     private double latitude;
-    @Exclude
     private double longitude;
     @Exclude
     private String verificationBadge;
     private List<NearbyCampus> nearbyCampuses;
-    private List<String> nearbyCampusIds;
+    private List<String> nearbyCampusCodes = new ArrayList<>();
     private double distanceKm;
     private String distanceSource;
     private boolean isDistanceEstimate;
@@ -62,11 +58,8 @@ public class AccommodationPost {
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
 
-    public String getAddressFingerprint() { return addressFingerprint; }
-    public void setAddressFingerprint(String addressFingerprint) { this.addressFingerprint = addressFingerprint; }
-
-    public String getAddressVerificationStatus() { return addressVerificationStatus; }
-    public void setAddressVerificationStatus(String addressVerificationStatus) { this.addressVerificationStatus = addressVerificationStatus; }
+    public String getAddressValidationStatus() { return addressValidationStatus; }
+    public void setAddressValidationStatus(String addressValidationStatus) { this.addressValidationStatus = addressValidationStatus; }
 
     public int getCityCode() { return cityCode; }
     public void setCityCode(int cityCode) { this.cityCode = cityCode; }
@@ -109,14 +102,14 @@ public class AccommodationPost {
             for (NearbyCampus n : nearbyCampuses) {
                 if (n.getCampusId() != null) ids.add(n.getCampusId());
             }
-            this.nearbyCampusIds = ids;
+            this.nearbyCampusCodes = ids;
         } else {
-            this.nearbyCampusIds = null;
+            this.nearbyCampusCodes = null;
         }
     }
 
-    public List<String> getNearbyCampusIds() { return nearbyCampusIds; }
-    public void setNearbyCampusIds(List<String> nearbyCampusIds) { this.nearbyCampusIds = nearbyCampusIds; }
+    public List<String> getNearbyCampusCodes() { return nearbyCampusCodes; }
+    public void setNearbyCampusCodes(List<String> nearbyCampusCodes) { this.nearbyCampusCodes = nearbyCampusCodes; }
 
     public double getDistanceKm() { return distanceKm; }
     public void setDistanceKm(double distanceKm) { this.distanceKm = distanceKm; }

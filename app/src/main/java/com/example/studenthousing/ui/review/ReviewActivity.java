@@ -37,7 +37,6 @@ public class ReviewActivity extends AppCompatActivity {
     public static final String EXTRA_TARGET_USER_ID = "target_user_id";
     public static final String EXTRA_TARGET_USER_NAME = "target_user_name";
 
-    private String requestId;
     private String targetUserId;
     private String targetUserName;
 
@@ -57,9 +56,6 @@ public class ReviewActivity extends AppCompatActivity {
         reviewRepository = new ReviewRepository(this);
         session = new SessionManager(this);
 
-        requestId = getIntent().getStringExtra(EXTRA_REQUEST_ID);
-        requestId = requestId == null ? "" : requestId.trim();
-        if (requestId.isEmpty()) requestId = "req_general";
         targetUserId = getIntent().getStringExtra(EXTRA_TARGET_USER_ID);
         targetUserName = getIntent().getStringExtra(EXTRA_TARGET_USER_NAME);
 
@@ -162,7 +158,7 @@ public class ReviewActivity extends AppCompatActivity {
             return;
         }
 
-        CloudinaryUploader.uploadImage(imageFile, new CloudinaryUploader.UploadCallback() {
+        CloudinaryUploader.uploadImage(imageFile, new AppCallback<String>() {
             @Override
             public void onSuccess(String imageUrl) {
                 uploadedUrls.add(imageUrl);
@@ -196,14 +192,7 @@ public class ReviewActivity extends AppCompatActivity {
         }
         String currentUserId = firebaseUser.getUid();
         String currentUserName = session.getUserFamilyName() != null ? session.getUserFamilyName() : "Người dùng";
-        String reviewRequestId = requestId;
 
-        if (reviewRequestId == null || reviewRequestId.trim().isEmpty()) {
-            btnSubmit.setEnabled(true);
-            btnSubmit.setText("Gửi đánh giá");
-            Toast.makeText(this, "Không xác định được giao dịch để đánh giá", Toast.LENGTH_LONG).show();
-            return;
-        }
         if (targetUserId == null || targetUserId.trim().isEmpty() || currentUserId.equals(targetUserId)) {
             btnSubmit.setEnabled(true);
             btnSubmit.setText("Gửi đánh giá");
@@ -212,15 +201,16 @@ public class ReviewActivity extends AppCompatActivity {
         }
 
         Review review = new Review();
-        review.setReviewId(reviewRequestId + "_" + currentUserId);
-        review.setRequestId(reviewRequestId);
+        review.setReviewId(targetUserId + "_" + currentUserId);
         review.setRevieweeId(targetUserId != null ? targetUserId : "target_user");
         review.setReviewerId(currentUserId);
         review.setReviewerName(currentUserName);
         review.setRating(rating);
         review.setComment(comment);
         review.setImageUrls(imageUrls);
-        review.setCreatedAt(System.currentTimeMillis());
+        long now = System.currentTimeMillis();
+        review.setCreatedAt(now);
+        review.setUpdatedAt(now);
 
         reviewRepository.create(review, new AppCallback<String>() {
             @Override

@@ -359,13 +359,14 @@
                         android:visibility="gone">
 
                         <FrameLayout
-                            android:id="@+id/layoutStudentIdPreview"
-                            android:layout_width="110dp"
-                            android:layout_height="70dp"
+                            android:id="@+id/layoutStudentFrontPreview"
+                            android:layout_width="@dimen/kyc_thumb_w"
+                            android:layout_height="@dimen/kyc_thumb_h"
+                            android:layout_marginEnd="@dimen/space_md"
                             android:visibility="gone">
 
                             <com.google.android.material.imageview.ShapeableImageView
-                                android:id="@+id/ivStudentIdPreview"
+                                android:id="@+id/ivStudentFrontPreview"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:scaleType="centerCrop"
@@ -383,10 +384,49 @@
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/text_caption"
                                 android:textStyle="bold"
-                                android:text="@string/kyc_photo_student" />
+                                android:text="@string/kyc_photo_front" />
 
                             <ImageView
-                                android:id="@+id/btnRemoveStudentId"
+                                android:id="@+id/btnRemoveStudentFront"
+                                android:layout_width="@dimen/icon_lg"
+                                android:layout_height="@dimen/icon_lg"
+                                android:layout_gravity="top|end"
+                                android:layout_margin="3dp"
+                                android:background="@drawable/bg_dark_circle_button"
+                                android:contentDescription="@string/cd_remove_photo"
+                                android:padding="@dimen/space_xs"
+                                android:src="@drawable/ic_close" />
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:id="@+id/layoutStudentBackPreview"
+                            android:layout_width="@dimen/kyc_thumb_w"
+                            android:layout_height="@dimen/kyc_thumb_h"
+                            android:visibility="gone">
+
+                            <com.google.android.material.imageview.ShapeableImageView
+                                android:id="@+id/ivStudentBackPreview"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Image12" />
+
+                            <TextView
+                                style="@style/TextAppearance.App.Caption"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="bottom|start"
+                                android:layout_margin="@dimen/space_xs"
+                                android:background="@drawable/bg_pill_scrim"
+                                android:paddingHorizontal="@dimen/space_xs"
+                                android:paddingVertical="@dimen/space_xxs"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/text_caption"
+                                android:textStyle="bold"
+                                android:text="@string/kyc_photo_back" />
+
+                            <ImageView
+                                android:id="@+id/btnRemoveStudentBack"
                                 android:layout_width="@dimen/icon_lg"
                                 android:layout_height="@dimen/icon_lg"
                                 android:layout_gravity="top|end"

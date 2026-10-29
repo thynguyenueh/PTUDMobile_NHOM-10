@@ -26,7 +26,9 @@ import com.example.studenthousing.util.UiState;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ChatListActivity extends AppCompatActivity implements ChatRoomAdapter.OnChatRoomClickListener {
 
@@ -35,7 +37,8 @@ public class ChatListActivity extends AppCompatActivity implements ChatRoomAdapt
     private SessionManager session;
     private ChatRoomAdapter chatRoomAdapter;
     private List<ChatRoom> allRooms = new ArrayList<>();
-    private final java.util.Map<String, String> partnerNames = new java.util.HashMap<>();
+    private final Map<String, String> partnerNames = new HashMap<>();
+    private final Map<String, Integer> unreadCounts = new HashMap<>();
     private final java.util.Set<String> requestedPartnerProfiles = new java.util.HashSet<>();
     private UserRepository userRepository;
 
@@ -94,7 +97,6 @@ public class ChatListActivity extends AppCompatActivity implements ChatRoomAdapt
             String partnerId = getPartnerId(r);
             String partnerName = partnerId == null ? "" : partnerNames.getOrDefault(partnerId, "");
             if (partnerName.toLowerCase(java.util.Locale.ROOT).contains(q) ||
-                    (r.getPostTitle() != null && r.getPostTitle().toLowerCase(java.util.Locale.ROOT).contains(q)) ||
                     (r.getLastMessage() != null && r.getLastMessage().toLowerCase(java.util.Locale.ROOT).contains(q))) {
                 filtered.add(r);
             }
@@ -213,8 +215,6 @@ public class ChatListActivity extends AppCompatActivity implements ChatRoomAdapt
     public void onChatRoomClick(@NonNull ChatRoom room) {
         Intent intent = new Intent(ChatListActivity.this, ChatActivity.class);
         intent.putExtra("ROOM_ID", room.getRoomId());
-        intent.putExtra("POST_TITLE", room.getPostTitle());
-        intent.putExtra("POST_ID", room.getPostId());
 
         String currentUserId = session.getUserId() != null ? session.getUserId() : "current_user";
         String partnerId = null;

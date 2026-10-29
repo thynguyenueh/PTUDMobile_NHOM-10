@@ -2,8 +2,6 @@ package com.example.studenthousing.ui.home;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Toast;
 
@@ -58,11 +56,7 @@ public class SearchFilterActivity extends AppCompatActivity {
         binding.layoutSelectWard.setOnClickListener(v -> showWardDialog());
         binding.layoutSelectCampus.setOnClickListener(v -> showCampusDialog());
 
-        binding.etSearchQuery.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { updateResultButtonCount(); }
-            @Override public void afterTextChanged(Editable s) {}
-        });
+
 
         for (int i = 0; i < binding.chipGroupDistance.getChildCount(); i++) {
             View child = binding.chipGroupDistance.getChildAt(i);
@@ -89,8 +83,6 @@ public class SearchFilterActivity extends AppCompatActivity {
 
     private FilterCriteria buildFilterCriteria() {
         FilterCriteria criteria = new FilterCriteria();
-
-        criteria.searchQuery = binding.etSearchQuery.getText() != null ? binding.etSearchQuery.getText().toString().trim() : "";
 
         String wardStr = binding.tvWard.getText().toString();
         if (!wardStr.equals("Chọn Phường / Xã") && !wardStr.isEmpty()) {
@@ -124,8 +116,6 @@ public class SearchFilterActivity extends AppCompatActivity {
             resetFiltersWithoutToast();
             return;
         }
-
-        binding.etSearchQuery.setText(criteria.searchQuery != null ? criteria.searchQuery : "");
 
         if (criteria.wards != null && !criteria.wards.isEmpty()) {
             binding.tvWard.setText(criteria.wards.get(0));
@@ -167,24 +157,15 @@ public class SearchFilterActivity extends AppCompatActivity {
 
     private void setupUtilitiesFromAsset() {
         if (binding.chipGroupFilterUtilities == null) return;
+        binding.chipGroupFilterUtilities.removeAllViews();
         List<com.example.studenthousing.data.model.Utility> utilities =
                 com.example.studenthousing.data.loader.UtilitiesDataLoader.loadUtilities(this);
         for (com.example.studenthousing.data.model.Utility u : utilities) {
-            boolean exists = false;
-            for (int i = 0; i < binding.chipGroupFilterUtilities.getChildCount(); i++) {
-                View child = binding.chipGroupFilterUtilities.getChildAt(i);
-                if (child instanceof Chip && ((Chip) child).getText().toString().equalsIgnoreCase(u.getLabel())) {
-                    exists = true;
-                    break;
-                }
-            }
-            if (!exists) {
-                Chip chip = new Chip(new android.view.ContextThemeWrapper(this, R.style.Widget_App_Chip), null, 0);
-                chip.setText(u.getLabel());
-                chip.setCheckable(true);
-                chip.setOnCheckedChangeListener((buttonView, isChecked) -> updateResultButtonCount());
-                binding.chipGroupFilterUtilities.addView(chip);
-            }
+            Chip chip = new Chip(new android.view.ContextThemeWrapper(this, R.style.Widget_App_Chip), null, 0);
+            chip.setText(u.getLabel());
+            chip.setCheckable(true);
+            chip.setOnCheckedChangeListener((buttonView, isChecked) -> updateResultButtonCount());
+            binding.chipGroupFilterUtilities.addView(chip);
         }
     }
 
@@ -204,7 +185,6 @@ public class SearchFilterActivity extends AppCompatActivity {
     }
 
     private void resetFiltersWithoutToast() {
-        binding.etSearchQuery.setText("");
         binding.tvWard.setText("Chọn Phường / Xã");
         binding.tvWard.setTextColor(getColor(R.color.text_muted));
         selectedCampusId = null;

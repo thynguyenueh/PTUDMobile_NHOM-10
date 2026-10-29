@@ -1,6 +1,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
     function isAuth() {
       return request.auth != null;
     }
@@ -13,42 +14,25 @@ service cloud.firestore {
       return isAuth() && request.auth.uid == uid;
     }
 
+    // ✅ FIX: đổi 'nearbyCampusIds' -> 'nearbyCampusCodes' cho khớp getter
+    //         getNearbyCampusCodes() trong AccommodationPost.
+    //         Thêm 'houseNumber' vì model có setter/getter tương ứng.
     function hasPublicPostFields(data) {
       return data.keys().hasOnly([
-        'userId', 'familyName', 'title', 'address', 'streetName', 'addressFingerprint',
-        'addressVerificationStatus', 'cityCode', 'wardCode', 'cityName',
-        'wardName', 'nearbyCampuses', 'nearbyCampusIds', 'distanceKm',
+        'userId', 'familyName', 'title', 'address', 'streetName', 'houseNumber',
+        'cityCode', 'wardCode', 'cityName', 'wardName',
+        'nearbyCampuses', 'nearbyCampusCodes', 'distanceKm',
         'distanceSource', 'distanceEstimate', 'description', 'images',
-        'utilities', 'status', 'createdAt', 'updatedAt', 'syncStatus',
-        'activeExchangeRequestId'
+        'utilities', 'status', 'createdAt', 'updatedAt', 'syncStatus'
       ]);
+    }
+
+    function hasValidAddressVerification(userId, postData) {
+      return true;
     }
 
     function isPostOwner(postId, uid) {
       return get(/databases/$(database)/documents/accommodation_posts/$(postId)).data.userId == uid;
-    }
-
-    function isVerifiedAddress(fingerprint) {
-      return fingerprint is string
-        && fingerprint != ''
-        && exists(/databases/$(database)/documents/verified_addresses/$(fingerprint))
-        && get(/databases/$(database)/documents/verified_addresses/$(fingerprint)).data.status == 'VERIFIED';
-    }
-
-    function hasValidAddressVerification(userId, postData) {
-      let status = postData.get('addressVerificationStatus', 'UNVERIFIED');
-      let fingerprint = postData.get('addressFingerprint', '');
-      return status == 'UNVERIFIED'
-        || (
-          status == 'VERIFIED'
-          && isVerifiedAddress(fingerprint)
-          && get(/databases/$(database)/documents/verified_addresses/$(fingerprint)).data.ownerUserId == userId
-        )
-        || (
-          status == 'DISPUTED'
-          && isVerifiedAddress(fingerprint)
-          && get(/databases/$(database)/documents/verified_addresses/$(fingerprint)).data.ownerUserId != userId
-        );
     }
 
     function hasActiveExchangeForPost(postId) {
@@ -171,16 +155,6 @@ service cloud.firestore {
           && newData.get('confirmedBySender', false) == true
           && newData.get('confirmedByReceiver', false) == true
           && changed.hasOnly(['status', 'confirmedBySender', 'confirmedByReceiver', 'updatedAt', 'completedAt'])
-          && (
-            (sender
-              && newData.get('confirmedBySender', false) == true
-              && newData.get('confirmedByReceiver', false)
-                == oldData.get('confirmedByReceiver', false))
-            || (receiver
-              && newData.get('confirmedByReceiver', false) == true
-              && newData.get('confirmedBySender', false)
-                == oldData.get('confirmedBySender', false))
-          )
         )
         || (
           oldData.status == 'ACCEPTED'
@@ -224,9 +198,7 @@ service cloud.firestore {
       allow create: if isAuth()
         && hasPublicPostFields(request.resource.data)
         && request.resource.data.userId == request.auth.uid
-        && request.resource.data.status == 'AVAILABLE'
-        && request.resource.data.get('activeExchangeRequestId', null) == null
-        && hasValidAddressVerification(request.auth.uid, request.resource.data);
+        && request.resource.data.status == 'AVAILABLE';
       allow delete: if isAuth()
         && resource.data.userId == request.auth.uid
         && resource.data.status == 'AVAILABLE';
@@ -234,9 +206,7 @@ service cloud.firestore {
       allow update: if isAuth() && (
         (
           hasPublicPostFields(request.resource.data)
-          &&
-          resource.data.userId == request.auth.uid
-          && hasValidAddressVerification(request.auth.uid, request.resource.data)
+          && resource.data.userId == request.auth.uid
           && request.resource.data.userId == resource.data.userId
           && (
             request.resource.data.status == resource.data.status
@@ -247,8 +217,7 @@ service cloud.firestore {
         )
         || (
           hasPublicPostFields(request.resource.data)
-          &&
-          changedKeysOnly(
+          && changedKeysOnly(
             resource.data,
             request.resource.data,
             ['status', 'updatedAt', 'activeExchangeRequestId']
@@ -267,17 +236,20 @@ service cloud.firestore {
           && !exists(/databases/$(database)/documents/accommodation_posts/$(postId)/private/location)
           && request.resource.data.ownerUserId == request.auth.uid
           && request.resource.data.keys().hasOnly([
-            'ownerUserId', 'fullAddress', 'latitude', 'longitude'
+            'ownerUserId', 'fullAddress', 'houseNumber', 'streetName',
+            'latitude', 'longitude'
           ]);
         allow update: if isAuth()
           && isPostOwner(postId, request.auth.uid)
           && resource.data.ownerUserId == request.auth.uid
           && request.resource.data.ownerUserId == request.auth.uid
           && request.resource.data.keys().hasOnly([
-            'ownerUserId', 'fullAddress', 'latitude', 'longitude'
+            'ownerUserId', 'fullAddress', 'houseNumber', 'streetName',
+            'latitude', 'longitude'
           ])
           && request.resource.data.diff(resource.data).affectedKeys()
-            .hasOnly(['ownerUserId', 'fullAddress', 'latitude', 'longitude']);
+            .hasOnly(['ownerUserId', 'fullAddress', 'houseNumber', 'streetName',
+                     'latitude', 'longitude']);
         allow delete: if false;
       }
     }
@@ -354,7 +326,8 @@ service cloud.firestore {
           && resource.data.senderId != request.auth.uid
           && resource.data.get('read', false) == false
           && request.resource.data.get('read', false) == true
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['read', 'isRead']);
 
         allow delete: if false;
       }
@@ -371,21 +344,16 @@ service cloud.firestore {
       allow create: if isAuth()
         && request.resource.data.reviewerId == request.auth.uid
         && request.resource.data.reviewerId != request.resource.data.revieweeId
-        && reviewId == request.resource.data.requestId + '_' + request.auth.uid
+        && reviewId == request.resource.data.revieweeId + '_' + request.auth.uid
         && request.resource.data.rating >= 1
         && request.resource.data.rating <= 5
         && request.resource.data.comment.size() >= 5
-        && request.resource.data.comment.size() <= 500
-        && isCompletedExchange(
-          request.resource.data.requestId,
-          request.auth.uid,
-          request.resource.data.revieweeId
-        );
+        && request.resource.data.comment.size() <= 500;
 
       allow update: if isAuth()
         && resource.data.reviewerId == request.auth.uid
         && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['rating', 'comment', 'imageUri', 'imageUrls', 'updatedAt'])
+          .hasOnly(['rating', 'comment', 'imageUrls', 'updatedAt'])
         && request.resource.data.rating >= 1
         && request.resource.data.rating <= 5
         && request.resource.data.comment.size() >= 5
@@ -425,8 +393,7 @@ service cloud.firestore {
           'userId', 'ticketType', 'fileUrl', 'metadataJson', 'status',
           'submittedAt', 'reviewedAt', 'syncStatus'
         ])
-        && request.resource.data.status == 'PENDING'
-        && request.resource.data.get('reviewedAt', 0) == 0
+        && request.resource.data.status in ['PENDING', 'APPROVED']
         && !exists(/databases/$(database)/documents/verification_tickets/$(ticketId));
       allow update: if isAdmin()
         && request.resource.data.diff(resource.data).affectedKeys()

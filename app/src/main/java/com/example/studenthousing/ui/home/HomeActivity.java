@@ -50,7 +50,6 @@ public class HomeActivity extends AppCompatActivity {
     private List<AccommodationPost> allPosts = new ArrayList<>();
     private FilterCriteria currentFilter = new FilterCriteria();
     private boolean filterActive = false;
-    private boolean isSuggestionsTab = false;
     private Runnable emptyAction;
 
     private final ActivityResultLauncher<Intent> filterLauncher = registerForActivityResult(
@@ -80,17 +79,6 @@ public class HomeActivity extends AppCompatActivity {
 
         setupBottomNavigation();
         setupListeners();
-
-        com.google.android.material.chip.ChipGroup chipGroupHomeTabs = findViewById(R.id.chipGroupHomeTabs);
-        if (chipGroupHomeTabs != null) {
-            chipGroupHomeTabs.setOnCheckedStateChangeListener((group, checkedIds) -> {
-                if (!checkedIds.isEmpty()) {
-                    int checkedId = checkedIds.get(0);
-                    isSuggestionsTab = (checkedId == R.id.chipTabSuggestions);
-                    applyFilter();
-                }
-            });
-        }
 
         binding.swipeRefreshHome.setOnRefreshListener(() -> {
             binding.swipeRefreshHome.setRefreshing(true);
@@ -135,7 +123,7 @@ public class HomeActivity extends AppCompatActivity {
             if (user != null) {
                 String name = user.getFamilyName();
                 binding.tvHomeUserName.setText((name == null || name.isEmpty()) ? "Bạn" : name);
-                userVerified = user.isVerified();
+                userVerified = user.isIdentityVerified() || user.isResidenceVerified();
                 binding.tvKycBadge.setVisibility(userVerified ? View.VISIBLE : View.GONE);
                 ImageView avatar = binding.getRoot().findViewById(R.id.ivHomeAvatarImg);
                 if (avatar != null && user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
@@ -166,33 +154,28 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void applyFilter() {
-        filterActive = currentFilter.isActive();
+        String searchQuery = binding.etHomeSearch.getText() != null ? binding.etHomeSearch.getText().toString().trim() : "";
+        String qNorm = FilterCriteria.normalize(searchQuery);
 
-        String userUni = "";
-        try {
-            com.example.studenthousing.data.local.UserDao userDao = new com.example.studenthousing.data.local.UserDao(this);
-            User u = userDao.getById(session.getUserId());
-            if (u != null && u.getUniversityName() != null) userUni = u.getUniversityName().toLowerCase();
-        } catch (Exception ignored) {}
+        filterActive = currentFilter.isActive() || !searchQuery.isEmpty();
 
         List<AccommodationPost> filtered = new ArrayList<>();
         for (AccommodationPost post : allPosts) {
             if (!currentFilter.matches(post)) continue;
 
-            if (isSuggestionsTab) {
-                boolean matchesUni = true;
-                if (!userUni.isEmpty()) {
-                    String pAddr = post.getAddress() != null ? post.getAddress().toLowerCase() : "";
-                    String pTitle = post.getTitle() != null ? post.getTitle().toLowerCase() : "";
-                    String pDesc = post.getDescription() != null ? post.getDescription().toLowerCase() : "";
-                    String pWard = post.getWardName() != null ? post.getWardName().toLowerCase() : "";
-
-                    matchesUni = pAddr.contains(userUni) || pTitle.contains(userUni) || pDesc.contains(userUni) || pWard.contains(userUni);
+            if (!qNorm.isEmpty()) {
+                String title = FilterCriteria.normalize(post.getTitle());
+                String addr = FilterCriteria.normalize(post.getAddress());
+                String ward = FilterCriteria.normalize(post.getWardName());
+                String street = FilterCriteria.normalize(post.getStreetName());
+                String desc = FilterCriteria.normalize(post.getDescription());
+                String host = FilterCriteria.normalize(post.getFamilyName());
+                if (!title.contains(qNorm) && !addr.contains(qNorm) && !ward.contains(qNorm) && !street.contains(qNorm) && !desc.contains(qNorm) && !host.contains(qNorm)) {
+                    continue;
                 }
-                if (matchesUni) filtered.add(post);
-            } else {
-                filtered.add(post);
             }
+
+            filtered.add(post);
         }
 
         filtered.sort((p1, p2) -> Long.compare(p2.getCreatedAt(), p1.getCreatedAt()));
@@ -303,7 +286,11 @@ public class HomeActivity extends AppCompatActivity {
         binding.btnNotifications.setOnClickListener(v ->
                 startActivity(new Intent(this, NotificationsActivity.class)));
 
-        binding.btnSearch.setOnClickListener(v -> startActivity(new Intent(this, SearchFilterActivity.class)));
+        binding.etHomeSearch.addTextChangedListener(new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { applyFilter(); }
+            @Override public void afterTextChanged(android.text.Editable s) {}
+        });
         binding.btnFilter.setOnClickListener(v -> openFilterScreen());
 
         binding.btnEmptyAction.setOnClickListener(v -> { if (emptyAction != null) emptyAction.run(); });

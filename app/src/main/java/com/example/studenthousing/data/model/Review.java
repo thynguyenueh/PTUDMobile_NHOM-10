@@ -9,7 +9,6 @@ import java.util.List;
 public class Review {
     @DocumentId
     private String reviewId;
-    private String requestId;
     private String reviewerId;
     private String revieweeId;
     private String reviewerName;
@@ -18,6 +17,7 @@ public class Review {
     private String comment;
     private List<String> imageUrls = new ArrayList<>();
     private long createdAt;
+    private long updatedAt;
     private String syncStatus = Constants.SYNC_SYNCED;
 
     public Review() {}
@@ -27,9 +27,6 @@ public class Review {
 
     public String getReviewId() { return reviewId; }
     public void setReviewId(String reviewId) { this.reviewId = reviewId; }
-
-    public String getRequestId() { return requestId; }
-    public void setRequestId(String requestId) { this.requestId = requestId; }
 
     public String getReviewerId() { return reviewerId; }
     public void setReviewerId(String reviewerId) { this.reviewerId = reviewerId; }
@@ -56,4 +53,7 @@ public class Review {
 
     public long getCreatedAt() { return createdAt; }
     public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }
+
+    public long getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(long updatedAt) { this.updatedAt = updatedAt; }
 }

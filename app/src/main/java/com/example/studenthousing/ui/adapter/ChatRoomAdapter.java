@@ -48,8 +48,7 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoom, ChatRoomAdapter.ChatR
         public boolean areContentsTheSame(@NonNull ChatRoom oldItem, @NonNull ChatRoom newItem) {
             return oldItem.getLastMessageTime() == newItem.getLastMessageTime()
                     && Objects.equals(oldItem.getLastMessage(), newItem.getLastMessage())
-                    && Objects.equals(oldItem.getLastSenderId(), newItem.getLastSenderId())
-                    && Objects.equals(oldItem.getPostTitle(), newItem.getPostTitle());
+                    && Objects.equals(oldItem.getLastSenderId(), newItem.getLastSenderId());
         }
     };
 
@@ -116,10 +115,6 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoom, ChatRoomAdapter.ChatR
             Context ctx = itemView.getContext();
             String currentUserId = SessionManager.getUid(ctx);
 
-            String postTitle = room.getPostTitle() != null && !room.getPostTitle().isEmpty()
-                    ? room.getPostTitle()
-                    : ctx.getString(R.string.chat_default_post_title);
-
             // Xác định partner (người còn lại trong phòng)
             String targetUserId = null;
             if (room.getParticipantIds() != null) {
@@ -137,7 +132,6 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoom, ChatRoomAdapter.ChatR
             String partnerName = resolvePartnerName(ctx, targetUserId);
 
             tvTitle.setText(partnerName);
-            tvHouseTitle.setText(postTitle);
 
             String firstLetter = partnerName.isEmpty() ? "?" : partnerName.substring(0, 1).toUpperCase();
             tvAvatar.setText(firstLetter);

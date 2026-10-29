@@ -62,6 +62,7 @@
     <string name="format_distance_real">%1$s</string>
     <string name="format_distance_from_uni">Cách Đại học %1$s</string>
     <string name="nearby_universities_title">Các trường ĐH gần đây (&lt; 5km)</string>
+    <string name="label_nearby_schools">Trường gần đây</string>
 
     <string name="time_minutes_ago">%1$d phút trước</string>
     <string name="time_hours_ago">%1$d giờ trước</string>
@@ -117,7 +118,7 @@
     <string name="register_label_confirm_password">Xác nhận mật khẩu</string>
     <string name="register_hint_confirm_password">Nhập lại mật khẩu</string>
     <string name="register_terms_agree">Tôi đồng ý với Điều khoản dịch vụ và Chính sách bảo mật của StudentHousing.</string>
-    <string name="register_btn_continue">Đăng ký tài khoản</string>
+    <string name="register_btn_continue">Tiếp tục</string>
     <string name="register_has_account">Đã có tài khoản? Đăng nhập</string>
 
     <!-- ============================================ -->
@@ -170,6 +171,7 @@
 
     <string name="action_chat">Chat</string>
     <string name="action_message">Nhắn tin</string>
+    <string name="action_call">Gọi điện</string>
     <string name="action_propose_swap">Đề xuất đổi nhà</string>
     <string name="action_unsave">Bỏ thích</string>
     <string name="action_view_detail">Xem chi tiết ›</string>
@@ -431,7 +433,7 @@
     <string name="public_host_verify_cccd_sub">Đã qua đối soát OCR &amp; định danh</string>
     <string name="public_host_verify_student">Xác thực Thẻ Sinh viên</string>
     <string name="public_host_verify_student_id">Thẻ sinh viên đang theo học chính quy</string>
-    <string name="public_host_verify_police">Xác thực Công an Phường</string>
+    <string name="public_host_verify_police">Xác thực Cư trú</string>
     <string name="public_host_verify_police_sub">Đã đăng ký khai báo cư trú</string>
     <string name="public_host_verify_residence">Giấy chứng nhận tạm trú Công an địa phương</string>
     <string name="public_host_house_title">CĂN NHÀ ĐANG CHÀO ĐỔI</string>

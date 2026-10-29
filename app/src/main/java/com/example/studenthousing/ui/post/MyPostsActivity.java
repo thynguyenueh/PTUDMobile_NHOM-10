@@ -124,6 +124,8 @@ public class MyPostsActivity extends AppCompatActivity implements MyPostAdapter.
                 administrativeAddress.isEmpty() ? "" : getStreetAddress(post));
         intent.putStringArrayListExtra("POST_UTILITIES",
                 post.getUtilities() == null ? new ArrayList<>() : new ArrayList<>(post.getUtilities()));
+        intent.putStringArrayListExtra("POST_IMAGES",
+                post.getImages() == null ? new ArrayList<>() : new ArrayList<>(post.getImages()));
         intent.putExtra("POST_DESC", post.getDescription());
         startActivity(intent);
     }
@@ -169,43 +171,5 @@ public class MyPostsActivity extends AppCompatActivity implements MyPostAdapter.
                 })
                 .setNegativeButton("Hủy", null)
                 .show();
-    }
-
-    @Override
-    public void onToggleStatus(@NonNull AccommodationPost post) {
-        boolean markExchanged = !"EXCHANGED".equalsIgnoreCase(post.getStatus());
-        String message = markExchanged
-                ? "Chuyển bài đăng sang trạng thái Đã đổi nhà?"
-                : "Mở lại bài đăng ở trạng thái Sẵn sàng đổi?";
-        String actionLabel = markExchanged
-                ? "Đánh dấu Đã đổi"
-                : "Đánh dấu Sẵn sàng đổi";
-        new AlertDialog.Builder(this)
-                .setTitle("Đổi trạng thái")
-                .setMessage(message)
-                .setPositiveButton(actionLabel, (dialog, which) -> updatePostStatus(post, markExchanged))
-                .setNegativeButton("Hủy", null)
-                .show();
-    }
-
-    private void updatePostStatus(AccommodationPost post, boolean markExchanged) {
-        String newStatus = markExchanged ? "EXCHANGED" : "AVAILABLE";
-        viewModel.updateStatus(post.getPostId(), newStatus, new AppCallback<Void>() {
-            @Override
-            public void onSuccess(Void data) {
-                runOnUiThread(() -> {
-                    Toast.makeText(MyPostsActivity.this, "Đã cập nhật trạng thái bài đăng!", Toast.LENGTH_SHORT).show();
-                    loadMyPosts();
-                });
-            }
-
-            @Override
-            public void onError(Exception e) {
-                runOnUiThread(() -> {
-                    Toast.makeText(MyPostsActivity.this,
-                            "Lỗi cập nhật bài đăng", Toast.LENGTH_SHORT).show();
-                });
-            }
-        });
     }
 }

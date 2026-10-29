@@ -167,7 +167,6 @@ public class OtpActivity extends AppCompatActivity {
                     if (user.getPhone() == null || user.getPhone().isEmpty()) {
                         user.setPhone(phoneNumber);
                     }
-                    user.setPhoneVerified(true);
                     repo.saveUserProfile(user, new AppCallback<Void>() {
                         @Override public void onSuccess(Void d) {
                             session.createLoginSession(user);
@@ -211,7 +210,6 @@ public class OtpActivity extends AppCompatActivity {
         User user = new User();
         user.setUserId(uid);
         user.setPhone(phoneNumber);
-        user.setPhoneVerified(true);
         user.setFamilyName(parentName != null && !parentName.isEmpty() ? parentName : "Người dùng");
         if (university != null && !university.isEmpty()) {
             user.setUniversityName(university);

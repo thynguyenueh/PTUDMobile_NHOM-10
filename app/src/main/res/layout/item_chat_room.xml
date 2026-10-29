@@ -61,6 +61,7 @@
             android:maxLines="1"
             android:textColor="@color/primary"
             android:textSize="@dimen/text_small_lg"
+            android:visibility="gone"
             tools:text="Căn hộ cao cấp Thảo Điền" />
 
         <TextView

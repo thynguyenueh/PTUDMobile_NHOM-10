@@ -7,9 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-/**
- * LƯU Ý: Đây là kiểm tra phía client (chạy qua SyncWorker), không chạy khi app không mở hoàn toàn.
- */
 public class SyncWorker extends Worker {
     private static final String TAG = "SyncWorker";
 
@@ -23,6 +20,13 @@ public class SyncWorker extends Worker {
         Log.d(TAG, "SyncWorker đang chạy đồng bộ nền...");
         try {
             Context ctx = getApplicationContext();
+
+            // ✅ FIX: recovery trước — đảm bảo các item kẹt SYNCING từ lần trước
+            //         (do app bị kill / mất mạng giữa chừng) được reset về PENDING_*.
+            //         Gọi trực tiếp ở đây vì syncAll() có thể bị skip nếu đang có
+            //         sync khác chạy (isSyncing == true).
+            SyncManager.getInstance(ctx).recoverStuckSyncing();
+
             boolean success = SyncManager.getInstance(ctx).syncAll();
             if (!success) {
                 Log.w(TAG, "SyncWorker có tác vụ thất bại, yêu cầu retry...");

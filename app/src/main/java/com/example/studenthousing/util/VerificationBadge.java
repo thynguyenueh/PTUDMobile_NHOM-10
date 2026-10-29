@@ -15,13 +15,13 @@ public class VerificationBadge {
         return "CHƯA XÁC THỰC";
     }
 
-    public static String addressBadgeText(String addressVerificationStatus) {
-        if (Constants.ADDR_VERIFIED.equalsIgnoreCase(addressVerificationStatus)) {
-            return "ĐÃ XÁC THỰC CƯ TRÚ";
+    public static String addressBadgeText(String addressValidationStatus) {
+        if (Constants.ADDR_VALID.equalsIgnoreCase(addressValidationStatus)) {
+            return "ĐÃ KIỂM TRA ĐỊA CHỈ";
         }
-        if (Constants.ADDR_DISPUTED.equalsIgnoreCase(addressVerificationStatus)) {
-            return "ĐANG TRANH CHẤP";
+        if (Constants.ADDR_INVALID.equalsIgnoreCase(addressValidationStatus)) {
+            return "ĐỊA CHỈ KHÔNG TỒN TẠI";
         }
-        return "CHƯA XÁC THỰC ĐỊA CHỈ";
+        return "CHƯA KIỂM TRA";
     }
 }

@@ -6,12 +6,12 @@ public class Campus implements Serializable {
     private String campusCode;
     private String name;
     private String fullName;
-    private String type;
-    private boolean isSatellite;
-    private String category;
     private String district;
     private double lat;
     private double lon;
+    private String type;
+    private boolean satellite;
+    private String category;
     private long osmId;
     private String osmType;
 
@@ -49,30 +49,6 @@ public class Campus implements Serializable {
         this.fullName = fullName;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public boolean isSatellite() {
-        return isSatellite;
-    }
-
-    public void setSatellite(boolean satellite) {
-        isSatellite = satellite;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
     public String getDistrict() {
         return district;
     }
@@ -97,29 +73,20 @@ public class Campus implements Serializable {
         this.lon = lon;
     }
 
-    public long getOsmId() {
-        return osmId;
-    }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 
-    public void setOsmId(long osmId) {
-        this.osmId = osmId;
-    }
+    public boolean isSatellite() { return satellite; }
+    public void setSatellite(boolean satellite) { this.satellite = satellite; }
 
-    public String getOsmType() {
-        return osmType;
-    }
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 
-    public void setOsmType(String osmType) {
-        this.osmType = osmType;
-    }
+    public long getOsmId() { return osmId; }
+    public void setOsmId(long osmId) { this.osmId = osmId; }
 
-    public boolean isUniversity() {
-        return "university".equalsIgnoreCase(type);
-    }
-
-    public boolean isCollege() {
-        return "college".equalsIgnoreCase(type);
-    }
+    public String getOsmType() { return osmType; }
+    public void setOsmType(String osmType) { this.osmType = osmType; }
 
     public String getDisplayName() {
         if (fullName != null && !fullName.trim().isEmpty() && !fullName.equals(name)) {

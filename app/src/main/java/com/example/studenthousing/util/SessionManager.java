@@ -52,20 +52,68 @@ public class SessionManager {
     }
 
     public void logout() {
+        // ✅ FIX: phải lấy uid TRƯỚC khi signOut, nếu không sẽ không biết xóa data của ai.
+        final String uid = getUserId();
+
         FirebaseAuth.getInstance().signOut();
+
+        // Xóa data local của RIÊNG user này — KHÔNG đụng tới user khác trên cùng máy.
+        if (uid != null && !uid.isEmpty()) {
+            try {
+                android.database.sqlite.SQLiteDatabase db =
+                        com.example.studenthousing.data.local.DatabaseHelper
+                                .getInstance(context).getWritableDatabase();
+
+                String syncedWhere = "(" +
+                        com.example.studenthousing.data.local.DatabaseHelper.COL_SYNC_STATUS
+                        + " IS NULL OR "
+                        + com.example.studenthousing.data.local.DatabaseHelper.COL_SYNC_STATUS
+                        + " = 'SYNCED')";
+
+                // POSTS — chỉ của user này
+                db.delete(
+                        com.example.studenthousing.data.local.DatabaseHelper.TBL_POSTS,
+                        "user_id = ? AND " + syncedWhere,
+                        new String[]{ uid });
+
+                // MESSAGES — chỉ tin nhắn do user này gửi
+                db.delete(
+                        com.example.studenthousing.data.local.DatabaseHelper.TBL_MESSAGES,
+                        "sender_id = ? AND " + syncedWhere,
+                        new String[]{ uid });
+
+                // REVIEWS — chỉ review do user này viết
+                db.delete(
+                        com.example.studenthousing.data.local.DatabaseHelper.TBL_REVIEWS,
+                        "reviewer_id = ? AND " + syncedWhere,
+                        new String[]{ uid });
+
+                // CHAT ROOMS — chỉ các room mà user này tham gia.
+                // participant_ids lưu dạng JSON array text (vd: ["uid1","uid2"]) hoặc CSV,
+                // dùng LIKE với dấu nháy kép để tránh match nhầm substring uid.
+                String participantLike = "%\"" + uid + "\"%";
+                db.delete(
+                        com.example.studenthousing.data.local.DatabaseHelper.TBL_CHAT_ROOMS,
+                        "participant_ids LIKE ?",
+                        new String[]{ participantLike });
+
+                db.delete(
+                        com.example.studenthousing.data.local.DatabaseHelper.TBL_CHAT_ROOM_PARTICIPANTS,
+                        "user_id = ?",
+                        new String[]{ uid });
+
+                // SAVED HOUSES — chỉ của user này
+                db.delete(
+                        com.example.studenthousing.data.local.DatabaseHelper.TBL_SAVED_HOUSES,
+                        "user_id = ?",
+                        new String[]{ uid });
+
+            } catch (Exception ignored) {
+                // Không để lỗi DB chặn logout.
+            }
+        }
+
         pref.edit().clear().apply();
-        try {
-            android.database.sqlite.SQLiteDatabase db =
-                    com.example.studenthousing.data.local.DatabaseHelper.getInstance(context).getWritableDatabase();
-            String whereSynced = com.example.studenthousing.data.local.DatabaseHelper.COL_SYNC_STATUS + " IS NULL OR " +
-                    com.example.studenthousing.data.local.DatabaseHelper.COL_SYNC_STATUS + " = 'SYNCED'";
-            db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_POSTS, whereSynced, null);
-            db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_MESSAGES, whereSynced, null);
-            db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_REVIEWS, whereSynced, null);
-            db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_CHAT_ROOMS, null, null);
-            db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_CHAT_ROOM_PARTICIPANTS, null, null);
-            db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_SAVED_HOUSES, null, null);
-        } catch (Exception ignored) {}
     }
 
     public static String getUid(Context ctx) {

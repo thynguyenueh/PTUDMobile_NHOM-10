@@ -181,7 +181,7 @@ public class ChatViewModel extends AndroidViewModel {
 
         actionEvent.postValue("UPLOADING_IMAGE");
 
-        CloudinaryUploader.uploadImage(file, new CloudinaryUploader.UploadCallback() {
+        CloudinaryUploader.uploadImage(file, new AppCallback<String>() {
             @Override
             public void onSuccess(String imageUrl) {
                 Message msg = new Message();
