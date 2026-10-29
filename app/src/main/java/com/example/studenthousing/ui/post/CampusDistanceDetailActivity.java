@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 public class CampusDistanceDetailActivity extends AppCompatActivity {
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

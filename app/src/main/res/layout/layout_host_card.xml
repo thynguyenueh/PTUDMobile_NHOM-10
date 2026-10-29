@@ -23,6 +23,7 @@
         android:padding="14dp">
 
         <TextView
+            android:id="@+id/tvHostInitial"
             android:layout_width="44dp"
             android:layout_height="44dp"
             android:background="@drawable/bg_circle_olive"
@@ -61,7 +62,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
                     android:contentDescription="@string/cd_verified"
-                    android:src="@drawable/ic_verified_check"
+                    android:src="@drawable/ic_verified"
                     app:tint="@color/primary"
                     android:visibility="gone" />
             </LinearLayout>
@@ -99,6 +100,7 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/tvHostReviewCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/detail_review_count_format"

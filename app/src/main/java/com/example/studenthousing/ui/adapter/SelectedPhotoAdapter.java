@@ -46,10 +46,6 @@ public class SelectedPhotoAdapter extends RecyclerView.Adapter<SelectedPhotoAdap
                     .into(holder.ivPhoto);
         }
 
-        if (holder.tvCoverBadge != null) {
-            holder.tvCoverBadge.setVisibility(position == 0 ? View.VISIBLE : View.GONE);
-        }
-
         if (holder.btnRemovePhoto != null) {
             holder.btnRemovePhoto.setOnClickListener(v -> {
                 int adapterPos = holder.getBindingAdapterPosition();
@@ -67,13 +63,11 @@ public class SelectedPhotoAdapter extends RecyclerView.Adapter<SelectedPhotoAdap
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivPhoto;
-        TextView tvCoverBadge;
         ImageView btnRemovePhoto;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             ivPhoto = itemView.findViewById(R.id.ivPhoto);
-            tvCoverBadge = itemView.findViewById(R.id.tvCoverBadge);
             btnRemovePhoto = itemView.findViewById(R.id.btnRemovePhoto);
         }
     }

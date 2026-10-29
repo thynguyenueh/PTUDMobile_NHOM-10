@@ -53,4 +53,13 @@ public class UtilitiesDataLoader {
         }
         return null;
     }
+
+    public static String getLabelOrFallback(Context context, String codeOrLabel) {
+        if (codeOrLabel == null) return "";
+        Utility u = getByCode(context, codeOrLabel);
+        if (u != null && u.getLabel() != null && !u.getLabel().isEmpty()) {
+            return u.getLabel();
+        }
+        return codeOrLabel;
+    }
 }

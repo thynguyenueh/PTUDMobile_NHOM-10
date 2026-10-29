@@ -6,7 +6,7 @@ import java.util.List;
 public class ChatRoom {
     @DocumentId
     private String roomId;
-    private List<String> participantIds; // [userId1, userId2]
+    private List<String> participantIds;
     private String lastMessage;
     private long lastMessageTime;
     private String lastSenderId;

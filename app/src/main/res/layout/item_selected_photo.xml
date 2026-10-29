@@ -13,21 +13,6 @@
         android:contentDescription="@string/cd_photo"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
 
-    <TextView
-        android:id="@+id/tvCoverBadge"
-        style="@style/TextAppearance.App.Caption"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|start"
-        android:layout_margin="@dimen/space_xs"
-        android:background="@drawable/bg_pill_scrim"
-        android:paddingHorizontal="@dimen/space_xs"
-        android:paddingVertical="@dimen/space_xxs"
-        android:textColor="@color/white"
-        android:textSize="@dimen/text_caption"
-        android:textStyle="bold"
-        android:text="@string/create_post_photo_cover_badge" />
-
     <ImageView
         android:id="@+id/btnRemovePhoto"
         android:layout_width="28dp"

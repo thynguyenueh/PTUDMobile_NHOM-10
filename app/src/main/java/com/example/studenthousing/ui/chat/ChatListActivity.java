@@ -210,7 +210,6 @@ public class ChatListActivity extends AppCompatActivity implements ChatRoomAdapt
             });
         }
     }
-
     @Override
     public void onChatRoomClick(@NonNull ChatRoom room) {
         Intent intent = new Intent(ChatListActivity.this, ChatActivity.class);

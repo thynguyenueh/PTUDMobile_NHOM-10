@@ -1,7 +1,9 @@
 package com.example.studenthousing.ui.auth;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -10,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.studenthousing.BuildConfig;
 import com.example.studenthousing.R;
 import com.example.studenthousing.data.local.DatabaseHelper;
 import com.example.studenthousing.ui.home.HomeActivity;
@@ -30,6 +33,8 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private static final String PREFS_INIT = "app_init";
+    private static final String KEY_DEMO_SEEDED = "demo_seeded_v2";
     private static final String WEB_CLIENT_ID =
             "643135707324-45gf2nbr40nhaubqa9a1jm547j19fqtl.apps.googleusercontent.com";
 
@@ -58,12 +63,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        try {
-            DatabaseHelper.getInstance(getApplicationContext()).getWritableDatabase();
-            DemoDataSeeder.seedLocalAndRemote(getApplicationContext());
-        } catch (Throwable e) {
-            android.util.Log.e("LoginActivity", "Lỗi DB: " + e.getMessage());
-        }
+        // ✅ Seed demo CHỈ 1 LẦN, chỉ DEBUG build
+        seedDemoDataOnce();
 
         session = new SessionManager(this);
         if (session.isLoggedIn()) {
@@ -71,6 +72,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        // ✅ KHÔNG còn block DemoDataSeeder.seedLocalAndRemote() cũ
         setContentView(R.layout.activity_login);
         viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
         mAuth = FirebaseAuth.getInstance();
@@ -80,6 +82,22 @@ public class LoginActivity extends AppCompatActivity {
         initViews();
         setupGoogleSignIn();
         setupEvents();
+    }
+
+    private void seedDemoDataOnce() {
+        if (!BuildConfig.DEBUG) return;
+
+        SharedPreferences prefs = getSharedPreferences(PREFS_INIT, MODE_PRIVATE);
+        if (prefs.getBoolean(KEY_DEMO_SEEDED, false)) return;
+
+        try {
+            DatabaseHelper.getInstance(getApplicationContext()).getWritableDatabase();
+            DemoDataSeeder.seedLocalAndRemote(getApplicationContext());
+            prefs.edit().putBoolean(KEY_DEMO_SEEDED, true).apply();
+            Log.d("LoginActivity", "Demo data seeded (one-time, DEBUG only)");
+        } catch (Throwable e) {
+            Log.e("LoginActivity", "Lỗi seed demo: " + e.getMessage(), e);
+        }
     }
 
     private void initViews() {
@@ -100,7 +118,8 @@ public class LoginActivity extends AppCompatActivity {
     private void handleLogin() {
         if (tilPhone != null) tilPhone.setError(null);
 
-        String rawPhone = etPhone != null && etPhone.getText() != null ? etPhone.getText().toString().trim() : "";
+        String rawPhone = etPhone != null && etPhone.getText() != null
+                ? etPhone.getText().toString().trim() : "";
 
         if (rawPhone.isEmpty()) {
             if (tilPhone != null) tilPhone.setError("Vui lòng nhập số điện thoại");
@@ -145,7 +164,9 @@ public class LoginActivity extends AppCompatActivity {
     private void renderGoogleState(UiState<AuthViewModel.GoogleAuthResult> state) {
         if (state == null) return;
         if (state.getScreenState() == UiState.ScreenState.ERROR) {
-            Toast.makeText(this, state.getErrorMessage() != null ? state.getErrorMessage() : "Lỗi xác thực Google", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,
+                    state.getErrorMessage() != null ? state.getErrorMessage() : "Lỗi xác thực Google",
+                    Toast.LENGTH_SHORT).show();
             return;
         }
 

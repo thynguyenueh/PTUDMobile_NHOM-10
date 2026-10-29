@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">StudentHousing</string>
-    <string name="notifications_refresh">Làm mới</string>
-    <string name="notifications_loading">Đang tải thông báo…</string>
-    <string name="notifications_empty">Không có yêu cầu trao đổi hay tin nhắn mới.</string>
 
     <!-- ============================================ -->
     <!-- 1. ACCESSIBILITY (Content Descriptions)      -->
@@ -13,14 +10,11 @@
     <string name="cd_remove_photo">Xóa ảnh</string>
     <string name="cd_favorite">Yêu thích</string>
     <string name="cd_photo">Ảnh căn hộ</string>
-    <string name="cd_swap">Đổi nhà</string>
     <string name="cd_call">Gọi điện</string>
     <string name="cd_send">Gửi tin nhắn</string>
     <string name="cd_attach">Đính kèm tệp</string>
     <string name="cd_add">Thêm mới</string>
     <string name="cd_security">Bảo mật</string>
-    <string name="cd_settings">Cài đặt</string>
-    <string name="cd_notifications">Thông báo</string>
     <string name="cd_filter">Bộ lọc</string>
     <string name="cd_search">Tìm kiếm</string>
     <string name="cd_camera">Camera</string>
@@ -28,41 +22,23 @@
     <string name="cd_avatar">Ảnh đại diện</string>
     <string name="cd_id_card">CCCD</string>
     <string name="cd_student_id">Thẻ sinh viên</string>
-    <string name="cd_amenity_icon">Biểu tượng tiện ích</string>
     <string name="cd_logo">Logo StudentHousing</string>
-    <string name="cd_help">Trợ giúp</string>
     <string name="cd_dropdown">Mở rộng</string>
-    <string name="cd_doc_preview">Xem trước giấy tờ</string>
     <string name="cd_verified">Đã xác thực</string>
-    <string name="cd_shield">Khiên bảo mật</string>
     <string name="cd_home">Trang chủ</string>
-    <string name="cd_notification_icon">Biểu tượng thông báo</string>
-    <string name="cd_attached_image">Hình ảnh đính kèm</string>
     <string name="cd_message_image">Hình ảnh tin nhắn</string>
-    <string name="cd_proposal">Tạo đề xuất đổi nhà</string>
-    <string name="cd_refresh">Làm mới</string>
-    <string name="cd_share">Chia sẻ</string>
-    <string name="cd_more_options">Tùy chọn khác</string>
-    <string name="cd_info">Thông tin chi tiết</string>
+    <string name="cd_help">Trợ giúp</string>
     <string name="kyc_photo_front">Mặt trước</string>
     <string name="kyc_photo_back">Mặt sau</string>
-    <string name="kyc_photo_student">Thẻ SV</string>
 
     <!-- ============================================ -->
     <!-- 2. UNITS & FORMATS                           -->
+    <!-- ============================================ -->
     <string name="create_post_photo_count">%1$d ảnh đã chọn</string>
     <string name="create_post_photo_cover_badge">Ảnh bìa</string>
-    <string name="photo_counter_format">%1$d / %2$d</string>
-    <string name="search_result_count_format">%1$d kết quả</string>
-    <string name="exchange_count_format">%1$d lượt</string>
-    <string name="posts_count_format">%1$d bài đăng</string>
-    <string name="saved_count_format">%1$d căn nhà</string>
-    <string name="distance_km_format">%1$.1f km</string>
-    <string name="format_distance_est">~ %1$s (Ước lượng)</string>
-    <string name="format_distance_real">%1$s</string>
-    <string name="format_distance_from_uni">Cách Đại học %1$s</string>
     <string name="nearby_universities_title">Các trường ĐH gần đây (&lt; 5km)</string>
     <string name="label_nearby_schools">Trường gần đây</string>
+    <string name="action_view_all_campuses">Xem tất cả ›</string>
 
     <string name="time_minutes_ago">%1$d phút trước</string>
     <string name="time_hours_ago">%1$d giờ trước</string>
@@ -71,35 +47,14 @@
     <string name="time_yesterday">Hôm qua</string>
 
     <!-- ============================================ -->
-    <!-- 3. PLACEHOLDERS                              -->
-    <!-- ============================================ -->
-    <string name="placeholder_title">Tiêu đề bài đăng</string>
-    <string name="placeholder_address">Địa chỉ</string>
-    <string name="placeholder_distance">Khoảng cách</string>
-    <string name="placeholder_status">Trạng thái</string>
-    <string name="detail_review_count_placeholder">Số lượng đánh giá</string>
-
-    <!-- ============================================ -->
     <!-- 4. AUTHENTICATION & ONBOARDING               -->
     <!-- ============================================ -->
     <string name="login_title">Đăng nhập</string>
-    <string name="login_subtitle">Chào mừng bạn quay lại</string>
+    <string name="login_subtitle">Đăng nhập bằng Số điện thoại hoặc Google</string>
     <string name="login_hint_phone">Số điện thoại</string>
-    <string name="login_hint_password">Mật khẩu</string>
-    <string name="login_forgot_password">Quên mật khẩu?</string>
-    <string name="login_btn_login">Đăng nhập</string>
-    <string name="login_btn_phone_otp">Đăng nhập bằng SĐT (OTP)</string>
     <string name="login_or_continue_with">Hoặc tiếp tục với</string>
     <string name="login_btn_google">Google</string>
-    <string name="login_no_account">Chưa có tài khoản? </string>
-    <string name="login_btn_register">Đăng ký</string>
-
-    <string name="forgot_password_title">Quên mật khẩu?</string>
-    <string name="forgot_password_desc">Nhập số điện thoại đã đăng ký để nhận mã OTP đặt lại mật khẩu mới.</string>
-    <string name="forgot_password_label_phone">Số điện thoại đăng ký *</string>
-    <string name="forgot_password_hint_phone">Nhập số điện thoại...</string>
-    <string name="forgot_password_btn_send">Gửi mã OTP khôi phục</string>
-    <string name="forgot_password_back_to_login">Quay lại Đăng nhập</string>
+    <string name="login_btn_otp">Gửi mã OTP</string>
 
     <string name="otp_title">Xác thực OTP</string>
     <string name="otp_header">Nhập mã xác thực</string>
@@ -108,18 +63,9 @@
 
     <string name="register_step1_title">Đăng ký Hộ gia đình</string>
     <string name="register_label_name">Họ và tên</string>
-    <string name="register_hint_name">Nhập họ và tên</string>
     <string name="register_label_phone">Số điện thoại liên hệ</string>
-    <string name="register_hint_phone">Nhập số điện thoại</string>
     <string name="register_label_university">Trường Đại học</string>
-    <string name="register_hint_university">Chọn trường đại học</string>
-    <string name="register_label_password">Tạo mật khẩu</string>
-    <string name="register_hint_password">Tối thiểu 8 ký tự</string>
-    <string name="register_label_confirm_password">Xác nhận mật khẩu</string>
-    <string name="register_hint_confirm_password">Nhập lại mật khẩu</string>
-    <string name="register_terms_agree">Tôi đồng ý với Điều khoản dịch vụ và Chính sách bảo mật của StudentHousing.</string>
     <string name="register_btn_continue">Tiếp tục</string>
-    <string name="register_has_account">Đã có tài khoản? Đăng nhập</string>
 
     <!-- ============================================ -->
     <!-- 5. HOME SCREEN & BOTTOM NAV                  -->
@@ -129,30 +75,14 @@
     <string name="nav_messages">Tin nhắn</string>
     <string name="nav_profile">Hồ sơ</string>
 
-    <string name="home_badge_kyc">Đã duyệt KYC</string>
     <string name="home_greeting">Xin chào,</string>
     <string name="home_section_title">Khám phá chỗ ở</string>
-    <string name="home_filtered_section_title">Kết quả phù hợp</string>
     <string name="home_search_hint">Tìm kiếm chỗ ở theo tên, khu vực...</string>
     <string name="home_btn_post">Đăng bài</string>
-    <string name="post_status_available">Đang tìm người đổi</string>
-    <string name="post_status_available_short">Đang mở</string>
     <string name="post_address_verified">Địa chỉ đã xác thực</string>
-    <string name="post_area_unavailable">Khu vực chưa được cập nhật</string>
-    <string name="post_address_private">Vị trí chính xác chỉ hiển thị sau khi yêu cầu đổi được chấp nhận</string>
-    <string name="post_nearby_campus_format">Gần %1$s · %2$s</string>
-    <string name="post_utilities_more_format">%1$s · +%2$d tiện ích</string>
-    <string name="post_status_unknown">Trạng thái chưa xác định</string>
-    <string name="detail_no_reviews">Chưa có đánh giá</string>
-    <string name="detail_load_error">Không thể tải thông tin chỗ ở. Vui lòng quay lại và thử lại.</string>
-    <string name="suggestion_reference_format">Đổi với bài: %1$s</string>
     <string name="saved_empty_title">Chưa có chỗ ở đã lưu</string>
     <string name="saved_empty_desc">Lưu những chỗ ở bạn quan tâm để xem lại và so sánh sau.</string>
     <string name="saved_empty_action">Khám phá chỗ ở</string>
-    <string name="saved_load_error_title">Không tải được danh sách</string>
-    <string name="saved_load_error_desc">Kiểm tra kết nối rồi thử tải lại.</string>
-    <string name="saved_retry">Thử lại</string>
-    <string name="search_hint">Tìm kiếm...</string>
 
     <!-- ============================================ -->
     <!-- 6. ACCOMMODATION POST                        -->
@@ -161,31 +91,19 @@
     <string name="detail_location">Đang tải địa chỉ...</string>
     <string name="detail_host_initial">H</string>
     <string name="detail_host_name">Hộ gia đình</string>
-    <string name="detail_host_meta">Đang tải...</string>
     <string name="detail_amenities">Tiện nghi</string>
     <string name="detail_amenities_empty">Chưa cập nhật tiện ích</string>
     <string name="detail_review_count_format">(%1$d đánh giá)</string>
-    <string name="detail_rating_summary">%1$.1f · %2$d đánh giá</string>
     <string name="detail_desc_label">Mô tả không gian sống</string>
-    <string name="detail_price_label">Giá niêm yết</string>
 
-    <string name="action_chat">Chat</string>
     <string name="action_message">Nhắn tin</string>
     <string name="action_call">Gọi điện</string>
-    <string name="action_propose_swap">Đề xuất đổi nhà</string>
     <string name="action_unsave">Bỏ thích</string>
-    <string name="action_view_detail">Xem chi tiết ›</string>
-    <string name="action_clear">Xóa</string>
-    <string name="action_cancel">Hủy</string>
-    <string name="action_save_changes">Lưu thay đổi</string>
     <string name="action_delete">Xóa</string>
     <string name="action_edit">Sửa</string>
     <string name="action_view">Xem</string>
-    <string name="action_view_agreement">Xem thỏa thuận</string>
-    <string name="verified_badge">Xác thực</string>
 
     <string name="my_post_default_title">Bài đăng nhà ở</string>
-    <string name="my_post_default_price_area">Giá trị · Diện tích</string>
     <string name="my_post_default_address">Địa chỉ: %1$s</string>
 
     <!-- ============================================ -->
@@ -196,26 +114,13 @@
     <string name="create_post_hint_photo_click">Bấm để chọn ảnh tải lên</string>
     <string name="create_post_label_title">Tiêu đề bài đăng *</string>
     <string name="create_post_hint_title">Nhập tiêu đề bài đăng</string>
-    <string name="create_post_label_address">Địa chỉ chỗ ở *</string>
     <string name="create_post_label_admin_address">Khu vực (Phường/Xã) *</string>
     <string name="create_post_hint_admin_address">Bấm để chọn Phường/Xã</string>
     <string name="create_post_label_house_number">Số nhà *</string>
     <string name="create_post_hint_house_number">Ví dụ: 123</string>
     <string name="create_post_label_street_name">Tên đường *</string>
     <string name="create_post_hint_street_name">Ví dụ: Lý Thường Kiệt</string>
-    <string name="create_post_label_street_address">Địa chỉ chi tiết</string>
-    <string name="create_post_hint_street_address">Ví dụ: Tòa S5.02 Vinhomes</string>
-    <string name="create_post_hint_address">Nhập địa chỉ chỗ ở</string>
-    <string name="create_post_edit_photos_hint">Ảnh hiện tại sẽ được giữ nếu bạn không chọn ảnh mới.</string>
     <string name="create_post_label_utilities">Tiện ích có sẵn</string>
-    <string name="create_post_util_wifi">Wifi</string>
-    <string name="create_post_util_ac">Máy lạnh</string>
-    <string name="create_post_util_washer">Máy giặt</string>
-    <string name="create_post_util_parking">Chỗ đậu xe</string>
-    <string name="create_post_util_fridge">Tủ lạnh</string>
-    <string name="create_post_util_fingerprint">Khóa vân tay</string>
-    <string name="create_post_util_loft">Gác lửng</string>
-    <string name="create_post_util_kitchen">Bếp riêng</string>
     <string name="create_post_hint_custom_util">Nhập tiện ích khác (ví dụ: Ban công, TV...)</string>
     <string name="create_post_btn_add_util">Thêm</string>
     <string name="create_post_label_desc">Mô tả chi tiết</string>
@@ -223,150 +128,48 @@
     <string name="create_post_btn_submit">Đăng bài ngay</string>
 
     <string name="my_posts_title">Bài đăng của tôi</string>
-    <string name="my_posts_list_label">Danh sách bài đăng</string>
     <string name="my_posts_btn_create">Đăng bài mới</string>
     <string name="my_posts_empty_title">Bạn chưa có bài đăng nào</string>
     <string name="my_posts_empty_desc">Đăng chỗ ở của bạn để bắt đầu tìm người đổi phù hợp.</string>
-    <string name="my_post_status_rented">Đã đổi nhà</string>
-    <string name="my_post_status_available">Đang tìm người đổi</string>
     <string name="status_exchanged">Đã đổi nhà</string>
-    <string name="my_post_btn_mark_rented">Đánh dấu đã đổi</string>
-    <string name="my_post_btn_mark_available">Mở lại bài đăng</string>
-    <string name="my_post_status_change_title">Xác nhận cập nhật</string>
-    <string name="my_post_status_mark_message">Đánh dấu bài đăng này là đã đổi? Bài sẽ không còn xuất hiện trong danh sách chỗ ở đang tìm người đổi.</string>
-    <string name="my_post_status_reopen_message">Mở lại bài đăng này để tiếp tục tìm người đổi?</string>
-    <string name="my_post_delete_error">Không thể xóa bài đăng. Vui lòng thử lại.</string>
-    <string name="my_post_update_error">Không thể cập nhật trạng thái. Vui lòng thử lại.</string>
-    <string name="my_post_btn_delete">Xóa</string>
-    <string name="my_post_btn_edit">Sửa</string>
-    <string name="my_post_btn_view">Xem</string>
 
     <!-- ============================================ -->
     <!-- 8. FILTER & SEARCH                           -->
     <!-- ============================================ -->
     <string name="filter_title">Bộ lọc tìm kiếm chỗ ở</string>
     <string name="filter_btn_reset">Thiết lập lại</string>
-    <string name="filter_section_location">Khu vực tìm kiếm</string>
     <string name="filter_label_ward">Phường / Xã</string>
-    <string name="filter_ward_selected_count">Đã chọn %1$d</string>
-    <string name="filter_verified_toggle_text">Chỉ hiển thị Hộ gia đình đã xác thực</string>
-    <string name="filter_section_housing_type">Loại chỗ ở</string>
     <string name="filter_btn_apply">Áp dụng (%1$d)</string>
     <string name="filter_btn_apply_simple">Áp dụng</string>
-    <string name="filter_result_count">%1$d Kết quả</string>
     <string name="filter_hint_ward">Chọn Phường / Xã</string>
     <string name="filter_label_campus">Gần trường đại học</string>
     <string name="filter_hint_campus">Chọn trường muốn ở gần</string>
     <string name="filter_label_distance">Khoảng cách tối đa</string>
     <string name="filter_label_utilities">Tiện ích</string>
 
-    <string name="search_query_hint">Tìm theo tên, khu vực, đường...</string>
-    <string name="search_chip_verified">Đã xác minh</string>
-    <string name="search_chip_cheap">Giá thấp</string>
-    <string name="search_recent_title">Tìm kiếm gần đây</string>
-    <string name="search_suggest_title">Gợi ý</string>
     <string name="search_university_hint">Tìm kiếm trường đại học...</string>
+    <string name="campus_distance_title">Khoảng cách đến các trường</string>
 
     <!-- ============================================ -->
     <!-- 9. CHAT & MESSAGES                           -->
     <!-- ============================================ -->
     <string name="chat_header_name">Hộ gia đình đối tác</string>
-    <string name="chat_verified_badge">Đã xác minh</string>
     <string name="chat_active_status">Đang hoạt động</string>
     <string name="chat_input_hint">Nhập tin nhắn...</string>
     <string name="chat_search_hint">Tìm kiếm cuộc trò chuyện...</string>
     <string name="empty_chat_rooms">Chưa có cuộc trò chuyện nào</string>
-    <string name="chat_default_post_title">Nhà sinh viên</string>
     <string name="chat_default_partner_name">Đối tác</string>
-    <string name="chat_default_message">Nhấn để trao đổi...</string>
-
-    <!-- ============================================ -->
-    <!-- 10. EXCHANGE & PROPOSAL                      -->
-    <!-- ============================================ -->
-    <string name="proposal_title">Tạo đề xuất đổi nhà</string>
-    <string name="proposal_my_home_label">NHÀ BẠN</string>
-    <string name="proposal_my_home_name">Căn hộ</string>
-    <string name="proposal_my_home_area">Đang tải diện tích...</string>
-    <string name="proposal_partner_label">NHÀ ĐỐI TÁC</string>
-    <string name="proposal_partner_name">Căn hộ</string>
-    <string name="proposal_partner_area">Đang tải diện tích...</string>
-    <string name="proposal_period_title">Thời gian đổi</string>
-    <string name="proposal_period_3_months">3 tháng</string>
-    <string name="proposal_period_6_months">6 tháng</string>
-    <string name="proposal_period_1_year">1 năm</string>
-    <string name="proposal_period_custom">Tự chọn</string>
-    <string name="proposal_period_custom_hint">Nhập thời gian tự chọn (ví dụ: 9 tháng, 2 năm...)</string>
-    <string name="proposal_message_title">Lời nhắn cho %1$s</string>
-    <string name="proposal_message_hint">Giới thiệu ngắn về gia đình và thời gian bạn mong muốn đổi nhà...</string>
-    <string name="proposal_privacy_note">Thông tin chỉ được chia sẻ sau khi hai bên đồng ý.</string>
-    <string name="proposal_send">Gửi đề xuất</string>
-    <string name="proposal_message_required">Vui lòng nhập lời nhắn</string>
-    <string name="proposal_sent">Đã gửi đề xuất cho %1$s (%2$s)</string>
-
-    <string name="proposal_detail_title">Biên bản thỏa thuận đổi nhà</string>
-    <string name="proposal_detail_banner_title">Hợp đồng điện tử bảo chứng StudentHousing</string>
-    <string name="proposal_detail_banner_desc">Các thỏa thuận trao đổi nhà ở được pháp lý bảo đảm</string>
-    <string name="proposal_detail_pair_label">Cặp nhà trao đổi</string>
-    <string name="proposal_detail_message_label">Lời nhắn từ đối tác</string>
-    <string name="proposal_detail_btn_reject">Từ chối đề xuất</string>
-    <string name="proposal_detail_btn_accept">Đồng ý trao đổi</string>
-    <string name="proposal_detail_btn_handover">Xác nhận bàn giao nhà</string>
-    <string name="proposal_detail_btn_cancel_request">Yêu cầu hủy thỏa thuận</string>
-    <string name="proposal_detail_btn_cancel_agree">Đồng ý hủy thỏa thuận</string>
-    <string name="proposal_detail_agreement_label">Nội dung Thỏa thuận pháp lý đổi nhà</string>
-    <string name="proposal_detail_consent_text">Tôi là đại diện phụ huynh/học sinh, đã đọc kỹ nội dung thỏa thuận</string>
-    <string name="proposal_detail_btn_sign">Ký duyệt thỏa thuận</string>
-
-    <string name="exchange_history_title">Lịch sử đổi nhà</string>
-    <string name="exchange_history_list_label">Danh sách giao dịch</string>
-    <string name="exchange_filter_all">Tất cả</string>
-    <string name="exchange_filter_pending">Đang chờ</string>
-    <string name="exchange_filter_approved">Đã đồng ý</string>
-    <string name="exchange_filter_completed">Đã hoàn tất</string>
-    <string name="exchange_filter_closed">Đã từ chối / hủy</string>
-    <string name="exchange_btn_create_proposal">Tạo đề xuất đổi nhà mới</string>
-
-    <string name="exchange_status_completed">Hoàn tất</string>
-    <string name="exchange_status_accepted">Đã chấp nhận</string>
-    <string name="exchange_status_in_progress">Đang trao đổi</string>
-    <string name="exchange_status_rejected">Đã từ chối</string>
-    <string name="exchange_status_cancelled">Đã hủy</string>
-    <string name="exchange_status_withdrawn">Đã rút</string>
-    <string name="exchange_status_superseded">Đã đổi bài</string>
-    <string name="exchange_status_expired">Hết hạn</string>
-    <string name="exchange_status_pending">Đang chờ duyệt</string>
-    <string name="exchange_default_period">Thời gian đổi</string>
-    <string name="exchange_default_message">Thỏa thuận đổi nhà 2 chiều.</string>
-    <string name="exchange_default_title">Yêu cầu đổi nhà</string>
-    <string name="exchange_btn_accept">Đồng ý</string>
-    <string name="exchange_btn_reject">Từ chối</string>
-    <string name="exchange_btn_review">Đánh giá đối tác</string>
-
-    <string name="swap_card_title">GỢI Ý ĐỔI NHÀ TỐI ƯU</string>
-    <string name="swap_my_home">NHÀ CỦA BẠN</string>
-    <string name="swap_partner_home">NHÀ ĐỐI TÁC</string>
-    <string name="swap_partner_desc_label">Mô tả nhà đối tác:</string>
 
     <!-- ============================================ -->
     <!-- 11. REVIEWS & NOTIFICATIONS                  -->
     <!-- ============================================ -->
-    <string name="notifications_title">Thông báo</string>
-    <string name="review_date_default">Gần đây</string>
-    <string name="review_comment_default">Đối tác đổi nhà</string>
-    <string name="review_title_default">Đối tác</string>
-    <string name="review_rating_default">Chưa có đánh giá</string>
-
     <string name="reviews_received_title">Đánh giá nhận được</string>
-    <string name="reviews_list_label">Danh sách đánh giá</string>
-    <string name="reviews_btn_write">+ Viết đánh giá cho đối tác</string>
-    <string name="reviews_star_summary">★ ★ ★ ★ ★</string>
-    <string name="reviews_count_format">Dựa trên %1$d đánh giá</string>
-    <string name="reviews_count_placeholder">Dựa trên 0 đánh giá</string>
-    <string name="rating_text_default">Rất hài lòng (5/5 sao)</string>
-
-    <string name="review_sheet_title">Đánh giá đối tác đổi nhà</string>
-    <string name="review_sheet_hint_comment">Nhận xét chi tiết về đối tác</string>
-    <string name="review_sheet_btn_submit">Gửi đánh giá xác nhận</string>
+    <string name="review_screen_title">Đánh giá đối tác</string>
+    <string name="review_comment_hint">Nhập nhận xét của bạn về đối tác...</string>
+    <string name="review_photos_title">Hình ảnh minh chứng</string>
+    <string name="review_btn_add_photo">+ Thêm ảnh</string>
+    <string name="review_btn_submit">Gửi đánh giá</string>
+    <string name="review_rating_5">Rất hài lòng</string>
 
     <!-- ============================================ -->
     <!-- 12. VERIFICATION (KYC & RESIDENCE)           -->
@@ -383,91 +186,39 @@
     <string name="kyc_status_not_uploaded">Chưa tải lên</string>
     <string name="kyc_consent_text">Tôi cam kết các thông tin giấy tờ trên là chính xác và đồng ý để StudentHousing xác thực dữ liệu phục vụ bảo lãnh đổi nhà.</string>
     <string name="kyc_btn_submit">Gửi hồ sơ xét duyệt KYC</string>
-    <string name="kyc_verified_badge">Đã xác minh KYC</string>
-    <string name="kyc_status_title">Tiến độ xác minh danh tính</string>
-    <string name="kyc_label_issue_date">Ngày cấp</string>
-    <string name="kyc_label_expiry_date">Thời hạn</string>
-    <string name="kyc_label_level">Cấp độ</string>
-    <string name="kyc_timeline_title">QUY TRÌNH THẨM ĐỊNH HỒ SƠ</string>
-    <string name="kyc_step1_title">Tải lên CCCD &amp; Thẻ sinh viên</string>
-    <string name="kyc_step1_desc">Thông tin trên giấy tờ đã được trích xuất và đang chờ đối soát.</string>
-    <string name="kyc_step2_title">Đối soát dữ liệu nhà trường</string>
-    <string name="kyc_step3_title">Kích hoạt bảo lãnh đổi nhà 2 chiều</string>
-    <string name="kyc_step3_desc">Tài khoản được phép tạo và ký biên bản thỏa thuận hoán đổi.</string>
-    <string name="kyc_btn_reupload">Cập nhật lại giấy tờ khi có thay đổi</string>
 
     <string name="residence_verification_title">Xác thực cư trú</string>
     <string name="residence_verification_banner">Hoàn tất xác thực để tăng độ tin cậy cho hồ sơ</string>
-    <string name="residence_verification_method_title">Chọn phương thức xác thực</string>
-    <string name="residence_verification_method_recommend">KHUYẾN NGHỊ</string>
-    <string name="residence_verification_option1_title">Tải lên Giấy xác nhận cư trú (CT07)</string>
-    <string name="residence_verification_option1_desc">Chụp ảnh CT07</string>
-    <string name="residence_verification_option2_title">Mã số định danh / Giấy tạm trú Phường</string>
-    <string name="residence_verification_reg_number_label">Mã số đăng ký</string>
-    <string name="residence_verification_reg_number_hint">Nhập mã số</string>
-    <string name="residence_verification_ward_label">Phường / Xã</string>
-    <string name="residence_verification_ward_hint">Chọn Phường</string>
-    <string name="residence_verification_uploaded_title">Giấy tờ đã tải lên</string>
-    <string name="residence_verification_doc_filename">Đang tải...</string>
-    <string name="residence_verification_doc_status1">Tệp giấy tờ đã tải lên</string>
-    <string name="residence_verification_doc_status2">Chưa đối soát • Chờ gửi hồ sơ</string>
+    <string name="residence_upload_title">Tải lên giấy tờ xác thực</string>
+    <string name="residence_upload_desc">Giấy xác nhận cư trú (Mẫu CT07) hoặc QR VNeID</string>
+    <string name="residence_upload_hint">Bấm để chọn ảnh hoặc tệp</string>
+    <string name="residence_address_title">Địa chỉ chi tiết</string>
+    <string name="residence_address_hint">Số nhà, tên đường, Phường/Xã, Quận/Huyện</string>
     <string name="residence_verification_btn_submit">Gửi hồ sơ xác thực</string>
-    <string name="residence_verification_footer_note">Hồ sơ sẽ được Quản trị viên và dữ liệu Phường đối soát</string>
 
     <!-- ============================================ -->
     <!-- 13. PROFILE & SETTINGS                       -->
     <!-- ============================================ -->
     <string name="profile_title">Hồ sơ cá nhân</string>
-    <string name="profile_verified_tag">Đã xác minh</string>
-    <string name="profile_kyc_title">Xác minh KYC</string>
-    <string name="profile_residence_title">Xác thực cư trú</string>
+    <string name="profile_identity">Danh tính</string>
+    <string name="profile_verify_action">Xác thực</string>
+    <string name="profile_residence">Cư trú</string>
+    <string name="profile_my_posts">Bài đăng của tôi</string>
+    <string name="profile_reviews_about_me">Đánh giá về tôi</string>
+    <string name="profile_settings">Cài đặt</string>
 
     <string name="public_host_title">Hồ sơ đối tác</string>
-    <string name="public_host_badge_verified">Phụ huynh bảo lãnh chính chủ</string>
-    <string name="public_host_trust_text">Tài khoản sinh viên &amp; hộ gia đình đã xác minh</string>
-    <string name="public_host_stat_exchanges">Lượt đổi nhà</string>
-    <string name="public_host_stat_completed">Hoàn tất</string>
     <string name="public_host_verification_title">TRẠNG THÁI XÁC THỰC AN TOÀN</string>
-    <string name="public_host_verify_cccd">CCCD Phụ huynh đã qua đối soát OCR</string>
     <string name="public_host_verify_cccd_title">Xác thực CCCD gắn chip</string>
-    <string name="public_host_verify_cccd_sub">Đã qua đối soát OCR &amp; định danh</string>
     <string name="public_host_verify_student">Xác thực Thẻ Sinh viên</string>
-    <string name="public_host_verify_student_id">Thẻ sinh viên đang theo học chính quy</string>
     <string name="public_host_verify_police">Xác thực Cư trú</string>
-    <string name="public_host_verify_police_sub">Đã đăng ký khai báo cư trú</string>
-    <string name="public_host_verify_residence">Giấy chứng nhận tạm trú Công an địa phương</string>
     <string name="public_host_house_title">CĂN NHÀ ĐANG CHÀO ĐỔI</string>
     <string name="public_host_btn_chat">Nhắn tin ngay</string>
-
-    <string name="profile_stat_posts">Bài đăng</string>
-    <string name="profile_stat_reviews">Đánh giá</string>
-    <string name="profile_stat_exchanges">Lượt đổi</string>
 
     <string name="settings_title">Cài đặt tài khoản</string>
     <string name="settings_section_info">THÔNG TIN CHI TIẾT TÀI KHOẢN</string>
     <string name="settings_label_university">Trường Đại học</string>
     <string name="settings_value_not_updated">Chưa cập nhật</string>
-    <string name="settings_section_account">TÀI KHOẢN &amp; BẢO MẬT</string>
     <string name="settings_btn_edit_profile">Chỉnh sửa thông tin cá nhân</string>
-    <string name="settings_section_app">ỨNG DỤNG &amp; THÔNG BÁO</string>
-    <string name="settings_section_support">HỖ TRỢ &amp; PHÁP LÝ</string>
-    <string name="settings_btn_terms">Điều khoản dịch vụ đổi nhà</string>
-    <string name="settings_btn_privacy">Chính sách bảo mật dữ liệu</string>
     <string name="settings_btn_logout">Đăng xuất</string>
-
-    <string name="suggestions_title">Gợi ý đổi</string>
-    <string name="suggestions_empty">Chưa có gợi ý đổi nhà phù hợp. Hãy đăng bài nhà còn khả dụng hoặc thử lại sau.</string>
-
-    <string name="edit_post_title">Chỉnh sửa thông tin</string>
-    <string name="edit_post_hint_title">Tiêu đề bài đăng</string>
-    <!-- ===== CHAT ===== -->
-    <string name="chat_uploading_image">Đang tải ảnh lên…</string>
-    <string name="chat_phone_not_provided">Người dùng chưa cung cấp số điện thoại</string>
-    <string name="chat_no_dialer">Không tìm thấy ứng dụng gọi điện</string>
-    <string name="chat_no_target">Không tìm thấy người nhận</string>
-    <string name="chat_must_login">Vui lòng đăng nhập lại</string>
-    <string name="chat_default_last_message">Nhấn để trao đổi…</string>
-    <string name="chat_prefix_you">Bạn: %1$s</string>
-    <string name="chat_unread_dot">●</string>
-    <string name="chat_send_empty_hint">Nhập tin nhắn trước khi gửi</string>
 </resources>

@@ -88,7 +88,7 @@
                             android:layout_height="@dimen/icon_md"
                             android:layout_marginStart="@dimen/space_xs"
                             android:contentDescription="@string/cd_verified"
-                            android:src="@drawable/ic_verified_check"
+                            android:src="@drawable/ic_verified"
                             android:visibility="gone"
                             app:tint="@color/primary"
                             tools:visibility="visible" />
@@ -106,12 +106,6 @@
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Verification Status List -->
-            <TextView
-                style="@style/TextAppearance.App.SectionTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_xl"
-                android:text="@string/public_host_verification_title" />
 
             <com.google.android.material.card.MaterialCardView
                 style="@style/Widget.App.Card"
@@ -121,7 +115,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:padding="@dimen/space_lg">
 
@@ -146,8 +140,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/space_md"
                             android:layout_weight="1"
-                            android:textSize="@dimen/text_body"
-                            android:text="@string/public_host_verify_student" />
+                            android:text="@string/public_host_verify_student"
+                            android:textSize="@dimen/text_body" />
 
                         <TextView
                             android:id="@+id/tvStudentVerifyStatus"
@@ -184,8 +178,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/space_md"
                             android:layout_weight="1"
-                            android:textSize="@dimen/text_body"
-                            android:text="@string/public_host_verify_cccd_title" />
+                            android:text="@string/public_host_verify_cccd_title"
+                            android:textSize="@dimen/text_body" />
 
                         <TextView
                             android:id="@+id/tvCccdVerifyStatus"
@@ -197,43 +191,7 @@
                             tools:text="Đã xác thực" />
                     </LinearLayout>
 
-                    <View
-                        style="@style/Widget.App.Divider"
-                        android:layout_marginVertical="@dimen/space_md" />
-
                     <!-- Status 2: Xác thực Công an -->
-                    <LinearLayout
-                        android:id="@+id/layoutPoliceVerifyRow"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="@dimen/icon_lg"
-                            android:layout_height="@dimen/icon_lg"
-                            android:contentDescription="@string/cd_security"
-                            android:src="@drawable/ic_shield_check"
-                            app:tint="@color/primary" />
-
-                        <TextView
-                            style="@style/TextAppearance.App.SectionTitle"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/space_md"
-                            android:layout_weight="1"
-                            android:textSize="@dimen/text_body"
-                            android:text="@string/public_host_verify_police" />
-
-                        <TextView
-                            android:id="@+id/tvPoliceVerifyStatus"
-                            style="@style/TextAppearance.App.Caption"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/primary"
-                            android:textStyle="bold"
-                            tools:text="Đã xác thực" />
-                    </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Theme chính cho app StudentHousing (Material 3 DayNight) -->
     <style name="Base.Theme.StudentHousing" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Typography -->
         <item name="android:fontFamily">@font/inter</item>
         <item name="fontFamily">@font/inter</item>
 
-        <!-- Color Tokens -->
+        <!-- Color tokens -->
         <item name="colorPrimary">@color/primary</item>
-        <item name="colorOnPrimary">@color/on_primary</item>
+        <item name="colorOnPrimary">@color/white</item>
         <item name="colorPrimaryContainer">@color/light_moss</item>
         <item name="colorOnPrimaryContainer">@color/olive_primary_dark</item>
         <item name="colorSurface">@color/surface_card</item>
@@ -19,18 +18,13 @@
         <item name="colorOutline">@color/divider_line</item>
         <item name="colorError">@color/status_danger</item>
         <item name="colorOnError">@color/white</item>
-        <item name="colorErrorContainer">@color/status_danger_container</item>
-        <item name="colorOnErrorContainer">@color/status_on_danger_container</item>
 
-        <!-- Window System Bars -->
+        <!-- Window bars -->
         <item name="android:windowBackground">@color/bg_app</item>
         <item name="android:statusBarColor">@color/bg_app</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="Theme.StudentHousing" parent="Base.Theme.StudentHousing" />
-
-    <!-- Theme Alias cho HomeExchange (Kế thừa hoàn toàn từ Base.Theme.StudentHousing để đảm bảo tính nhất quán) -->
-    <style name="Theme.HomeExchange" parent="Base.Theme.StudentHousing" />
 
 </resources>

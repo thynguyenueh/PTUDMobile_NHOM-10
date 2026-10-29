@@ -8,7 +8,6 @@
     android:background="@color/bg_app"
     android:orientation="vertical">
 
-    <!-- Content Area inside ScrollView -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -25,12 +24,11 @@
             android:paddingEnd="20dp"
             android:paddingBottom="24dp">
 
-            <!-- ================= HEADER TITLE ================= -->
+            <!-- HEADER -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/toolbar_height"
                 android:gravity="center_vertical">
-
                 <TextView
                     style="@style/TextAppearance.App.Heading"
                     android:layout_width="match_parent"
@@ -39,7 +37,7 @@
                     android:text="@string/profile_title" />
             </LinearLayout>
 
-            <!-- ================= USER INFO (Avatar + Name + University) ================= -->
+            <!-- USER INFO -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -51,7 +49,6 @@
                     android:layout_width="72dp"
                     android:layout_height="72dp"
                     android:background="@drawable/bg_circle_olive">
-
                     <ImageView
                         android:id="@+id/ivProfileAvatarImg"
                         android:layout_width="match_parent"
@@ -59,7 +56,6 @@
                         android:contentDescription="@string/cd_avatar"
                         android:scaleType="centerCrop"
                         android:visibility="gone" />
-
                     <TextView
                         android:id="@+id/tvProfileAvatar"
                         android:layout_width="match_parent"
@@ -77,7 +73,6 @@
                     android:layout_marginTop="12dp"
                     android:gravity="center"
                     android:orientation="horizontal">
-
                     <TextView
                         android:id="@+id/tvProfileName"
                         style="@style/TextAppearance.App.Heading"
@@ -85,14 +80,13 @@
                         android:layout_height="wrap_content"
                         android:textSize="18sp"
                         tools:text="Nguyễn Văn A" />
-
                     <ImageView
                         android:id="@+id/tvProfileVerifiedBadge"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:layout_marginStart="6dp"
                         android:contentDescription="@string/cd_verified"
-                        android:src="@drawable/ic_verified_check"
+                        android:src="@drawable/ic_verified"
                         android:visibility="gone"
                         app:tint="@color/primary" />
                 </LinearLayout>
@@ -106,115 +100,99 @@
                     tools:text="Đại học Quốc gia TP.HCM" />
             </LinearLayout>
 
-            <!-- ================= VERIFICATION STATUS SECTION ================= -->
+            <!-- VERIFICATION -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:orientation="vertical">
 
-                <TextView
-                    style="@style/TextAppearance.App.SectionTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="8dp"
-                    android:text="Trạng thái xác thực" />
-
-                <!-- Identity Status Row (Danh tính) -->
-                <RelativeLayout
+                <!-- KYC row: LinearLayout thay RelativeLayout -->
+                <LinearLayout
                     android:id="@+id/btnKyc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
                     android:paddingVertical="12dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        style="@style/TextAppearance.App.SectionTitle"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:baselineAligned="false"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:layout_weight="1"
+                        android:text="Danh tính" />
 
-                        <TextView
-                            style="@style/TextAppearance.App.SectionTitle"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Danh tính" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnKycAction"
+                        style="@style/Widget.App.Button.Outlined"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:minHeight="0dp"
+                        android:minWidth="0dp"
+                        android:text="Xác thực"
+                        android:textSize="12sp" />
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnKycAction"
-                            style="@style/Widget.App.Button.Outlined"
-                            android:layout_width="wrap_content"
-                            android:layout_height="36dp"
-                            android:insetTop="0dp"
-                            android:insetBottom="0dp"
-                            android:text="Xác thực"
-                            android:textSize="12sp" />
-
-                        <ImageView
-                            android:id="@+id/ivKycVerified"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:contentDescription="@string/cd_verified"
-                            android:src="@drawable/ic_verified_check"
-                            android:visibility="gone"
-                            app:tint="@color/olive_accent" />
-                    </LinearLayout>
-                </RelativeLayout>
+                    <ImageView
+                        android:id="@+id/ivKycVerified"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@string/cd_verified"
+                        android:src="@drawable/ic_verified"
+                        android:visibility="gone"
+                        app:tint="@color/olive_accent" />
+                </LinearLayout>
 
                 <View style="@style/Widget.App.Divider" />
 
-                <!-- Residence Status Row (Cư trú) -->
-                <RelativeLayout
+                <!-- Residence row -->
+                <LinearLayout
                     android:id="@+id/btnResidenceAuth"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
                     android:paddingVertical="12dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        style="@style/TextAppearance.App.SectionTitle"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:baselineAligned="false"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:layout_weight="1"
+                        android:text="Cư trú" />
 
-                        <TextView
-                            style="@style/TextAppearance.App.SectionTitle"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Cư trú" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnResidenceAction"
+                        style="@style/Widget.App.Button.Outlined"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:minHeight="0dp"
+                        android:minWidth="0dp"
+                        android:text="Xác thực"
+                        android:textSize="12sp" />
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnResidenceAction"
-                            style="@style/Widget.App.Button.Outlined"
-                            android:layout_width="wrap_content"
-                            android:layout_height="36dp"
-                            android:insetTop="0dp"
-                            android:insetBottom="0dp"
-                            android:text="Xác thực"
-                            android:textSize="12sp" />
-
-                        <ImageView
-                            android:id="@+id/ivResidenceVerified"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:contentDescription="@string/cd_verified"
-                            android:src="@drawable/ic_verified_check"
-                            android:visibility="gone"
-                            app:tint="@color/olive_accent" />
-                    </LinearLayout>
-                </RelativeLayout>
-
+                    <ImageView
+                        android:id="@+id/ivResidenceVerified"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@string/cd_verified"
+                        android:src="@drawable/ic_verified"
+                        android:visibility="gone"
+                        app:tint="@color/olive_accent" />
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- ================= NAVIGATION ROWS (RelativeLayouts) ================= -->
+            <!-- NAVIGATION ROWS -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -231,66 +209,12 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:paddingVertical="14dp">
-
                     <TextView
                         style="@style/TextAppearance.App.Body"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:text="Bài đăng của tôi" />
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/tvStatPosts"
-                            style="@style/TextAppearance.App.Caption"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="8dp"
-                            android:textStyle="bold"
-                            tools:text="12" />
-
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_chevron_right"
-                            app:tint="@color/text_main"
-                            android:contentDescription="@string/cd_dropdown" />
-                    </LinearLayout>
-                </RelativeLayout>
-
-                <View style="@style/Widget.App.Divider" />
-
-                <RelativeLayout
-                    android:id="@+id/rowSaved"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:paddingVertical="14dp">
-
-                    <TextView
-                        style="@style/TextAppearance.App.Body"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="Nhà đã lưu" />
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/text_main"
-                        android:contentDescription="@string/cd_dropdown" />
                 </RelativeLayout>
 
                 <View style="@style/Widget.App.Divider" />
@@ -303,38 +227,12 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:paddingVertical="14dp">
-
                     <TextView
                         style="@style/TextAppearance.App.Body"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:text="Đánh giá về tôi" />
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/tvStatReviews"
-                            style="@style/TextAppearance.App.Caption"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="8dp"
-                            android:textStyle="bold"
-                            tools:text="8" />
-
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_chevron_right"
-                            app:tint="@color/text_main"
-                            android:contentDescription="@string/cd_dropdown" />
-                    </LinearLayout>
                 </RelativeLayout>
 
                 <View style="@style/Widget.App.Divider" />
@@ -347,32 +245,18 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:paddingVertical="14dp">
-
                     <TextView
                         style="@style/TextAppearance.App.Body"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:text="Cài đặt" />
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/text_main"
-                        android:contentDescription="@string/cd_dropdown" />
                 </RelativeLayout>
 
                 <View style="@style/Widget.App.Divider" />
-
             </LinearLayout>
-
         </LinearLayout>
     </ScrollView>
 
-    <!-- ================= FIXED BOTTOM NAVIGATION ================= -->
     <include layout="@layout/layout_bottom_nav" />
-
 </LinearLayout>

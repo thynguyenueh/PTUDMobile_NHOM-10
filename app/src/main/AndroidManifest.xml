@@ -8,6 +8,13 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.DIAL" />
+            <data android:scheme="tel" />
+        </intent>
+    </queries>
+
     <application
         android:name=".StudentHousingApp"
         android:allowBackup="true"
@@ -28,19 +35,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name=".MainActivity"
-            android:exported="true"
+            android:name=".ui.auth.OtpActivity"
+            android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
         <!-- Đăng ký -->
         <activity
             android:name=".ui.auth.RegisterActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".RegisterStep2Activity"
             android:exported="false" />
 
         <activity
@@ -98,10 +100,6 @@
 
         <activity
             android:name=".ui.profile.SettingsActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".ui.profile.NotificationsActivity"
             android:exported="false" />
 
         <activity

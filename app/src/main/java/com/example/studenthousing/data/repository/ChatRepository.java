@@ -54,10 +54,13 @@ public class ChatRepository {
                 ? getRoomId(normalizedParticipants.get(0), normalizedParticipants.get(1))
                 : roomId.trim();
 
-        ChatRoom room = new ChatRoom();
+        ChatRoom existing = localRooms.getById(safeRoomId);
+        ChatRoom room = existing != null ? existing : new ChatRoom();
         room.setRoomId(safeRoomId);
         room.setParticipantIds(normalizedParticipants);
-        room.setCreatedAt(System.currentTimeMillis());
+        if (existing == null) {
+            room.setCreatedAt(System.currentTimeMillis());
+        }
         localRooms.upsert(room);
 
         if (!NetworkUtils.isOnline(ctx)) {

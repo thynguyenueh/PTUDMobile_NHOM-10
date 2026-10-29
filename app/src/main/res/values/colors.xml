@@ -1,51 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- ============ BASE ============ -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="on_primary">#FFFFFF</color>
+    <color name="transparent">#00000000</color>
 
-    <!-- Olive Palette -->
-    <color name="olive_green">#536D2A</color>
-    <color name="olive_primary_dark">#344718</color>
-    <color name="olive_accent">#536D2A</color>
+    <!-- ============ OLIVE PALETTE ============ -->
+    <color name="primary">#76962D</color>
+    <color name="olive_primary_dark">#4A6B1C</color>
     <color name="pale_olive">#C0C7A2</color>
     <color name="light_moss">#D7E4D1</color>
     <color name="dusty_olive">#E1E9E2</color>
-    <color name="cloud_olive">#E1E9E2</color>
 
-    <!-- Canonical Semantic -->
-    <color name="primary">#536D2A</color>
+    <!-- Alias tương thích -->
+    <color name="olive_green">@color/primary</color>
+    <color name="olive_accent">@color/primary</color>
+    <color name="cloud_olive">@color/dusty_olive</color>
+    <color name="color_primary">@color/primary</color>
+
+    <!-- ============ SEMANTIC SURFACE ============ -->
     <color name="bg_app">#F0F4F1</color>
     <color name="bg_input">#E1E9E2</color>
     <color name="surface_card">#FFFFFF</color>
     <color name="surface_variant">#E1E9E2</color>
-    <color name="divider_line">#B0B99B</color>
-    <color name="color_border">#B0B99B</color>
-    <color name="color_focus">#344718</color>
+    <color name="divider_line">#C0C7A2</color>
+    <color name="outline_soft">#E1E9E2</color>
 
-    <!-- Text -->
+    <!-- Alias -->
+    <color name="color_bg">@color/bg_app</color>
+    <color name="color_surface">@color/surface_card</color>
+    <color name="color_border">@color/divider_line</color>
+    <color name="color_focus">@color/primary</color>
+
+    <!-- ============ TEXT ============ -->
     <color name="text_main">#0F172A</color>
-    <color name="text_dark">#0F172A</color>
-    <color name="text_sub">#475569</color>
-    <color name="text_muted">#64748B</color>
+    <color name="text_sub">#64748B</color>
+    <color name="text_muted">#94A3B8</color>
 
-    <!-- States -->
-    <color name="status_verified">#4A6B1C</color>
-    <color name="status_verified_bg">#D7E4D1</color>
+    <!-- Alias -->
+    <color name="text_dark">@color/text_main</color>
+    <color name="color_text_primary">@color/text_main</color>
+    <color name="color_text_secondary">@color/text_sub</color>
+
+    <!-- ============ STATUS ============ -->
+    <color name="status_verified">@color/primary</color>
+    <color name="status_verified_bg">@color/light_moss</color>
     <color name="status_warning">#D97706</color>
-    <color name="status_danger">#DC2626</color>
-    <color name="status_danger_container">#FEE2E2</color>
-    <color name="status_on_danger_container">#991B1B</color>
+    <color name="status_danger">#EF4444</color>
+    <color name="status_danger_container">#FFFDE8E7</color>
     <color name="status_info">#2563EB</color>
 
-    <!-- Overlays -->
+    <color name="color_error">@color/status_danger</color>
+    <color name="color_success">@color/primary</color>
+
+    <!-- ============ CHIP / TRUST (dùng cho Adapter) ============ -->
+    <color name="color_status_pending_bg">@color/bg_input</color>
+    <color name="color_status_pending_text">@color/status_warning</color>
+    <color name="color_status_exchanging_bg">@color/pale_olive</color>
+    <color name="chip_exchanging_bg">@color/light_moss</color>
+    <color name="chip_exchanging_text">@color/olive_primary_dark</color>
+    <color name="color_status_completed_bg">@color/light_moss</color>
+    <color name="chip_completed_text">@color/olive_primary_dark</color>
+    <color name="color_status_closed_bg">@color/text_muted</color>
+    <color name="chip_cancelled_text">@color/status_danger</color>
+    <color name="chip_pending_text">@color/status_warning</color>
+
+    <color name="trust_full_bg">@color/light_moss</color>
+    <color name="trust_full_text">@color/olive_primary_dark</color>
+    <color name="color_trust_full_bg">@color/light_moss</color>
+    <color name="color_trust_full_text">@color/olive_primary_dark</color>
+
+    <color name="trust_partial_bg">@color/pale_olive</color>
+    <color name="trust_partial_text">@color/status_warning</color>
+    <color name="color_trust_partial_bg">@color/pale_olive</color>
+
+    <color name="trust_unverified_bg">@color/bg_input</color>
+    <color name="trust_unverified_text">@color/text_sub</color>
+    <color name="color_trust_none_bg">@color/bg_input</color>
+    <color name="color_trust_none_text">@color/text_sub</color>
+
+    <!-- ============ OVERLAY ============ -->
     <color name="overlay_white">#E6FFFFFF</color>
     <color name="dot_inactive">#80FFFFFF</color>
     <color name="on_olive_sub">#CCFFFFFF</color>
     <color name="scrim_translucent">#99000000</color>
-    <color name="outline_soft">#E1E9E2</color>
+    <color name="color_scrim_50">#80000000</color>
+    <color name="scrim_black">@color/color_scrim_50</color>
+    <color name="overlay_scrim">#66000000</color>
 
-    <!-- Toggle Fallback (dùng cho MaterialSwitch) -->
+    <!-- ============ BANNER / BUBBLE ============ -->
+    <color name="color_banner_info_bg">@color/light_moss</color>
+    <color name="color_banner_offline_bg">@color/bg_input</color>
+    <color name="color_bubble_in">@color/surface_card</color>
+    <color name="color_bubble_out">@color/light_moss</color>
+    <color name="color_skeleton">@color/bg_input</color>
+
+    <!-- ============ TOGGLE ============ -->
     <color name="toggle_on">@color/primary</color>
-    <color name="toggle_off">#788A60</color>
+    <color name="toggle_off">@color/text_muted</color>
+
+    <!-- Alias cho style cũ (Widget.App.Button.Toggle) -->
+    <color name="toggle_background">@color/toggle_off</color>
+    <color name="toggle_text">@color/text_main</color>
 </resources>

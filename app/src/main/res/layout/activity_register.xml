@@ -75,23 +75,6 @@
                     android:inputType="phone" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Field: Mật khẩu -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilPassword"
-                style="@style/Widget.App.FormField"
-                android:layout_marginTop="@dimen/space_md"
-                android:hint="Mật khẩu"
-                app:endIconMode="password_toggle"
-                app:startIconDrawable="@drawable/ic_lock">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etPassword"
-                    style="@style/Widget.App.FormInput"
-                    android:autofillHints="password"
-                    android:imeOptions="actionNext"
-                    android:inputType="textPassword" />
-            </com.google.android.material.textfield.TextInputLayout>
-
             <!-- Field: Trường Đại Học (Chỉ chọn) -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilUniversity"

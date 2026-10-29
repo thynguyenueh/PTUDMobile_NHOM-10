@@ -65,16 +65,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             holder.tvTime.setVisibility(timeStr.isEmpty() ? View.GONE : View.VISIBLE);
         }
 
-        boolean isAvailable = Constants.POST_AVAILABLE.equalsIgnoreCase(post.getStatus());
-        if (holder.tvStatus != null) {
-            holder.tvStatus.setText(isAvailable ? "Sẵn sàng đổi" : "Đã đổi");
-            holder.tvStatus.setBackgroundResource(isAvailable
-                    ? R.drawable.bg_badge_verified
-                    : R.drawable.bg_badge_distance);
-            holder.tvStatus.setTextColor(context.getColor(isAvailable
-                    ? R.color.olive_primary_dark
-                    : R.color.text_sub));
-            holder.tvStatus.setVisibility(View.VISIBLE);
+        if (holder.ivVerified != null) {
+            boolean addressValid = Constants.ADDR_VALID.equalsIgnoreCase(post.getAddressValidationStatus());
+            holder.ivVerified.setVisibility(addressValid ? View.VISIBLE : View.GONE);
         }
 
         String imageUrl = post.getImages() != null && !post.getImages().isEmpty()
@@ -101,7 +94,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivPhoto;
-        TextView tvTitle, tvAddress, tvDistance, tvStatus, tvUtilities, tvTime;
+        TextView tvTitle, tvAddress, tvDistance, tvUtilities, tvTime;
         ImageView ivVerified;
 
         public ViewHolder(@NonNull View itemView) {
@@ -110,7 +103,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             tvTitle = itemView.findViewById(R.id.tvHouseTitle);
             tvAddress = itemView.findViewById(R.id.tvHouseAddress);
             tvDistance = itemView.findViewById(R.id.tvHouseDistance);
-            tvStatus = itemView.findViewById(R.id.tvHouseStatus);
             tvUtilities = itemView.findViewById(R.id.tvHouseUtilities);
             tvTime = itemView.findViewById(R.id.tvHouseTime);
             ivVerified = itemView.findViewById(R.id.ivHouseVerified);

@@ -28,9 +28,6 @@ public class OtpActivity extends AppCompatActivity {
     public static final String EXTRA_VERIFICATION_ID = "verificationId";
     public static final String EXTRA_PHONE = "phoneNumber";
     public static final String EXTRA_MODE = "mode";
-    public static final String EXTRA_PARENT_NAME = "PARENT_NAME";
-    public static final String EXTRA_UNIVERSITY = "UNIVERSITY";
-    public static final String EXTRA_GOOGLE_UID = "GOOGLE_UID";
 
     public static final String MODE_REGISTER = "REGISTER";
     public static final String MODE_LOGIN = "LOGIN";
@@ -58,7 +55,8 @@ public class OtpActivity extends AppCompatActivity {
         if (mode == null) mode = MODE_REGISTER;
 
         if (verificationId == null || verificationId.isEmpty()) {
-            Toast.makeText(this, "Phiên xác thực không hợp lệ, vui lòng thử lại", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Phiên xác thực không hợp lệ, vui lòng thử lại",
+                    Toast.LENGTH_LONG).show();
             finish();
             return;
         }
@@ -71,10 +69,13 @@ public class OtpActivity extends AppCompatActivity {
             tvPhoneHint.setText("Mã xác thực đã được gửi tới SĐT " + phoneNumber);
         }
 
-        tvOtpError = null;
+        // ✅ FIX: gán đúng View, KHÔNG gán null
+        tvOtpError = findViewById(R.id.tvOtpError);
+
         otpDigits = new EditText[]{
-                findViewById(R.id.otpDigit1), findViewById(R.id.otpDigit2), findViewById(R.id.otpDigit3),
-                findViewById(R.id.otpDigit4), findViewById(R.id.otpDigit5), findViewById(R.id.otpDigit6)
+                findViewById(R.id.otpDigit1), findViewById(R.id.otpDigit2),
+                findViewById(R.id.otpDigit3), findViewById(R.id.otpDigit4),
+                findViewById(R.id.otpDigit5), findViewById(R.id.otpDigit6)
         };
         for (int i = 0; i < otpDigits.length; i++) {
             final int index = i;
@@ -94,7 +95,9 @@ public class OtpActivity extends AppCompatActivity {
                 @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
                 @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
                     if (distributing) return;
-                    if (tvOtpError != null && tvOtpError.getVisibility() == View.VISIBLE) tvOtpError.setVisibility(View.GONE);
+                    if (tvOtpError != null && tvOtpError.getVisibility() == View.VISIBLE) {
+                        tvOtpError.setVisibility(View.GONE);
+                    }
                     if (s.length() > 1) {
                         distributing = true;
                         String pasted = s.toString().replaceAll("\\D", "");
@@ -139,98 +142,79 @@ public class OtpActivity extends AppCompatActivity {
         mAuth.signInWithCredential(phoneCredential).addOnCompleteListener(this, task -> {
             btnVerify.setEnabled(true);
             if (!task.isSuccessful()) {
-                Toast.makeText(this, "Xác thực OTP thất bại: " +
-                        (task.getException() != null ? task.getException().getMessage() : ""), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Xác thực OTP thất bại", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             FirebaseUser fbUser = mAuth.getCurrentUser();
             if (fbUser == null) {
-                Toast.makeText(this, "Không lấy được thông tin người dùng", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Không lấy được thông tin người dùng",
+                        Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            if (MODE_LOGIN.equals(mode)) {
-                checkExistingAndLogin(fbUser.getUid());
-            } else {
-                continueRegister(fbUser.getUid());
-            }
+            // Dù MODE_LOGIN hay MODE_REGISTER → luôn kiểm tra profile
+            checkExistingAndLogin(fbUser.getUid());
         });
     }
 
+    // ✅ CHỈ CÒN 1 ĐỊNH NGHĨA DUY NHẤT
     private void checkExistingAndLogin(String uid) {
         UserRepository repo = new UserRepository(this);
         repo.getUserProfile(uid, new AppCallback<User>() {
             @Override
             public void onSuccess(User user) {
-                if (user != null) {
+                // Có profile đầy đủ → đăng nhập luôn
+                boolean hasProfile = user != null
+                        && user.getFamilyName() != null
+                        && !user.getFamilyName().trim().isEmpty()
+                        && !"Người dùng".equalsIgnoreCase(user.getFamilyName());
+
+                if (hasProfile) {
                     if (user.getPhone() == null || user.getPhone().isEmpty()) {
                         user.setPhone(phoneNumber);
                     }
                     repo.saveUserProfile(user, new AppCallback<Void>() {
-                        @Override public void onSuccess(Void d) {
+                        @Override
+                        public void onSuccess(Void d) {
                             session.createLoginSession(user);
                             runOnUiThread(() -> {
-                                Toast.makeText(OtpActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(OtpActivity.this, "Đăng nhập thành công!",
+                                        Toast.LENGTH_SHORT).show();
                                 goToHome();
                             });
                         }
-                        @Override public void onError(Exception e) {
+                        @Override
+                        public void onError(Exception e) {
+                            // Vẫn cho vào Home (offline-first)
                             session.createLoginSession(user);
                             runOnUiThread(() -> {
-                                Toast.makeText(OtpActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(OtpActivity.this, "Đăng nhập thành công!",
+                                        Toast.LENGTH_SHORT).show();
                                 goToHome();
                             });
                         }
                     });
                 } else {
-                    // Chưa có profile -> chuyển sang RegisterActivity để điền thông tin (Họ tên, Trường)
-                    Intent i = new Intent(OtpActivity.this, RegisterActivity.class);
-                    i.putExtra("VERIFIED_PHONE", phoneNumber);
-                    i.putExtra("GOOGLE_UID", uid);
-                    startActivity(i);
-                    finish();
+                    // Chưa có profile → sang Register để điền tên + trường
+                    openRegisterForProfile(uid);
                 }
             }
 
             @Override
             public void onError(Exception e) {
-                // Tạo profile mới nếu chưa có
-                continueRegister(uid);
+                // Lỗi mạng → vẫn mở Register (OTP đã xác thực thành công)
+                openRegisterForProfile(uid);
             }
         });
     }
 
-    private void continueRegister(String uid) {
-        Intent in = getIntent();
-        String parentName = in.getStringExtra(EXTRA_PARENT_NAME);
-        String university = in.getStringExtra(EXTRA_UNIVERSITY);
-
-        long now = System.currentTimeMillis();
-        User user = new User();
-        user.setUserId(uid);
-        user.setPhone(phoneNumber);
-        user.setFamilyName(parentName != null && !parentName.isEmpty() ? parentName : "Người dùng");
-        if (university != null && !university.isEmpty()) {
-            user.setUniversityName(university);
-        }
-        user.setCreatedAt(now);
-        user.setUpdatedAt(now);
-
-        UserRepository repo = new UserRepository(this);
-        repo.saveUserProfile(user, new AppCallback<Void>() {
-            @Override public void onSuccess(Void d) {
-                session.createLoginSession(user);
-                runOnUiThread(() -> {
-                    Toast.makeText(OtpActivity.this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
-                    goToHome();
-                });
-            }
-            @Override public void onError(Exception e) {
-                runOnUiThread(() ->
-                        Toast.makeText(OtpActivity.this, "Đăng ký thất bại: Không thể kết nối máy chủ", Toast.LENGTH_LONG).show());
-            }
-        });
+    private void openRegisterForProfile(String uid) {
+        Intent i = new Intent(OtpActivity.this, RegisterActivity.class);
+        i.putExtra("VERIFIED_PHONE", phoneNumber);
+        i.putExtra("GOOGLE_UID", uid);
+        startActivity(i);
+        finish();
     }
 
     private void goToHome() {

@@ -103,7 +103,6 @@ public class KycActivity extends AppCompatActivity {
         if (btnRemoveStudentFront != null) btnRemoveStudentFront.setOnClickListener(v -> { studentFrontUri = null; updateDocumentStatus(); });
         if (btnRemoveStudentBack != null) btnRemoveStudentBack.setOnClickListener(v -> { studentBackUri = null; updateDocumentStatus(); });
 
-        cbConsent = findViewById(R.id.cbConsent);
         btnSubmitKyc = findViewById(R.id.btnSubmitKyc);
         addParentButton = findViewById(R.id.btnAddParentId);
         addStudentButton = findViewById(R.id.btnAddStudentId);

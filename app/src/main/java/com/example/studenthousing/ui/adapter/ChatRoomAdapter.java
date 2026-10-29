@@ -29,8 +29,6 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoom, ChatRoomAdapter.ChatR
     }
 
     private final OnChatRoomClickListener listener;
-
-    // ✅ Cache tên partner để tránh query SQLite lặp lại mỗi lần scroll
     private static final Map<String, String> partnerNameCache = new ConcurrentHashMap<>();
 
     public ChatRoomAdapter(@NonNull OnChatRoomClickListener listener) {
@@ -65,7 +63,6 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoom, ChatRoomAdapter.ChatR
         holder.bind(getItem(position));
     }
 
-    /** Lấy tên partner có cache — tránh query SQLite trên main thread nhiều lần */
     private static String resolvePartnerName(Context ctx, String targetUserId) {
         if (targetUserId == null) {
             return ctx.getString(R.string.chat_default_partner_name);
@@ -115,7 +112,6 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoom, ChatRoomAdapter.ChatR
             Context ctx = itemView.getContext();
             String currentUserId = SessionManager.getUid(ctx);
 
-            // Xác định partner (người còn lại trong phòng)
             String targetUserId = null;
             if (room.getParticipantIds() != null) {
                 for (String pid : room.getParticipantIds()) {
@@ -136,14 +132,16 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoom, ChatRoomAdapter.ChatR
             String firstLetter = partnerName.isEmpty() ? "?" : partnerName.substring(0, 1).toUpperCase();
             tvAvatar.setText(firstLetter);
 
+            if (tvHouseTitle != null) {
+                tvHouseTitle.setVisibility(View.GONE);
+            }
+
             String rawMsg = room.getLastMessage() != null && !room.getLastMessage().isEmpty()
                     ? room.getLastMessage()
                     : "Chưa có tin nhắn";
 
             boolean isMyMessage = Objects.equals(currentUserId, room.getLastSenderId());
-            tvLastMessage.setText(isMyMessage
-                    ? "Bạn: " + rawMsg
-                    : rawMsg);
+            tvLastMessage.setText(isMyMessage ? "Bạn: " + rawMsg : rawMsg);
 
             if (room.getLastMessageTime() > 0) {
                 tvTime.setText(TimeFormatter.relative(ctx, room.getLastMessageTime()));
@@ -151,7 +149,6 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoom, ChatRoomAdapter.ChatR
                 tvTime.setText("Vừa xong");
             }
 
-            // ✅ Hiện unread badge đúng logic
             if (tvUnreadBadge != null) {
                 boolean isUnread = room.getLastMessageTime() > 0
                         && room.getLastSenderId() != null

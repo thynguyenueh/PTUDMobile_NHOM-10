@@ -110,20 +110,6 @@
                     android:layout_marginTop="@dimen/space_sm"
                     android:text="@string/detail_title" />
 
-                <TextView
-                    android:id="@+id/tvAreaMeta"
-                    style="@style/TextAppearance.App.Caption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/space_xs"
-                    android:drawablePadding="@dimen/space_xs"
-                    android:textSize="@dimen/text_small_lg"
-                    android:visibility="gone"
-                    app:drawableStartCompat="@drawable/ic_verified_check"
-                    app:drawableTint="@color/primary"
-                    tools:text="@string/post_address_verified"
-                    tools:visibility="visible" />
-
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -150,12 +136,15 @@
                 <include layout="@layout/layout_host_card" />
 
                 <TextView
+                    android:id="@+id/tvNearbyCampusesLabel"
                     style="@style/TextAppearance.App.SectionTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/space_xl"
                     android:textSize="@dimen/text_body_lg2"
-                    android:text="@string/label_nearby_schools" />
+                    android:text="@string/label_nearby_schools"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
 
                 <include layout="@layout/layout_distance_card" />
 

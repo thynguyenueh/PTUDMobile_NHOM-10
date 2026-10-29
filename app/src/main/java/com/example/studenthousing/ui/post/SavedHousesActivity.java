@@ -124,7 +124,6 @@ public class SavedHousesActivity extends AppCompatActivity implements SavedHouse
             retrySavedLoad = true;
             savedHouseAdapter.submitList(new ArrayList<>());
             binding.rvSavedHouses.setVisibility(android.view.View.GONE);
-            if (binding.tvSavedCount != null) binding.tvSavedCount.setText("0 căn nhà");
             return;
         }
         if (state.getContent() == null) return;
@@ -135,7 +134,6 @@ public class SavedHousesActivity extends AppCompatActivity implements SavedHouse
             list.add(SavedHouseAdapter.SavedHouseItem.fromPost(this, post));
         }
         savedHouseAdapter.submitList(list);
-        if (binding.tvSavedCount != null) binding.tvSavedCount.setText(list.size() + " căn nhà");
         boolean isEmpty = list.isEmpty();
         binding.rvSavedHouses.setVisibility(isEmpty ? android.view.View.GONE : android.view.View.VISIBLE);
     }

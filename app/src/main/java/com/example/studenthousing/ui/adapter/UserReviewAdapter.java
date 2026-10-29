@@ -1,6 +1,5 @@
 package com.example.studenthousing.ui.adapter;
 
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,18 +12,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.studenthousing.R;
+import com.example.studenthousing.data.local.UserDao;
 import com.example.studenthousing.data.model.Review;
+import com.example.studenthousing.data.model.User;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class UserReviewAdapter extends RecyclerView.Adapter<UserReviewAdapter.ReviewViewHolder> {
 
     private final List<Review> reviews = new ArrayList<>();
+    private static final Map<String, String> reviewerNameCache = new ConcurrentHashMap<>();
 
     public void submitList(@NonNull List<Review> newReviews) {
         reviews.clear();
@@ -49,8 +52,29 @@ public class UserReviewAdapter extends RecyclerView.Adapter<UserReviewAdapter.Re
         return reviews.size();
     }
 
-    public static class ReviewViewHolder extends RecyclerView.ViewHolder {
+    static String resolveName(android.content.Context ctx, Review r) {
+        String name = r.getReviewerName();
+        if (name != null && !name.isEmpty() && !name.startsWith("Đối tác ")) return name;
 
+        String id = r.getReviewerId();
+        if (id == null) return "Hộ gia đình đối tác";
+
+        String cached = reviewerNameCache.get(id);
+        if (cached != null) return cached;
+
+        try {
+            User user = new UserDao(ctx).getById(id);
+            if (user != null && user.getFamilyName() != null && !user.getFamilyName().isEmpty()) {
+                reviewerNameCache.put(id, user.getFamilyName());
+                return user.getFamilyName();
+            }
+        } catch (Exception ignored) {}
+
+        reviewerNameCache.put(id, "Hộ gia đình đối tác");
+        return "Hộ gia đình đối tác";
+    }
+
+    public static class ReviewViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvAvatar;
         private final TextView tvName;
         private final TextView tvDate;
@@ -71,38 +95,23 @@ public class UserReviewAdapter extends RecyclerView.Adapter<UserReviewAdapter.Re
         }
 
         void bind(@NonNull Review r) {
-            String name = r.getReviewerName();
-            if (name == null || name.isEmpty() || name.startsWith("Đối tác ")) {
-                if (r.getReviewerId() != null) {
-                    com.example.studenthousing.data.local.UserDao userDao = new com.example.studenthousing.data.local.UserDao(itemView.getContext());
-                    com.example.studenthousing.data.model.User user = userDao.getById(r.getReviewerId());
-                    if (user != null && user.getFamilyName() != null && !user.getFamilyName().isEmpty()) {
-                        name = user.getFamilyName();
-                    }
-                }
-            }
-            if (name == null || name.isEmpty() || name.startsWith("Đối tác ")) {
-                name = "Hộ gia đình đối tác";
-            }
+            String name = resolveName(itemView.getContext(), r);
             tvName.setText(name);
             tvAvatar.setText(name.substring(0, 1).toUpperCase());
 
             int rating = (int) Math.round(r.getRating());
             StringBuilder stars = new StringBuilder();
-            for (int i = 0; i < 5; i++) {
-                stars.append(i < rating ? "★" : "☆");
-            }
+            for (int i = 0; i < 5; i++) stars.append(i < rating ? "★" : "☆");
             tvStars.setText(stars.toString());
 
             String dateStr;
             if (r.getCreatedAt() > 0) {
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                dateStr = sdf.format(new Date(r.getCreatedAt()));
+                dateStr = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                        .format(new Date(r.getCreatedAt()));
             } else {
                 dateStr = "Gần đây";
             }
             tvDate.setText(dateStr + " · Đối tác đổi nhà");
-
             tvComment.setText(r.getComment() != null ? r.getComment() : "");
 
             List<String> images = r.getImageUrls() != null ? r.getImageUrls() : new ArrayList<>();
@@ -112,24 +121,21 @@ public class UserReviewAdapter extends RecyclerView.Adapter<UserReviewAdapter.Re
             if (attachmentsContainer != null) {
                 attachmentsContainer.removeAllViews();
                 for (String imgUrl : images) {
-                    if (imgUrl != null && !imgUrl.trim().isEmpty()) {
-                        ImageView iv = new ImageView(itemView.getContext());
-                        int size = (int) (80 * itemView.getContext().getResources().getDisplayMetrics().density);
-                        int margin = (int) (8 * itemView.getContext().getResources().getDisplayMetrics().density);
-                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(size, size);
-                        lp.setMarginEnd(margin);
-                        iv.setLayoutParams(lp);
-                        iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                        iv.setBackgroundResource(R.drawable.bg_image_placeholder);
-
-                        Glide.with(itemView.getContext())
-                                .load(imgUrl)
-                                .placeholder(R.drawable.bg_image_placeholder)
-                                .error(R.drawable.bg_image_placeholder)
-                                .into(iv);
-
-                        attachmentsContainer.addView(iv);
-                    }
+                    if (imgUrl == null || imgUrl.trim().isEmpty()) continue;
+                    ImageView iv = new ImageView(itemView.getContext());
+                    int size = (int) (80 * itemView.getContext().getResources().getDisplayMetrics().density);
+                    int margin = (int) (8 * itemView.getContext().getResources().getDisplayMetrics().density);
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(size, size);
+                    lp.setMarginEnd(margin);
+                    iv.setLayoutParams(lp);
+                    iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    iv.setBackgroundResource(R.drawable.bg_image_placeholder);
+                    Glide.with(itemView.getContext())
+                            .load(imgUrl)
+                            .placeholder(R.drawable.bg_image_placeholder)
+                            .error(R.drawable.bg_image_placeholder)
+                            .into(iv);
+                    attachmentsContainer.addView(iv);
                 }
             }
         }

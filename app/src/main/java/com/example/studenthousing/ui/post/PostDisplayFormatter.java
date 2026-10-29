@@ -3,6 +3,7 @@ package com.example.studenthousing.ui.post;
 import android.content.Context;
 
 import com.example.studenthousing.R;
+import com.example.studenthousing.data.loader.UtilitiesDataLoader;
 import com.example.studenthousing.data.model.AccommodationPost;
 import com.example.studenthousing.data.model.Campus;
 import com.example.studenthousing.data.model.NearbyCampus;
@@ -26,9 +27,6 @@ public final class PostDisplayFormatter {
     }
 
     public static int getStatusLabel(AccommodationPost post) {
-        if (Constants.POST_AVAILABLE.equalsIgnoreCase(post.getStatus())) {
-            return R.string.status_exchanged;
-        }
         if (Constants.POST_EXCHANGED.equalsIgnoreCase(post.getStatus())) {
             return R.string.status_exchanged;
         }
@@ -66,7 +64,9 @@ public final class PostDisplayFormatter {
         for (String utility : utilities) {
             if (utility == null || utility.trim().isEmpty()) continue;
             utilityCount++;
-            if (visibleUtilities.size() < 2) visibleUtilities.add(utility.trim());
+            if (visibleUtilities.size() < 2) {
+                visibleUtilities.add(UtilitiesDataLoader.getLabelOrFallback(context, utility.trim()));
+            }
         }
         if (visibleUtilities.isEmpty()) return null;
 

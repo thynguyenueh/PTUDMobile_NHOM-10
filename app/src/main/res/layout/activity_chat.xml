@@ -43,12 +43,11 @@
                     android:text="@string/chat_header_name" />
 
                 <ImageView
-                    android:id="@+id/ivVerifiedBadge"
                     android:layout_width="@dimen/icon_sm"
                     android:layout_height="@dimen/icon_sm"
                     android:layout_marginStart="@dimen/space_xs"
                     android:contentDescription="@string/cd_verified"
-                    android:src="@drawable/ic_verified_check"
+                    android:src="@drawable/ic_verified"
                     android:visibility="gone"
                     app:tint="@color/primary"
                     tools:visibility="visible" />

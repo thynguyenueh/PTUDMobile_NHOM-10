@@ -1,6 +1,5 @@
 package com.example.studenthousing.ui.review;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -8,9 +7,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.studenthousing.R;
 import com.example.studenthousing.data.model.Review;
 import com.example.studenthousing.databinding.ActivityUserReviewsBinding;
 import com.example.studenthousing.ui.adapter.UserReviewAdapter;
@@ -29,6 +26,7 @@ public class UserReviewsActivity extends AppCompatActivity {
     private SessionManager session;
     private UserReviewsViewModel viewModel;
     private UserReviewAdapter reviewAdapter;
+    private TextView reviewsState;
 
     private String targetUserId;
     private String targetUserName;
@@ -47,13 +45,14 @@ public class UserReviewsActivity extends AppCompatActivity {
 
         binding.btnBack.setOnClickListener(v -> finish());
 
+        reviewsState = findViewById(com.example.studenthousing.R.id.tvReviewsState);
+
         if (binding.rvUserReviews != null) {
             binding.rvUserReviews.setLayoutManager(new LinearLayoutManager(this));
             reviewAdapter = new UserReviewAdapter();
             binding.rvUserReviews.setAdapter(reviewAdapter);
         }
 
-        TextView reviewsState = null;
         viewModel.getReviews().observe(this, state -> {
             if (state == null) return;
             if (state.getScreenState() == UiState.ScreenState.LOADING) {
@@ -88,7 +87,6 @@ public class UserReviewsActivity extends AppCompatActivity {
             finish();
             return;
         }
-        boolean isOtherUser = currentUserId != null && !targetUserId.equals(currentUserId);
     }
 
     @Override

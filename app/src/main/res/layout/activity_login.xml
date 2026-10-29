@@ -12,7 +12,6 @@
     tools:context=".ui.auth.LoginActivity">
 
     <ImageView
-        android:id="@+id/ivLogo"
         android:layout_width="96dp"
         android:layout_height="47dp"
         android:layout_gravity="center_horizontal"

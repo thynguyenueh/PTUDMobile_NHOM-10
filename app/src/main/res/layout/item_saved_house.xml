@@ -38,20 +38,6 @@
                     android:scaleType="centerCrop"
                     tools:src="@drawable/bg_image_placeholder" />
 
-                <TextView
-                    android:id="@+id/tvSavedStatus"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:background="@color/scrim_translucent"
-                    android:gravity="center"
-                    android:paddingVertical="2dp"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/text_caption"
-                    android:textStyle="bold"
-                    android:visibility="gone"
-                    tools:text="Sẵn sàng đổi"
-                    tools:visibility="visible" />
             </FrameLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -85,7 +71,7 @@
                     android:layout_height="20dp"
                     android:layout_marginStart="@dimen/space_xs"
                     android:contentDescription="@string/cd_verified"
-                    android:src="@drawable/ic_verified_check"
+                    android:src="@drawable/ic_verified"
                     app:tint="@color/primary"
                     android:visibility="gone" />
 
@@ -97,8 +83,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/action_unsave"
                     android:padding="6dp"
-                    android:src="@drawable/ic_favorite"
-                    app:tint="@color/status_danger" />
+                    android:src="@drawable/ic_favorite" />
             </LinearLayout>
 
             <TextView

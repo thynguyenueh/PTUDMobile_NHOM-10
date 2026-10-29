@@ -16,13 +16,6 @@
         <TextView
             style="@style/Widget.App.HeaderTitle"
             android:text="@string/residence_verification_title" />
-
-        <ImageView
-            android:id="@+id/btnHelp"
-            style="@style/Widget.App.HeaderBackButton"
-            android:contentDescription="@string/cd_help"
-            android:src="@drawable/ic_help"
-            app:tint="@color/primary" />
     </LinearLayout>
 
     <View style="@style/Widget.App.Divider" />
@@ -122,8 +115,9 @@
                 android:text="Địa chỉ chi tiết" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilDetailedAddress"
                 style="@style/Widget.App.FormField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_xs"
                 android:hint="Số nhà, tên đường, Phường/Xã, Quận/Huyện"
                 app:startIconDrawable="@drawable/ic_location">
@@ -131,9 +125,29 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etDetailedAddress"
                     style="@style/Widget.App.FormInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:inputType="textPostalAddress"
                     android:minLines="2" />
             </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Verified Address List Section -->
+            <TextView
+                android:id="@+id/tvVerifiedAddressesHeader"
+                style="@style/TextAppearance.App.SectionTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xl"
+                android:text="Địa chỉ đã được xác thực"
+                android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvVerifiedAddresses"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:nestedScrollingEnabled="false"
+                android:visibility="gone" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
@@ -149,6 +163,7 @@
             android:id="@+id/btnSubmitVerification"
             style="@style/Widget.App.Button.Primary"
             android:layout_width="match_parent"
+            android:layout_height="@dimen/btn_height"
             android:text="@string/residence_verification_btn_submit"
             app:icon="@drawable/ic_shield_check"
             app:iconGravity="textStart"

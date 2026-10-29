@@ -83,7 +83,7 @@
                 android:id="@+id/btnDeletePost"
                 style="@style/Widget.App.ActionText"
                 android:textColor="@color/status_danger"
-                android:drawableStart="@drawable/ic_delete"
+                app:drawableStartCompat="@drawable/ic_delete"
                 app:drawableTint="@color/status_danger"
                 android:text="@string/action_delete" />
 
@@ -92,7 +92,7 @@
                 style="@style/Widget.App.ActionText"
                 android:layout_marginStart="@dimen/space_xs"
                 android:textColor="@color/text_main"
-                android:drawableStart="@drawable/ic_edit"
+                app:drawableStartCompat="@drawable/ic_edit"
                 app:drawableTint="@color/text_main"
                 android:text="@string/action_edit" />
 
@@ -101,7 +101,7 @@
                 style="@style/Widget.App.ActionText"
                 android:layout_marginStart="@dimen/space_xs"
                 android:textColor="@color/olive_accent"
-                android:drawableStart="@drawable/ic_eye"
+                app:drawableStartCompat="@drawable/ic_eye"
                 app:drawableTint="@color/olive_accent"
                 android:text="@string/action_view" />
         </LinearLayout>

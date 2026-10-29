@@ -3,6 +3,7 @@ package com.example.studenthousing.ui.auth;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,6 +26,8 @@ import com.example.studenthousing.util.SessionManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
@@ -141,106 +144,127 @@ public class RegisterActivity extends AppCompatActivity {
         return s.startsWith("Chọn") ? "" : s;
     }
 
+    // RegisterActivity.java
+
     private void handleContinueOrSave() {
-        String parentName = etParentName != null && etParentName.getText() != null ? etParentName.getText().toString().trim() : "";
-        String rawPhone = etPhone != null && etPhone.getText() != null ? etPhone.getText().toString().trim() : "";
+        String parentName = etParentName != null && etParentName.getText() != null
+                ? etParentName.getText().toString().trim() : "";
+        String rawPhone = etPhone != null && etPhone.getText() != null
+                ? etPhone.getText().toString().trim() : "";
 
         clearErrors();
 
+        // Validate tên
         if (TextUtils.isEmpty(parentName)) {
             if (tilParentName != null) tilParentName.setError("Vui lòng nhập họ và tên");
             if (etParentName != null) etParentName.requestFocus();
             return;
         }
 
-        if (isEditMode) {
-            String phoneEdit = !TextUtils.isEmpty(rawPhone) ? OtpHelper.toLocal(rawPhone) : session.getUserPhone();
-            String universityEdit = tvUniversity != null && tvUniversity.getText() != null
-                    ? cleanSelectedText(tvUniversity.getText().toString()) : "";
-            registerOrUpdateUser(parentName, phoneEdit, universityEdit, session.getUserId());
+        // ===== BẮT BUỘC: phải có Firebase Auth trước khi tạo profile =====
+        FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (fbUser == null) {
+            // Chưa xác thực → bắt buộc quay về Login
+            Toast.makeText(this,
+                    "Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.",
+                    Toast.LENGTH_LONG).show();
+            Intent i = new Intent(this, LoginActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(i);
+            finish();
             return;
         }
 
-        if (TextUtils.isEmpty(rawPhone)) {
-            if (tilPhone != null) tilPhone.setError("Vui lòng nhập số điện thoại");
-            if (etPhone != null) etPhone.requestFocus();
-            return;
-        }
-        if (!OtpHelper.isValidVnPhone(rawPhone)) {
-            if (tilPhone != null) tilPhone.setError("Số điện thoại không hợp lệ (10 số, bắt đầu bằng 0)");
-            if (etPhone != null) etPhone.requestFocus();
-            return;
+        // ===== UID LUÔN lấy từ Firebase, KHÔNG dùng customUid/user_ + timestamp =====
+        String uid = fbUser.getUid();
+        String phone = OtpHelper.toLocal(rawPhone);
+        if (phone.isEmpty() && fbUser.getPhoneNumber() != null) {
+            phone = OtpHelper.toLocal(fbUser.getPhoneNumber());
         }
 
-        final String phone = OtpHelper.toLocal(rawPhone);
-        UserDao userDao = new UserDao(this);
-        if (!isEditMode && userDao.getByPhone(phone) != null && (verifiedPhone == null || !verifiedPhone.equals(phone))) {
-            if (tilPhone != null) tilPhone.setError("Số điện thoại này đã được đăng ký");
-            if (etPhone != null) etPhone.requestFocus();
-            Toast.makeText(this, "Số điện thoại này đã được đăng ký!", Toast.LENGTH_SHORT).show();
-            return;
+        // Validate phone (chỉ khi đăng ký mới, không phải edit)
+        if (!isEditMode) {
+            if (TextUtils.isEmpty(phone)) {
+                if (tilPhone != null) tilPhone.setError("Vui lòng nhập số điện thoại");
+                return;
+            }
+            if (!OtpHelper.isValidVnPhone(phone)) {
+                if (tilPhone != null) tilPhone.setError("SĐT không hợp lệ (10 số, bắt đầu bằng 0)");
+                return;
+            }
+            // Kiểm tra trùng SĐT với user khác (không phải uid hiện tại)
+            User existingByPhone = new UserDao(this).getByPhone(phone);
+            if (existingByPhone != null
+                    && !uid.equals(existingByPhone.getUserId())
+                    && !phone.equals(verifiedPhone)) {
+                if (tilPhone != null) tilPhone.setError("SĐT này đã được đăng ký");
+                return;
+            }
         }
 
-        final String university = tvUniversity != null && tvUniversity.getText() != null ? cleanSelectedText(tvUniversity.getText().toString()) : "";
-        String newUid = googleUid != null && !googleUid.isEmpty() ? googleUid : ("user_" + System.currentTimeMillis());
-        registerOrUpdateUser(parentName, phone, university, newUid);
+        String university = tvUniversity != null && tvUniversity.getText() != null
+                ? cleanSelectedText(tvUniversity.getText().toString()) : "";
+
+        registerOrUpdateUser(uid, parentName, phone, university);
     }
 
-    private void registerOrUpdateUser(String parentName, String phone, String university, String customUid) {
-        long now = System.currentTimeMillis();
-        UserDao userDao = new UserDao(this);
-        final User user;
-        String uid = (customUid != null && !customUid.isEmpty())
-                ? customUid
-                : session.getUserId();
-        if (uid == null || uid.isEmpty()) {
-            uid = "user_" + now;
+    // RegisterActivity.java
+
+    private void registerOrUpdateUser(String uid, String parentName, String phone, String university) {
+        // Defensive: uid phải trùng Firebase UID hiện tại
+        FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (fbUser == null || !fbUser.getUid().equals(uid)) {
+            Toast.makeText(this, "Phiên đăng nhập đã thay đổi. Vui lòng thử lại.",
+                    Toast.LENGTH_LONG).show();
+            return;
         }
 
-        User existing = userDao.getById(uid);
-        if (existing == null) {
+        long now = System.currentTimeMillis();
+        UserDao userDao = new UserDao(this);
+
+        // Load user cũ nếu có (giữ các field đã set trước đó như avatar, identityType...)
+        User user = userDao.getById(uid);
+        if (user == null) {
             user = new User();
             user.setUserId(uid);
             user.setCreatedAt(now);
-        } else {
-            user = existing;
         }
-        if (phone != null) user.setPhone(phone);
+
         user.setFamilyName(parentName);
-        if (university != null && !university.isEmpty()) {
-            user.setUniversityName(university);
-        }
+        if (phone != null && !phone.isEmpty()) user.setPhone(phone);
+        if (university != null && !university.isEmpty()) user.setUniversityName(university);
         user.setUpdatedAt(now);
 
+        // 1. Lưu local + session TRƯỚC (đảm bảo offline-first)
         userDao.upsert(user);
+        session.createLoginSession(user);
 
-        com.google.firebase.auth.FirebaseAuth.getInstance().signInAnonymously().addOnCompleteListener(authTask -> {
-            com.google.firebase.auth.FirebaseUser fbUser = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
-            if (user.getUserId() == null || user.getUserId().trim().isEmpty()) {
-                if (fbUser != null) {
-                    user.setUserId(fbUser.getUid());
-                } else {
-                    user.setUserId("user_" + phone);
-                }
+        // 2. Đồng bộ Firestore (không cần anonymous auth nữa)
+        new UserRepository(this).saveUserProfile(user, new AppCallback<Void>() {
+            @Override
+            public void onSuccess(Void data) {
+                Log.d("RegisterActivity", "Profile saved to Firestore: " + uid);
+                navigateHome();
             }
-            userDao.upsert(user);
-            session.createLoginSession(user);
 
-            UserRepository userRepository = new UserRepository(this);
-            userRepository.saveUserProfile(user, new AppCallback<Void>() {
-                @Override public void onSuccess(Void d) {}
-                @Override public void onError(Exception e) {}
-            });
+            @Override
+            public void onError(Exception e) {
+                // Lỗi mạng / rules → vẫn cho vào Home, SyncManager sẽ retry
+                Log.w("RegisterActivity", "Firestore save failed, will retry later: "
+                        + e.getMessage());
+                navigateHome();
+            }
+        });
+    }
 
-            runOnUiThread(() -> {
-                String msg = isEditMode ? "Cập nhật thông tin thành công!" : "Đăng ký tài khoản thành công!";
-                Toast.makeText(RegisterActivity.this, msg, Toast.LENGTH_SHORT).show();
-
-                Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
-            });
+    private void navigateHome() {
+        runOnUiThread(() -> {
+            String msg = isEditMode ? "Cập nhật thành công!" : "Đăng ký tài khoản thành công!";
+            Toast.makeText(RegisterActivity.this, msg, Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         });
     }
 }

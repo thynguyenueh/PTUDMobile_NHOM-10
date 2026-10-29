@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -27,7 +26,6 @@ import com.example.studenthousing.ui.chat.ChatListActivity;
 import com.example.studenthousing.ui.post.CreatePostActivity;
 import com.example.studenthousing.ui.post.DetailActivity;
 import com.example.studenthousing.ui.post.SavedHousesActivity;
-import com.example.studenthousing.ui.profile.NotificationsActivity;
 import com.example.studenthousing.ui.profile.ProfileActivity;
 import com.example.studenthousing.ui.viewmodel.HomeViewModel;
 import com.example.studenthousing.util.AppCallback;
@@ -83,7 +81,9 @@ public class HomeActivity extends AppCompatActivity {
         binding.swipeRefreshHome.setOnRefreshListener(() -> {
             binding.swipeRefreshHome.setRefreshing(true);
             viewModel.refreshPosts();
-            viewModel.refreshProfile(session.getUserId());
+            if (session.isLoggedIn()) {
+                viewModel.refreshProfile(session.getUserId());
+            }
         });
         binding.swipeRefreshHome.setColorSchemeResources(R.color.primary);
     }
@@ -91,7 +91,12 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        viewModel.refreshProfile(session.getUserId());
+        if (session != null && session.isLoggedIn()) {
+            String uid = session.getUserId();
+            if (uid != null && !uid.isEmpty()) {
+                viewModel.refreshProfile(uid);
+            }
+        }
         viewModel.refreshPosts();
         updateMessagesBadge();
         try {
@@ -120,21 +125,32 @@ public class HomeActivity extends AppCompatActivity {
         viewModel.getProfile().observe(this, state -> {
             if (state == null) return;
             User user = state.getContent();
+            ImageView avatar = binding.getRoot().findViewById(R.id.ivHomeAvatarImg);
             if (user != null) {
                 String name = user.getFamilyName();
                 binding.tvHomeUserName.setText((name == null || name.isEmpty()) ? "Bạn" : name);
                 userVerified = user.isIdentityVerified() || user.isResidenceVerified();
                 binding.tvKycBadge.setVisibility(userVerified ? View.VISIBLE : View.GONE);
-                ImageView avatar = binding.getRoot().findViewById(R.id.ivHomeAvatarImg);
                 if (avatar != null && user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
                     avatar.setVisibility(View.VISIBLE);
                     Glide.with(this).load(user.getAvatarUrl()).circleCrop().into(avatar);
                     binding.tvHomeAvatar.setVisibility(View.GONE);
+                } else {
+                    if (avatar != null) avatar.setVisibility(View.GONE);
+                    binding.tvHomeAvatar.setVisibility(View.VISIBLE);
+                    binding.tvHomeAvatar.setText(initialOf(name));
                 }
             } else if (state.getScreenState() == UiState.ScreenState.ERROR) {
                 binding.tvKycBadge.setVisibility(View.GONE);
             }
         });
+    }
+
+    private static String initialOf(String name) {
+        if (name == null || name.trim().isEmpty()) return "B";
+        String[] words = name.trim().split("\\s+");
+        String last = words[words.length - 1];
+        return last.substring(0, 1).toUpperCase(java.util.Locale.ROOT);
     }
 
     private void bindHeader() {
@@ -144,9 +160,6 @@ public class HomeActivity extends AppCompatActivity {
         binding.tvHomeAvatar.setVisibility(View.VISIBLE);
         binding.tvHomeAvatar.setText("B");
         binding.tvKycBadge.setVisibility(View.GONE);
-
-        TextView tvNotifBadgeCount = binding.getRoot().findViewById(R.id.tvNotifBadgeCount);
-        if (tvNotifBadgeCount != null) tvNotifBadgeCount.setVisibility(View.GONE);
     }
 
     private void loadPosts() {
@@ -283,9 +296,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        binding.btnNotifications.setOnClickListener(v ->
-                startActivity(new Intent(this, NotificationsActivity.class)));
-
         binding.etHomeSearch.addTextChangedListener(new android.text.TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) { applyFilter(); }

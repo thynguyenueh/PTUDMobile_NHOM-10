@@ -18,9 +18,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.studenthousing.R;
+import com.example.studenthousing.data.loader.UtilitiesDataLoader;
+import com.example.studenthousing.data.local.VerifiedAddressDao;
+import com.example.studenthousing.data.model.Utility;
+import com.example.studenthousing.data.model.VerifiedAddress;
 import com.example.studenthousing.ui.adapter.SelectedPhotoAdapter;
 import com.example.studenthousing.ui.viewmodel.CreatePostViewModel;
-import com.example.studenthousing.util.AppCallback;
+import com.example.studenthousing.util.SessionManager;
 import com.example.studenthousing.util.UiState;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
@@ -43,7 +47,7 @@ public class CreatePostActivity extends AppCompatActivity {
     private SelectedPhotoAdapter photoAdapter;
 
     private int selectedCityCode = 79;
-    private int selectedWardCode = 27256;
+    private int selectedWardCode = 27256; // Default fallback, sẽ được ghi đè từ VerifiedAddress
     private String selectedWardName = "";
 
     private boolean isEditMode = false;
@@ -107,6 +111,15 @@ public class CreatePostActivity extends AppCompatActivity {
         if (etAdminAddress != null) {
             etAdminAddress.setOnClickListener(v -> openAddressPicker());
         }
+
+        TextView tvVerifyPrompt = findViewById(R.id.tvVerifyAddressPrompt);
+        if (tvVerifyPrompt != null) {
+            tvVerifyPrompt.setOnClickListener(v -> {
+                android.content.Intent intent = new android.content.Intent(this, com.example.studenthousing.ui.verify.ResidenceVerificationActivity.class);
+                startActivity(intent);
+            });
+        }
+
         etDescription = findViewById(R.id.etDescription);
         etCustomUtility = findViewById(R.id.etCustomUtility);
         View btnAddCustomUtility = findViewById(R.id.btnAddCustomUtility);
@@ -170,6 +183,7 @@ public class CreatePostActivity extends AppCompatActivity {
         if (etHouseNumber != null && houseNumber != null) etHouseNumber.setText(houseNumber);
         if (etStreetAddress != null && streetAddress != null) etStreetAddress.setText(streetAddress);
         if (etDescription != null && desc != null) etDescription.setText(desc);
+
         selectedCityCode = getIntent().getIntExtra("POST_CITY_CODE", selectedCityCode);
         selectedWardCode = getIntent().getIntExtra("POST_WARD_CODE", selectedWardCode);
         String wardName = getIntent().getStringExtra("POST_WARD_NAME");
@@ -188,15 +202,16 @@ public class CreatePostActivity extends AppCompatActivity {
         }
 
         if (chipGroupUtilities != null) {
-            setupUtilitiesFromAsset();
+            setupUtilitiesFromAsset(); // Reset lại list ban đầu
             if (utilities != null) {
-                for (String util : utilities) {
+                for (String utilCode : utilities) { // utilCode lấy từ DB truyền sang
                     boolean found = false;
                     for (int i = 0; i < chipGroupUtilities.getChildCount(); i++) {
                         View child = chipGroupUtilities.getChildAt(i);
                         if (child instanceof Chip) {
                             Chip c = (Chip) child;
-                            if (c.getText().toString().trim().equalsIgnoreCase(util.trim())) {
+                            String chipCode = c.getTag() != null ? c.getTag().toString() : c.getText().toString();
+                            if (chipCode.equalsIgnoreCase(utilCode.trim())) {
                                 c.setChecked(true);
                                 found = true;
                                 break;
@@ -204,13 +219,15 @@ public class CreatePostActivity extends AppCompatActivity {
                         }
                     }
                     if (!found) {
-                        addUtilityChip(util, true, "ic_check");
+                        // Nếu là custom utility không có trong assets
+                        Utility u = UtilitiesDataLoader.getByCode(this, utilCode);
+                        String displayLabel = (u != null) ? u.getLabel() : utilCode;
+                        addUtilityChip(displayLabel, utilCode, true, "ic_check");
                     }
                 }
             }
         }
         if (tvPhotoHint != null) tvPhotoHint.setText("Bấm để chọn hoặc chỉnh sửa ảnh");
-
         if (btnSubmitPost != null) btnSubmitPost.setText("Cập nhật bài đăng");
     }
 
@@ -218,7 +235,7 @@ public class CreatePostActivity extends AppCompatActivity {
         if (etCustomUtility == null) return;
         String text = etCustomUtility.getText() != null ? etCustomUtility.getText().toString().trim() : "";
         if (!text.isEmpty()) {
-            addUtilityChip(text, true, "ic_check");
+            addUtilityChip(text, text, true, "ic_check"); // code = text đối với custom
             etCustomUtility.setText("");
         }
     }
@@ -226,10 +243,9 @@ public class CreatePostActivity extends AppCompatActivity {
     private void setupUtilitiesFromAsset() {
         if (chipGroupUtilities == null) return;
         chipGroupUtilities.removeAllViews();
-        List<com.example.studenthousing.data.model.Utility> utilities =
-                com.example.studenthousing.data.loader.UtilitiesDataLoader.loadUtilities(this);
-        for (com.example.studenthousing.data.model.Utility u : utilities) {
-            addUtilityChip(u.getLabel(), false, u.getIcon());
+        List<Utility> utilities = UtilitiesDataLoader.loadUtilities(this);
+        for (Utility u : utilities) {
+            addUtilityChip(u.getLabel(), u.getCode(), false, u.getIcon());
         }
     }
 
@@ -241,31 +257,45 @@ public class CreatePostActivity extends AppCompatActivity {
             case "ic_wifi": return R.drawable.ic_wifi;
             case "ic_parking": return R.drawable.ic_parking_car;
             case "ic_ac": return R.drawable.ic_air_conditioner;
-            case "ic_washer": return R.drawable.ic_check;
+            case "ic_washer": return R.drawable.ic_washer;
             case "ic_fridge": return R.drawable.ic_kitchen;
-            case "ic_bath": return R.drawable.ic_check;
+            case "ic_bath": return R.drawable.ic_bath;
             case "ic_security": return R.drawable.ic_shield_check;
-            case "ic_elevator": return R.drawable.ic_check;
-            case "ic_pet": return R.drawable.ic_check;
+            case "ic_elevator": return R.drawable.ic_elevator;
+            case "ic_pet": return R.drawable.ic_pet;
             default: return R.drawable.ic_check;
         }
     }
 
-    private void addUtilityChip(String text, boolean checked, String iconName) {
+    private void addUtilityChip(String text, String code, boolean checked, String iconName) {
         if (chipGroupUtilities == null || text == null || text.trim().isEmpty()) return;
         String trimmedText = text.trim();
+
+        // Nếu code bị null hoặc rỗng (custom utility do user tự nhập), lấy text làm code luôn
+        String finalCode = (code == null || code.trim().isEmpty()) ? trimmedText : code.trim();
+
+        // 1. Kiểm tra xem chip đã tồn tại chưa (So sánh dựa trên Code trong Tag)
         for (int i = 0; i < chipGroupUtilities.getChildCount(); i++) {
             View child = chipGroupUtilities.getChildAt(i);
             if (child instanceof Chip) {
                 Chip c = (Chip) child;
-                if (c.getText().toString().trim().equalsIgnoreCase(trimmedText)) {
+                String chipCode = c.getTag() != null ? c.getTag().toString() : c.getText().toString();
+                if (chipCode.equalsIgnoreCase(finalCode)) {
                     if (checked) c.setChecked(true);
-                    return;
+                    return; // Nếu đã có thì dừng lại
                 }
             }
         }
+
+        // 2. Tạo chip mới nếu chưa có
         Chip chip = new Chip(new android.view.ContextThemeWrapper(this, R.style.Widget_App_Chip), null, 0);
+
+        // setText: Hiển thị Label tiếng Việt (VD: "Máy lạnh")
         chip.setText(trimmedText);
+
+        // setTag: Ẩn Code bên trong (VD: "AIR_CONDITIONER") để tí nữa lưu vào DB
+        chip.setTag(finalCode);
+
         chip.setCheckable(true);
         chip.setChecked(checked);
 
@@ -280,9 +310,7 @@ public class CreatePostActivity extends AppCompatActivity {
         if (editPostId == null) return;
 
         String title = etTitle != null ? etTitle.getText().toString().trim() : "";
-        String adminAddr = etAdminAddress != null ? etAdminAddress.getText().toString().trim() : "";
-        String streetAddr = etStreetAddress != null ? etStreetAddress.getText().toString().trim() : "";
-        String houseNum = etHouseNumber != null ? etHouseNumber.getText().toString().trim() : "";
+        String fullAddress = etAdminAddress != null ? etAdminAddress.getText().toString().trim() : "";
         String desc = etDescription != null ? etDescription.getText().toString().trim() : "";
 
         if (title.isEmpty()) {
@@ -290,19 +318,9 @@ public class CreatePostActivity extends AppCompatActivity {
             else Toast.makeText(this, "Vui lòng nhập tiêu đề bài đăng", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (adminAddr.isEmpty()) {
-            if (tilAdminAddress != null) tilAdminAddress.setError("Vui lòng chọn Phường/Xã");
-            else Toast.makeText(this, "Vui lòng chọn Phường/Xã", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (houseNum.isEmpty()) {
-            if (tilHouseNumber != null) tilHouseNumber.setError("Vui lòng nhập số nhà");
-            else Toast.makeText(this, "Vui lòng nhập số nhà", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (streetAddr.isEmpty()) {
-            if (tilStreetAddress != null) tilStreetAddress.setError("Vui lòng nhập tên đường");
-            else Toast.makeText(this, "Vui lòng nhập tên đường", Toast.LENGTH_SHORT).show();
+        if (fullAddress.isEmpty()) {
+            if (tilAdminAddress != null) tilAdminAddress.setError("Vui lòng chọn địa chỉ đã xác thực");
+            else Toast.makeText(this, "Vui lòng chọn địa chỉ đã xác thực", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -312,13 +330,15 @@ public class CreatePostActivity extends AppCompatActivity {
                 View child = chipGroupUtilities.getChildAt(i);
                 if (child instanceof Chip) {
                     Chip chip = (Chip) child;
-                    if (chip.isChecked()) utilities.add(chip.getText().toString());
+                    if (chip.isChecked()) {
+                        String code = chip.getTag() != null ? chip.getTag().toString() : chip.getText().toString();
+                        utilities.add(code);
+                    }
                 }
             }
         }
 
-        String fullAddress = houseNum + " " + streetAddr + ", " + adminAddr;
-        viewModel.updatePost(editPostId, selectedImageUris, title, fullAddress, desc, utilities, selectedCityCode, selectedWardCode, selectedWardName, houseNum, streetAddr);
+        viewModel.updatePost(editPostId, selectedImageUris, title, fullAddress, desc, utilities, selectedCityCode, selectedWardCode, selectedWardName, "", "");
     }
 
     private void updatePhotoPreview() {
@@ -354,13 +374,9 @@ public class CreatePostActivity extends AppCompatActivity {
     private void savePost() {
         if (tilTitle != null) tilTitle.setError(null);
         if (tilAdminAddress != null) tilAdminAddress.setError(null);
-        if (tilStreetAddress != null) tilStreetAddress.setError(null);
-        if (tilHouseNumber != null) tilHouseNumber.setError(null);
 
         String title = etTitle != null ? etTitle.getText().toString().trim() : "";
-        String adminAddr = etAdminAddress != null ? etAdminAddress.getText().toString().trim() : "";
-        String streetAddr = etStreetAddress != null ? etStreetAddress.getText().toString().trim() : "";
-        String houseNum = etHouseNumber != null ? etHouseNumber.getText().toString().trim() : "";
+        String fullAddress = etAdminAddress != null ? etAdminAddress.getText().toString().trim() : "";
         String desc = etDescription != null ? etDescription.getText().toString().trim() : "";
 
         if (title.isEmpty()) {
@@ -368,29 +384,30 @@ public class CreatePostActivity extends AppCompatActivity {
             else Toast.makeText(this, "Vui lòng nhập tiêu đề bài đăng", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (adminAddr.isEmpty()) {
+        if (fullAddress.isEmpty()) {
             if (tilAdminAddress != null)
-                tilAdminAddress.setError("Vui lòng chọn Tỉnh/Thành, Phường/Xã");
+                tilAdminAddress.setError("Vui lòng chọn địa chỉ đã xác thực");
             else
-                Toast.makeText(this, "Vui lòng chọn Tỉnh/Thành, Phường/Xã", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Vui lòng chọn địa chỉ đã xác thực", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (houseNum.isEmpty()) {
-            if (tilHouseNumber != null) tilHouseNumber.setError("Vui lòng nhập số nhà");
-            else Toast.makeText(this, "Vui lòng nhập số nhà", Toast.LENGTH_SHORT).show();
+
+        // Kiểm tra xem địa chỉ này có thực sự nằm trong danh sách đã xác thực của user hay không
+        SessionManager session = new SessionManager(this);
+        VerifiedAddressDao dao = new VerifiedAddressDao(this);
+        VerifiedAddress va = dao.getByAddressAndUser(session.getUserId(), fullAddress);
+        if (va == null) {
+            if (tilAdminAddress != null) {
+                tilAdminAddress.setError("Địa chỉ này chưa được xác thực cư trú");
+            }
+            Toast.makeText(this, "Vui lòng chọn địa chỉ đã xác thực hoặc gửi xác thực trước", Toast.LENGTH_LONG).show();
             return;
         }
-        if (streetAddr.isEmpty()) {
-            if (tilStreetAddress != null) tilStreetAddress.setError("Vui lòng nhập tên đường");
-            else Toast.makeText(this, "Vui lòng nhập tên đường", Toast.LENGTH_SHORT).show();
-            return;
-        }
+
         if (selectedImageUris.isEmpty()) {
             Toast.makeText(this, "Vui lòng chọn ít nhất 1 hình ảnh chỗ ở", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        String fullAddress = houseNum + " " + streetAddr + ", " + adminAddr;
 
         List<String> utilities = new ArrayList<>();
         if (chipGroupUtilities != null) {
@@ -398,7 +415,10 @@ public class CreatePostActivity extends AppCompatActivity {
                 View child = chipGroupUtilities.getChildAt(i);
                 if (child instanceof Chip) {
                     Chip chip = (Chip) child;
-                    if (chip.isChecked()) utilities.add(chip.getText().toString());
+                    if (chip.isChecked()) {
+                        String code = chip.getTag() != null ? chip.getTag().toString() : chip.getText().toString();
+                        utilities.add(code);
+                    }
                 }
             }
         }
@@ -409,32 +429,69 @@ public class CreatePostActivity extends AppCompatActivity {
         final String finalFullAddress = fullAddress;
         final String finalDesc = desc;
         final List<String> finalUtilities = utilities;
-        final String finalHouseNum = houseNum;
-        final String finalStreetName = streetAddr;
+        final String finalHouseNum = "";
+        final String finalStreetName = "";
+
+        viewModel.createPost(
+                selectedImageUris,
+                finalTitle,
+                finalFullAddress,
+                finalDesc,
+                finalUtilities,
+                fCityCode,
+                fWardCode,
+                selectedWardName,
+                finalHouseNum,
+                finalStreetName
+        );
     }
 
     private void openAddressPicker() {
-        com.example.studenthousing.util.ProvincePickerHelper.showPicker(this, (cityName, ward) -> {
-            if (cityName != null) {
-                selectedCityCode = 79;
-                selectedWardCode = ward != null ? ward.getCode() : 0;
-                selectedWardName = ward != null ? ward.getName() : "";
+        SessionManager session = new SessionManager(this);
+        String userId = session.getUserId();
+        VerifiedAddressDao dao = new VerifiedAddressDao(this);
+        List<VerifiedAddress> verifiedAddresses = dao.getByUserId(userId);
 
-                String wardName = selectedWardName;
-                String provName = cityName;
+        if (verifiedAddresses == null || verifiedAddresses.isEmpty()) {
+            TextView tvVerifyPrompt = findViewById(R.id.tvVerifyAddressPrompt);
+            if (tvVerifyPrompt != null) tvVerifyPrompt.setVisibility(View.VISIBLE);
 
-                StringBuilder sb = new StringBuilder();
-                if (!wardName.isEmpty()) sb.append(wardName).append(", ");
-                sb.append(provName);
+            new AlertDialog.Builder(this)
+                    .setTitle("Chưa có địa chỉ xác thực")
+                    .setMessage("Để đảm bảo uy tín và an toàn, bài đăng phải có địa chỉ trùng khớp với Giấy xác thực cư trú (CT07). Bạn vui lòng xác thực địa chỉ trước khi đăng bài.")
+                    .setPositiveButton("Xác thực ngay", (dialog, which) -> {
+                        android.content.Intent intent = new android.content.Intent(this, com.example.studenthousing.ui.verify.ResidenceVerificationActivity.class);
+                        startActivity(intent);
+                    })
+                    .setNegativeButton("Để sau", null)
+                    .show();
+            return;
+        }
 
-                if (etAdminAddress != null) {
-                    etAdminAddress.setText(sb.toString());
-                }
-                if (tilAdminAddress != null) {
-                    tilAdminAddress.setError(null);
-                }
-            }
-        });
+        String[] addresses = new String[verifiedAddresses.size()];
+        for (int i = 0; i < verifiedAddresses.size(); i++) {
+            addresses[i] = verifiedAddresses.get(i).getFullAddress();
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Chọn địa chỉ đã xác thực")
+                .setItems(addresses, (dialog, which) -> {
+                    VerifiedAddress selected = verifiedAddresses.get(which);
+                    if (etAdminAddress != null) {
+                        etAdminAddress.setText(selected.getFullAddress());
+                    }
+                    if (tilAdminAddress != null) {
+                        tilAdminAddress.setError(null);
+                    }
+                    TextView tvVerifyPrompt = findViewById(R.id.tvVerifyAddressPrompt);
+                    if (tvVerifyPrompt != null) tvVerifyPrompt.setVisibility(View.GONE);
+                })
+                .setPositiveButton("Thêm địa chỉ mới", (dialog, which) -> {
+                    android.content.Intent intent = new android.content.Intent(this, com.example.studenthousing.ui.verify.ResidenceVerificationActivity.class);
+                    startActivity(intent);
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 
     private void renderSubmitState(UiState<String> state) {
@@ -456,7 +513,7 @@ public class CreatePostActivity extends AppCompatActivity {
         }
 
         if (state.getContent() != null) {
-            Toast.makeText(this, "Đăng bài thành công!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, isEditMode ? "Cập nhật bài đăng thành công!" : "Đăng bài thành công!", Toast.LENGTH_SHORT).show();
             finish();
         } else {
             resetButton();
@@ -466,7 +523,7 @@ public class CreatePostActivity extends AppCompatActivity {
     private void resetButton() {
         if (btnSubmitPost != null) {
             btnSubmitPost.setEnabled(true);
-            btnSubmitPost.setText("Đăng bài ngay");
+            btnSubmitPost.setText(isEditMode ? "Cập nhật bài đăng" : "Đăng bài ngay");
         }
         if (progressBar != null) {
             progressBar.setVisibility(View.GONE);

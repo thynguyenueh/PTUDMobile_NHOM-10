@@ -11,6 +11,7 @@ import com.example.studenthousing.data.local.UserDao;
 import com.example.studenthousing.data.local.VerificationTicketDao;
 import com.example.studenthousing.data.model.AccommodationPost;
 import com.example.studenthousing.data.model.Campus;
+import com.example.studenthousing.data.model.NearbyCampus;
 import com.example.studenthousing.data.model.ChatRoom;
 import com.example.studenthousing.data.model.Message;
 import com.example.studenthousing.data.model.Review;
@@ -54,11 +55,22 @@ public class DemoDataSeeder {
             ReviewDao reviewDao = new ReviewDao(appCtx);
             MessageDao messageDao = new MessageDao(appCtx);
             ChatRoomDao chatRoomDao = new ChatRoomDao(appCtx);
+            com.example.studenthousing.data.local.VerifiedAddressDao verifiedAddressDao = new com.example.studenthousing.data.local.VerifiedAddressDao(appCtx);
 
             // Seed Users
             List<User> users = buildUsers();
             for (User u : users) {
                 userDao.upsert(u);
+                if (u.isResidenceVerified() && u.getPermanentAddress() != null && !u.getPermanentAddress().isEmpty()) {
+                    verifiedAddressDao.upsert(new com.example.studenthousing.data.model.VerifiedAddress(
+                            "addr_" + u.getUserId(),
+                            u.getPermanentAddress(),
+                            u.getUserId(),
+                            u.getPermanentCityCode(),
+                            u.getPermanentWardCode(),
+                            "seed_ticket_" + u.getUserId()
+                    ));
+                }
             }
 
             // Seed Verification Tickets
@@ -357,6 +369,14 @@ public class DemoDataSeeder {
                 "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80"
         ));
         p1.setUtilities(Arrays.asList(U_AC, U_WIFI, U_FRIDGE, U_PARKING, U_SECURITY));
+        p1.setNearbyCampuses(Arrays.asList(
+                new NearbyCampus("45", 0.6, false), // ĐH Bách Khoa
+                new NearbyCampus("68", 1.2, false), // ĐH Kinh tế TP.HCM cơ sở C
+                new NearbyCampus("69", 1.4, false), // ĐH Kinh tế TP.HCM cơ sở B
+                new NearbyCampus("103", 1.8, false), // ĐH Y Dược TP.HCM
+                new NearbyCampus("92", 2.2, false), // ĐH Sư Phạm TP.HCM
+                new NearbyCampus("90", 2.5, false)  // ĐH Sài Gòn
+        ));
         p1.setStatus(Constants.POST_AVAILABLE);
         p1.setCreatedAt(now - DAY);
         p1.setUpdatedAt(now - DAY);
@@ -382,6 +402,12 @@ public class DemoDataSeeder {
                 "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80"
         ));
         p2.setUtilities(Arrays.asList(U_AC, U_ELEVATOR, U_SECURITY, U_WASHER, U_WIFI, U_PARKING));
+        p2.setNearbyCampuses(Arrays.asList(
+                new NearbyCampus("129", 1.1, false), // ĐH Văn Hóa TP.HCM
+                new NearbyCampus("125", 1.5, false), // Saigon International Univ
+                new NearbyCampus("51", 2.8, false),  // HUTECH
+                new NearbyCampus("85", 3.2, false)   // ĐH Quốc tế Hồng Bàng
+        ));
         p2.setStatus(Constants.POST_AVAILABLE);
         p2.setCreatedAt(now - 2 * DAY);
         p2.setUpdatedAt(now - 2 * DAY);
@@ -406,6 +432,13 @@ public class DemoDataSeeder {
                 "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=800&q=80"
         ));
         p3.setUtilities(Arrays.asList(U_WIFI, U_PARKING, U_WASHER));
+        p3.setNearbyCampuses(Arrays.asList(
+                new NearbyCampus("59", 0.3, false), // ĐH KHTN (CS1)
+                new NearbyCampus("90", 0.5, false), // ĐH Sài Gòn
+                new NearbyCampus("92", 0.7, false), // ĐH Sư Phạm TP.HCM
+                new NearbyCampus("72", 1.2, false), // ĐH Kinh tế UEH (Cơ sở A)
+                new NearbyCampus("105", 2.1, false) // ĐH Y Khoa Phạm Ngọc Thạch
+        ));
         p3.setStatus(Constants.POST_AVAILABLE);
         p3.setCreatedAt(now - 3 * DAY);
         p3.setUpdatedAt(now - 3 * DAY);
@@ -431,6 +464,13 @@ public class DemoDataSeeder {
                 "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
         ));
         p4.setUtilities(Arrays.asList(U_AC, U_FRIDGE, U_PARKING, U_WASHER, U_PRIVATE_BATH));
+        p4.setNearbyCampuses(Arrays.asList(
+                new NearbyCampus("44", 1.2, false), // ĐH Bách Khoa (CS Dĩ An)
+                new NearbyCampus("60", 1.5, false), // ĐH KHTN (CS Linh Trung)
+                new NearbyCampus("52", 1.8, false), // ĐH Công nghệ Thông tin (UIT)
+                new NearbyCampus("84", 2.0, false), // ĐH Quốc Tế
+                new NearbyCampus("82", 2.5, false)  // ĐH Nông Lâm
+        ));
         p4.setStatus(Constants.POST_EXCHANGED);
         p4.setCreatedAt(now - 5 * DAY);
         p4.setUpdatedAt(now - 4 * DAY);
@@ -455,6 +495,13 @@ public class DemoDataSeeder {
                 "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80"
         ));
         p5.setUtilities(Arrays.asList(U_AC, U_WIFI, U_SECURITY, U_PARKING));
+        p5.setNearbyCampuses(Arrays.asList(
+                new NearbyCampus("44", 1.0, false), // ĐH Bách Khoa (CS Dĩ An)
+                new NearbyCampus("60", 1.3, false), // ĐH KHTN (CS Linh Trung)
+                new NearbyCampus("52", 1.6, false), // ĐH Công nghệ Thông tin (UIT)
+                new NearbyCampus("84", 1.9, false), // ĐH Quốc Tế
+                new NearbyCampus("78", 2.4, false)  // ĐH Ngân Hàng TP.HCM
+        ));
         p5.setStatus(Constants.POST_AVAILABLE);
         p5.setCreatedAt(now - 6 * DAY);
         p5.setUpdatedAt(now - 6 * DAY);
@@ -480,6 +527,12 @@ public class DemoDataSeeder {
                 "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80"
         ));
         p6.setUtilities(Arrays.asList(U_AC, U_FRIDGE, U_ELEVATOR, U_WIFI, U_PRIVATE_BATH));
+        p6.setNearbyCampuses(Arrays.asList(
+                new NearbyCampus("51", 0.4, false), // HUTECH
+                new NearbyCampus("85", 0.8, false), // ĐH Quốc tế Hồng Bàng
+                new NearbyCampus("123", 1.2, false), // ĐH Ngoại Thương CS2
+                new NearbyCampus("129", 1.8, false)  // ĐH Văn Hóa
+        ));
         p6.setStatus(Constants.POST_AVAILABLE);
         p6.setCreatedAt(now - 12 * HOUR);
         p6.setUpdatedAt(now - 12 * HOUR);
@@ -504,6 +557,12 @@ public class DemoDataSeeder {
                 "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80"
         ));
         p7.setUtilities(Arrays.asList(U_AC, U_WIFI, U_PARKING, U_SECURITY));
+        p7.setNearbyCampuses(Arrays.asList(
+                new NearbyCampus("113", 1.0, false), // Học viện Hàng không
+                new NearbyCampus("74", 1.5, false),  // ĐH Mở TP.HCM
+                new NearbyCampus("55", 2.2, false),  // ĐH Gia Định
+                new NearbyCampus("53", 2.6, false)   // ĐH Công Thương
+        ));
         p7.setStatus(Constants.POST_AVAILABLE);
         p7.setCreatedAt(now - 4 * HOUR);
         p7.setUpdatedAt(now - 4 * HOUR);
@@ -529,6 +588,13 @@ public class DemoDataSeeder {
                 "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80"
         ));
         p8.setUtilities(Arrays.asList(U_AC, U_ELEVATOR, U_SECURITY, U_PARKING, U_WASHER));
+        p8.setNearbyCampuses(Arrays.asList(
+                new NearbyCampus("98", 0.6, false), // ĐH Tôn Đức Thắng
+                new NearbyCampus("88", 1.2, false), // RMIT
+                new NearbyCampus("80", 1.8, false), // ĐH Nguyễn Tất Thành
+                new NearbyCampus("94", 2.3, false), // ĐH Tài chính Marketing
+                new NearbyCampus("1", 2.8, false)   // CĐ Bách Khoa Nam Sài Gòn
+        ));
         p8.setStatus(Constants.POST_AVAILABLE);
         p8.setCreatedAt(now - 8 * HOUR);
         p8.setUpdatedAt(now - 8 * HOUR);
@@ -570,6 +636,74 @@ public class DemoDataSeeder {
         rev2.setCreatedAt(now - DAY);
         rev2.setUpdatedAt(now - DAY);
         list.add(rev2);
+
+        // Reviews for user_001 (Nguyễn Văn A)
+        Review rev3 = new Review();
+        rev3.setReviewId("review_003");
+        rev3.setReviewerId("user_002");
+        rev3.setReviewerName("Trần Thị B");
+        rev3.setRevieweeId("user_001");
+        rev3.setRevieweeName("Nguyễn Văn A");
+        rev3.setRating(5.0);
+        rev3.setComment("Bạn A rất uy tín, trao đổi nhà đúng thời hạn, phòng ốc bàn giao ngăn nắp sạch sẽ.");
+        rev3.setImageUrls(Collections.emptyList());
+        rev3.setCreatedAt(now - 2 * DAY);
+        rev3.setUpdatedAt(now - 2 * DAY);
+        list.add(rev3);
+
+        Review rev4 = new Review();
+        rev4.setReviewId("review_004");
+        rev4.setReviewerId("user_004");
+        rev4.setReviewerName("Phạm Minh D");
+        rev4.setRevieweeId("user_001");
+        rev4.setRevieweeName("Nguyễn Văn A");
+        rev4.setRating(4.7);
+        rev4.setComment("Chủ nhà rất nhiệt tình hỗ trợ, thông tin nhà rõ ràng và chính xác.");
+        rev4.setImageUrls(Collections.emptyList());
+        rev4.setCreatedAt(now - 5 * DAY);
+        rev4.setUpdatedAt(now - 5 * DAY);
+        list.add(rev4);
+
+        // Reviews for user_002 (Trần Thị B)
+        Review rev5 = new Review();
+        rev5.setReviewId("review_005");
+        rev5.setReviewerId("user_001");
+        rev5.setReviewerName("Nguyễn Văn A");
+        rev5.setRevieweeId("user_002");
+        rev5.setRevieweeName("Trần Thị B");
+        rev5.setRating(4.9);
+        rev5.setComment("Chị B rất dễ thương, hỗ trợ mọi thủ tục nhanh gọn, phòng đẹp y hình.");
+        rev5.setImageUrls(Collections.emptyList());
+        rev5.setCreatedAt(now - 3 * DAY);
+        rev5.setUpdatedAt(now - 3 * DAY);
+        list.add(rev5);
+
+        Review rev6 = new Review();
+        rev6.setReviewId("review_006");
+        rev6.setReviewerId("user_003");
+        rev6.setReviewerName("Lê Văn C");
+        rev6.setRevieweeId("user_002");
+        rev6.setRevieweeName("Trần Thị B");
+        rev6.setRating(5.0);
+        rev6.setComment("Phòng Thảo Điền ở rất thích, an ninh và tiện ích đầy đủ.");
+        rev6.setImageUrls(Collections.emptyList());
+        rev6.setCreatedAt(now - 7 * DAY);
+        rev6.setUpdatedAt(now - 7 * DAY);
+        list.add(rev6);
+
+        // Reviews for user_004 (Phạm Minh D)
+        Review rev7 = new Review();
+        rev7.setReviewId("review_007");
+        rev7.setReviewerId("user_001");
+        rev7.setReviewerName("Nguyễn Văn A");
+        rev7.setRevieweeId("user_004");
+        rev7.setRevieweeName("Phạm Minh D");
+        rev7.setRating(4.6);
+        rev7.setComment("Anh D hướng dẫn nhiệt tình, vị trí nhà rất gần cụm ĐHQG.");
+        rev7.setImageUrls(Collections.emptyList());
+        rev7.setCreatedAt(now - 4 * DAY);
+        rev7.setUpdatedAt(now - 4 * DAY);
+        list.add(rev7);
 
         return list;
     }

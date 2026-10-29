@@ -43,7 +43,6 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
     private String userId;
     private String selectedFilePath = null;
     private String selectedFileName = null;
-    private boolean alreadyVerified = false;
 
     private final ActivityResultLauncher<String> pickFile =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
@@ -123,7 +122,6 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
 
     private void setupListeners() {
         if (binding.btnBack != null) binding.btnBack.setOnClickListener(v -> finish());
-        if (binding.btnHelp != null) binding.btnHelp.setOnClickListener(v -> showHelp());
 
         if (binding.layoutUploadBox != null) {
             binding.layoutUploadBox.setOnClickListener(v -> pickFile.launch("*/*"));
@@ -131,10 +129,6 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
 
         if (binding.btnSubmitVerification != null) {
             binding.btnSubmitVerification.setOnClickListener(v -> {
-                if (alreadyVerified) {
-                    Toast.makeText(this, "Bạn đã xác thực cư trú rồi", Toast.LENGTH_SHORT).show();
-                    return;
-                }
                 submit();
             });
         }
@@ -146,53 +140,57 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
         }
     }
 
+    private VerifiedAddressAdapter addressAdapter;
+
     private void renderStatusState(UiState<ResidenceVerificationViewModel.ResidenceStatusData> state) {
         if (state == null || state.getContent() == null) return;
         ResidenceVerificationViewModel.ResidenceStatusData data = state.getContent();
 
-        alreadyVerified = data.isVerified;
-        String status = data.status;
-
-        if (alreadyVerified || "APPROVED".equals(status)) {
-            applyStatus(true, false);
-        } else if ("PENDING".equals(status)) {
-            applyStatus(false, true);
-        } else {
-            applyStatus(false, false);
+        if (addressAdapter == null) {
+            addressAdapter = new VerifiedAddressAdapter();
+            binding.rvVerifiedAddresses.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this));
+            binding.rvVerifiedAddresses.setAdapter(addressAdapter);
         }
+
+        if (data.verifiedAddresses != null && !data.verifiedAddresses.isEmpty()) {
+            addressAdapter.submitList(data.verifiedAddresses);
+            binding.tvVerifiedAddressesHeader.setVisibility(android.view.View.VISIBLE);
+            binding.rvVerifiedAddresses.setVisibility(android.view.View.VISIBLE);
+        } else {
+            binding.tvVerifiedAddressesHeader.setVisibility(android.view.View.GONE);
+            binding.rvVerifiedAddresses.setVisibility(android.view.View.GONE);
+        }
+
+        // Cho phép xác thực thêm địa chỉ bất động sản khác
+        binding.btnSubmitVerification.setEnabled(true);
+        binding.btnSubmitVerification.setText("Gửi xác thực địa chỉ này");
+        if (binding.etDetailedAddress != null) binding.etDetailedAddress.setEnabled(true);
+        if (binding.layoutUploadBox != null) binding.layoutUploadBox.setEnabled(true);
     }
 
     private void renderSubmitState(UiState<String> state) {
         if (state == null) return;
         if (state.getScreenState() == UiState.ScreenState.LOADING) {
             binding.btnSubmitVerification.setEnabled(false);
-            binding.btnSubmitVerification.setText("Đang gửi...");
+            binding.btnSubmitVerification.setText("Đang kiểm tra tọa độ & gửi hồ sơ...");
             return;
         }
 
         binding.btnSubmitVerification.setEnabled(true);
-        binding.btnSubmitVerification.setText("Gửi hồ sơ đối soát");
+        binding.btnSubmitVerification.setText("Gửi xác thực địa chỉ này");
 
         if (state.getScreenState() == UiState.ScreenState.ERROR) {
-            Toast.makeText(this, state.getErrorMessage() != null ? state.getErrorMessage() : "Lỗi gửi hồ sơ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, state.getErrorMessage() != null ? state.getErrorMessage() : "Lỗi gửi hồ sơ", Toast.LENGTH_LONG).show();
             return;
         }
 
         if (state.getContent() != null) {
             Toast.makeText(this, state.getContent(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void applyStatus(boolean verified, boolean pending) {
-        alreadyVerified = verified;
-        if (verified) {
-            binding.btnSubmitVerification.setEnabled(false);
-            binding.btnSubmitVerification.setText("Đã xác thực cư trú");
-            if (binding.etDetailedAddress != null) binding.etDetailedAddress.setEnabled(false);
-            if (binding.layoutUploadBox != null) binding.layoutUploadBox.setEnabled(false);
-        } else if (pending) {
-            binding.btnSubmitVerification.setEnabled(false);
-            binding.btnSubmitVerification.setText("Đang chờ đối soát (trong 24h)");
+            // Reset form sau khi gửi thành công để người dùng có thể gửi địa chỉ khác nếu muốn
+            selectedFilePath = null;
+            selectedFileName = null;
+            binding.tvUploadText.setText("Bấm để chọn ảnh hoặc tệp");
+            if (binding.etDetailedAddress != null) binding.etDetailedAddress.setText("");
         }
     }
 
@@ -235,16 +233,6 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
             }
         }
         return name;
-    }
-
-    private void showHelp() {
-        new AlertDialog.Builder(this)
-                .setTitle("Xác thực cư trú")
-                .setMessage("Tải lên Giấy xác nhận cư trú (Mẫu CT07) hoặc ảnh QR VNeID có mộc "
-                        + "Công an Phường cùng với địa chỉ chi tiết để đối soát. "
-                        + "Sau khi được duyệt, bài đăng của bạn sẽ có tích xanh xác thực.")
-                .setPositiveButton("Đã hiểu", null)
-                .show();
     }
 
     private void submit() {

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -45,7 +46,7 @@ public class PublicHostProfileActivity extends AppCompatActivity {
             targetUserId = getIntent().getStringExtra("target_user_id");
         }
         if (targetUserId == null || targetUserId.trim().isEmpty()) {
-            android.widget.Toast.makeText(this, "Không có thông tin đối tác", android.widget.Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Không có thông tin đối tác", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -86,16 +87,15 @@ public class PublicHostProfileActivity extends AppCompatActivity {
 
         TextView tvStudentVerifyStatus = findViewById(R.id.tvStudentVerifyStatus);
         TextView tvCccdVerifyStatus = findViewById(R.id.tvCccdVerifyStatus);
-        TextView tvPoliceVerifyStatus = findViewById(R.id.tvPoliceVerifyStatus);
 
         User cached = new UserDao(this).getById(userId);
         if (cached != null) {
-            bindUser(cached, tvHostFullName, ivHostAvatarImg, tvAvatarInitial, ivVerifiedBadge, tvStudentInfo, tvStudentVerifyStatus, tvCccdVerifyStatus, tvPoliceVerifyStatus);
+            bindUser(cached, tvHostFullName, ivHostAvatarImg, tvAvatarInitial, ivVerifiedBadge, tvStudentInfo, tvStudentVerifyStatus, tvCccdVerifyStatus);
         }
 
         new UserRepository(this).getUserProfile(userId, new AppCallback<User>() {
             @Override public void onSuccess(User user) {
-                runOnUiThread(() -> bindUser(user, tvHostFullName, ivHostAvatarImg, tvAvatarInitial, ivVerifiedBadge, tvStudentInfo, tvStudentVerifyStatus, tvCccdVerifyStatus, tvPoliceVerifyStatus));
+                runOnUiThread(() -> bindUser(user, tvHostFullName, ivHostAvatarImg, tvAvatarInitial, ivVerifiedBadge, tvStudentInfo, tvStudentVerifyStatus, tvCccdVerifyStatus));
             }
             @Override public void onError(Exception e) {
                 if (cached == null) {
@@ -109,7 +109,7 @@ public class PublicHostProfileActivity extends AppCompatActivity {
     }
 
     private void bindUser(User user, TextView tvHostFullName, ImageView ivHostAvatarImg, TextView tvAvatarInitial, View ivVerifiedBadge, TextView tvStudentInfo,
-                          TextView tvStudentVerifyStatus, TextView tvCccdVerifyStatus, TextView tvPoliceVerifyStatus) {
+                          TextView tvStudentVerifyStatus, TextView tvCccdVerifyStatus) {
         if (user == null) return;
         String name = user.getFamilyName() != null && !user.getFamilyName().isEmpty()
                 ? user.getFamilyName() : "Đối tác";
@@ -133,11 +133,9 @@ public class PublicHostProfileActivity extends AppCompatActivity {
 
         View rowStudent = findViewById(R.id.layoutStudentVerifyRow);
         View rowCccd = findViewById(R.id.layoutCccdVerifyRow);
-        View rowPolice = findViewById(R.id.layoutPoliceVerifyRow);
 
         if (rowStudent != null) rowStudent.setVisibility(isStudentVerified ? View.VISIBLE : View.GONE);
         if (rowCccd != null) rowCccd.setVisibility(isCccdVerified ? View.VISIBLE : View.GONE);
-        if (rowPolice != null) rowPolice.setVisibility(isPoliceVerified ? View.VISIBLE : View.GONE);
 
         if (ivVerifiedBadge != null) {
             ivVerifiedBadge.setVisibility(isStudentVerified || isCccdVerified || isPoliceVerified ? View.VISIBLE : View.GONE);
@@ -156,10 +154,6 @@ public class PublicHostProfileActivity extends AppCompatActivity {
         if (tvCccdVerifyStatus != null) {
             tvCccdVerifyStatus.setText("Đã xác thực");
             tvCccdVerifyStatus.setTextColor(getColor(R.color.primary));
-        }
-        if (tvPoliceVerifyStatus != null) {
-            tvPoliceVerifyStatus.setText("Đã xác thực");
-            tvPoliceVerifyStatus.setTextColor(getColor(R.color.primary));
         }
     }
 

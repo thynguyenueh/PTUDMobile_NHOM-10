@@ -37,7 +37,6 @@
                     android:paddingHorizontal="@dimen/screen_padding_wide">
 
                     <FrameLayout
-                        android:id="@+id/btnAvatar"
                         android:layout_width="@dimen/avatar_size_lg"
                         android:layout_height="@dimen/avatar_size_lg"
                         android:background="@drawable/bg_circle_olive"
@@ -97,47 +96,17 @@
                                 android:layout_height="@dimen/icon_sm"
                                 android:layout_marginStart="@dimen/space_xs"
                                 android:contentDescription="@string/cd_verified"
-                                android:src="@drawable/ic_verified_check"
+                                android:src="@drawable/ic_verified"
                                 android:visibility="gone"
                                 app:tint="@color/primary" />
                         </LinearLayout>
                     </LinearLayout>
 
-                    <FrameLayout
-                        android:id="@+id/btnNotifications"
-                        android:layout_width="@dimen/icon_btn_size"
-                        android:layout_height="@dimen/icon_btn_size"
-                        android:background="@drawable/bg_circle_light"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackgroundBorderless">
 
-                        <ImageView
-                            android:layout_width="@dimen/icon_md"
-                            android:layout_height="@dimen/icon_md"
-                            android:layout_gravity="center"
-                            android:contentDescription="@string/cd_notifications"
-                            android:src="@drawable/ic_notifications"
-                            app:tint="@color/primary" />
-
-                        <TextView
-                            android:id="@+id/tvNotifBadgeCount"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_gravity="top|end"
-                            android:background="@drawable/bg_pill_red"
-                            android:gravity="center"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/text_caption"
-                            android:textStyle="bold"
-                            android:visibility="gone"
-                            tools:text="1" />
-                    </FrameLayout>
                 </LinearLayout>
 
                 <!-- Search bar -->
                 <LinearLayout
-                    android:id="@+id/layoutSearchBar"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/search_bar_height"
                     android:layout_marginHorizontal="@dimen/screen_padding_wide"
@@ -223,18 +192,6 @@
                         android:layout_marginTop="@dimen/space_lg"
                         tools:text="Đăng bài" />
                 </LinearLayout>
-
-                <TextView
-                    android:id="@+id/tvHomeSectionTitle"
-                    style="@style/TextAppearance.App.Heading"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/screen_padding_wide"
-                    android:layout_marginTop="@dimen/space_xl"
-                    android:accessibilityHeading="true"
-                    android:text="@string/home_section_title"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
 
                 <!-- List -->
                 <androidx.recyclerview.widget.RecyclerView

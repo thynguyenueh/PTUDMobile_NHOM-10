@@ -14,11 +14,13 @@ import com.bumptech.glide.Glide;
 import com.example.studenthousing.R;
 import com.example.studenthousing.data.model.AccommodationPost;
 import com.example.studenthousing.ui.post.PostDisplayFormatter;
+import com.example.studenthousing.util.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SavedHouseAdapter extends RecyclerView.Adapter<SavedHouseAdapter.SavedHouseViewHolder> {
+
     public interface OnSavedHouseActionListener {
         void onRemoveSaved(int position, SavedHouseItem item);
         void onViewDetail(int position, SavedHouseItem item);
@@ -27,23 +29,26 @@ public class SavedHouseAdapter extends RecyclerView.Adapter<SavedHouseAdapter.Sa
     public static class SavedHouseItem {
         public final String postId, title, address, imageUrl, campusSummary;
         public final int statusLabel;
+        public final boolean addressVerified;
 
         public SavedHouseItem(String postId, String title, String address, String imageUrl,
-                              String campusSummary, int statusLabel) {
+                              String campusSummary, int statusLabel, boolean addressVerified) {
             this.postId = postId;
             this.title = title;
             this.address = address;
             this.imageUrl = imageUrl;
             this.campusSummary = campusSummary;
             this.statusLabel = statusLabel;
+            this.addressVerified = addressVerified;
         }
 
         public static SavedHouseItem fromPost(Context context, AccommodationPost post) {
             String title = post.getTitle() != null ? post.getTitle() : context.getString(R.string.my_post_default_title);
             String address = PostDisplayFormatter.getPublicArea(context, post);
+            boolean verified = Constants.ADDR_VALID.equalsIgnoreCase(post.getAddressValidationStatus());
             return new SavedHouseItem(post.getPostId(), title, address, firstImage(post),
                     PostDisplayFormatter.getNearestCampusSummary(context, post),
-                    PostDisplayFormatter.getCompactStatusLabel(post));
+                    PostDisplayFormatter.getCompactStatusLabel(post), verified);
         }
 
         private static String firstImage(AccommodationPost post) {
@@ -54,8 +59,16 @@ public class SavedHouseAdapter extends RecyclerView.Adapter<SavedHouseAdapter.Sa
     private final List<SavedHouseItem> items = new ArrayList<>();
     private final OnSavedHouseActionListener listener;
 
-    public SavedHouseAdapter(@NonNull OnSavedHouseActionListener listener) { this.listener = listener; }
-    public void submitList(@NonNull List<SavedHouseItem> newItems) { items.clear(); items.addAll(newItems); notifyDataSetChanged(); }
+    public SavedHouseAdapter(@NonNull OnSavedHouseActionListener listener) {
+        this.listener = listener;
+    }
+
+    public void submitList(@NonNull List<SavedHouseItem> newItems) {
+        items.clear();
+        items.addAll(newItems);
+        notifyDataSetChanged();
+    }
+
     public void removeItem(int position) {
         if (position >= 0 && position < items.size()) {
             items.remove(position);
@@ -63,15 +76,28 @@ public class SavedHouseAdapter extends RecyclerView.Adapter<SavedHouseAdapter.Sa
             notifyItemRangeChanged(position, items.size());
         }
     }
-    @Override public int getItemCount() { return items.size(); }
-    @NonNull @Override public SavedHouseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new SavedHouseViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_saved_house, parent, false), listener);
+
+    @Override
+    public int getItemCount() {
+        return items.size();
     }
-    @Override public void onBindViewHolder(@NonNull SavedHouseViewHolder holder, int position) { holder.bind(items.get(position)); }
+
+    @NonNull
+    @Override
+    public SavedHouseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new SavedHouseViewHolder(
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_saved_house, parent, false),
+                listener);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull SavedHouseViewHolder holder, int position) {
+        holder.bind(items.get(position));
+    }
 
     public static class SavedHouseViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvTitle, tvAddress;
-        private final TextView tvStatus, tvDistance;
+        private final TextView tvDistance;
         private final ImageView ivSavedPhoto;
         private final ImageView ivVerified;
         private final View btnRemoveSaved;
@@ -82,7 +108,6 @@ public class SavedHouseAdapter extends RecyclerView.Adapter<SavedHouseAdapter.Sa
             this.listener = listener;
             tvTitle = itemView.findViewById(R.id.tvSavedTitle);
             tvAddress = itemView.findViewById(R.id.tvSavedAddress);
-            tvStatus = itemView.findViewById(R.id.tvSavedStatus);
             tvDistance = itemView.findViewById(R.id.tvSavedDistance);
             ivSavedPhoto = itemView.findViewById(R.id.ivSavedPhoto);
             ivVerified = itemView.findViewById(R.id.tvSavedVerified);
@@ -92,10 +117,13 @@ public class SavedHouseAdapter extends RecyclerView.Adapter<SavedHouseAdapter.Sa
         void bind(@NonNull SavedHouseItem item) {
             tvTitle.setText(item.title);
             tvAddress.setText(item.address);
-            tvStatus.setVisibility(item.statusLabel == 0 ? View.GONE : View.VISIBLE);
-            if (item.statusLabel != 0) tvStatus.setText(item.statusLabel);
             tvDistance.setText(item.campusSummary == null ? "" : item.campusSummary);
             tvDistance.setVisibility(item.campusSummary == null ? View.GONE : View.VISIBLE);
+
+            if (ivVerified != null) {
+                ivVerified.setVisibility(item.addressVerified ? View.VISIBLE : View.GONE);
+            }
+
             if (ivSavedPhoto != null) {
                 int[] placeholders = {R.drawable.bg_image_placeholder};
                 int p = Math.max(0, getBindingAdapterPosition()) % placeholders.length;

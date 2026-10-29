@@ -1,6 +1,5 @@
 package com.example.studenthousing.ui.review;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -59,15 +58,16 @@ public class ReviewActivity extends AppCompatActivity {
         targetUserId = getIntent().getStringExtra(EXTRA_TARGET_USER_ID);
         targetUserName = getIntent().getStringExtra(EXTRA_TARGET_USER_NAME);
 
-        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+        View btnBack = findViewById(R.id.btnBack);
+        if (btnBack != null) btnBack.setOnClickListener(v -> finish());
 
         TextView tvPartnerName = findViewById(R.id.tvPartnerName);
         RatingBar ratingBar = findViewById(R.id.ratingBar);
         TextView tvRatingText = findViewById(R.id.tvRatingText);
         EditText edtComment = findViewById(R.id.edtComment);
-        com.google.android.material.button.MaterialButton btnSubmitReview = findViewById(R.id.btnSubmitReview);
-        View btnAddReviewPhoto = null;
-        rvReviewPhotos = null;
+        MaterialButton btnSubmitReview = findViewById(R.id.btnSubmitReview);
+        View btnAddReviewPhoto = findViewById(R.id.btnAddReviewPhoto);
+        rvReviewPhotos = findViewById(R.id.rvReviewPhotos);
 
         if (targetUserName != null && !targetUserName.isEmpty()) {
             if (tvPartnerName != null) tvPartnerName.setText(targetUserName);
@@ -202,7 +202,7 @@ public class ReviewActivity extends AppCompatActivity {
 
         Review review = new Review();
         review.setReviewId(targetUserId + "_" + currentUserId);
-        review.setRevieweeId(targetUserId != null ? targetUserId : "target_user");
+        review.setRevieweeId(targetUserId);
         review.setReviewerId(currentUserId);
         review.setReviewerName(currentUserName);
         review.setRating(rating);
