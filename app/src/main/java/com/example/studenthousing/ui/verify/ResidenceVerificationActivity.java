@@ -288,11 +288,11 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
     }
 
     private void showWardPicker() {
-        com.example.studenthousing.util.ProvincePickerHelper.showPicker(this, (province, ward) -> {
+        com.example.studenthousing.util.ProvincePickerHelper.showPicker(this, (cityName, ward) -> {
             if (ward != null) {
                 selectedWard = ward.getName();
-            } else if (province != null) {
-                selectedWard = province.getName();
+            } else if (cityName != null) {
+                selectedWard = cityName;
             }
             if (selectedWard != null) {
                 binding.tvSelectedWard.setText(selectedWard);

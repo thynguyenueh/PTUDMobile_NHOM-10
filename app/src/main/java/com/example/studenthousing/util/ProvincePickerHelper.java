@@ -2,22 +2,21 @@ package com.example.studenthousing.util;
 
 import android.content.Context;
 
-import com.example.studenthousing.data.model.province.Province;
-import com.example.studenthousing.data.model.province.Ward;
+import com.example.studenthousing.data.loader.WardsDataLoader;
+import com.example.studenthousing.data.model.Ward;
 import com.example.studenthousing.ui.dialog.SearchListDialog;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProvincePickerHelper {
 
     public interface OnAddressSelectedListener {
-        void onAddressSelected(Province province, Ward ward);
+        void onAddressSelected(String cityName, Ward ward);
     }
 
     public static void showPicker(Context context, OnAddressSelectedListener listener) {
-        Province hcm = new Province(79, "TP. Hồ Chí Minh");
-        List<Ward> wards = buildWardList();
+        String hcm = Constants.TPHCM_CITY_NAME;
+        List<Ward> wards = WardsDataLoader.loadWards(context);
 
         if (wards == null || wards.isEmpty()) {
             if (listener != null) {
@@ -43,14 +42,5 @@ public class ProvincePickerHelper {
                 listener.onAddressSelected(hcm, selectedWard);
             }
         });
-    }
-
-    private static List<Ward> buildWardList() {
-        List<Ward> wards = new ArrayList<>();
-        int code = 27256;
-        for (String wardName : LocationData.WARDS) {
-            wards.add(new Ward(code++, wardName));
-        }
-        return wards;
     }
 }

@@ -14,17 +14,14 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
-import com.example.studenthousing.data.local.ExchangeDao;
 import com.example.studenthousing.data.local.MessageDao;
 import com.example.studenthousing.data.local.PostDao;
 import com.example.studenthousing.data.local.ReviewDao;
 import com.example.studenthousing.data.local.VerificationTicketDao;
 import com.example.studenthousing.data.model.AccommodationPost;
-import com.example.studenthousing.data.model.ExchangeRequest;
 import com.example.studenthousing.data.model.Message;
 import com.example.studenthousing.data.model.Review;
 import com.example.studenthousing.data.model.VerificationTicket;
-import com.example.studenthousing.data.remote.ExchangeRemote;
 import com.example.studenthousing.data.remote.MessageRemote;
 import com.example.studenthousing.data.remote.PostRemote;
 import com.example.studenthousing.data.remote.ReviewRemote;
@@ -37,13 +34,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SyncManager {
     private static final String TAG = "SyncManager";
     private final Context ctx;
-    private final ExchangeDao exchangeDao;
     private final ReviewDao reviewDao;
     private final PostDao postDao;
     private final MessageDao messageDao;
     private final VerificationTicketDao ticketDao;
 
-    private final ExchangeRemote exchangeRemote;
     private final ReviewRemote reviewRemote;
     private final PostRemote postRemote;
     private final MessageRemote messageRemote;
@@ -60,13 +55,11 @@ public class SyncManager {
 
     public SyncManager(Context ctx) {
         this.ctx = ctx.getApplicationContext();
-        this.exchangeDao = new ExchangeDao(this.ctx);
         this.reviewDao = new ReviewDao(this.ctx);
         this.postDao = new PostDao(this.ctx);
         this.messageDao = new MessageDao(this.ctx);
         this.ticketDao = new VerificationTicketDao(this.ctx);
 
-        this.exchangeRemote = new ExchangeRemote();
         this.reviewRemote = new ReviewRemote();
         this.postRemote = new PostRemote();
         this.messageRemote = new MessageRemote();
@@ -147,7 +140,6 @@ public class SyncManager {
             allSuccess &= syncPosts();
             allSuccess &= syncPendingUpdates();
             allSuccess &= syncPendingDeletes();
-            allSuccess &= syncExchanges();
             allSuccess &= syncReviews();
             allSuccess &= syncMessages();
         } catch (Exception e) {
@@ -330,33 +322,6 @@ public class SyncManager {
                             p.setSyncStatus(Constants.SYNC_PENDING_DELETE);
                             postDao.upsert(p);
                             Log.e(TAG, "Lỗi sync delete bài đăng: " + e.getMessage());
-                        }
-                    });
-                }
-            }
-        }
-        return true;
-    }
-
-    private boolean syncExchanges() {
-        String activeUid = SessionManager.getUid(ctx);
-        if (activeUid == null) return true;
-
-        List<ExchangeRequest> pending = exchangeDao.getPendingRequests();
-        if (pending != null) {
-            for (ExchangeRequest req : pending) {
-                if (activeUid.equals(req.getSenderId())) {
-                    exchangeRemote.create(req, new AppCallback<String>() {
-                        @Override
-                        public void onSuccess(String id) {
-                            req.setSyncStatus(Constants.SYNC_SYNCED);
-                            exchangeDao.upsert(req);
-                            Log.d(TAG, "Đã sync exchange request: " + id);
-                        }
-
-                        @Override
-                        public void onError(Exception e) {
-                            Log.e(TAG, "Lỗi sync exchange request: " + e.getMessage());
                         }
                     });
                 }

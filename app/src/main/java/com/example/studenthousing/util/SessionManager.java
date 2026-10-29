@@ -61,7 +61,6 @@ public class SessionManager {
                     com.example.studenthousing.data.local.DatabaseHelper.COL_SYNC_STATUS + " = 'SYNCED'";
             db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_POSTS, whereSynced, null);
             db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_MESSAGES, whereSynced, null);
-            db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_EXCHANGE, whereSynced, null);
             db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_REVIEWS, whereSynced, null);
             db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_CHAT_ROOMS, null, null);
             db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_CHAT_ROOM_PARTICIPANTS, null, null);

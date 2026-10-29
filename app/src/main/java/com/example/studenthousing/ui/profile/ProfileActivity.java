@@ -12,7 +12,6 @@ import com.example.studenthousing.R;
 import com.example.studenthousing.databinding.ActivityProfileBinding;
 import com.example.studenthousing.ui.auth.LoginActivity;
 import com.example.studenthousing.ui.chat.ChatListActivity;
-import com.example.studenthousing.ui.exchange.ExchangeHistoryActivity;
 import com.example.studenthousing.ui.home.HomeActivity;
 import com.example.studenthousing.ui.post.MyPostsActivity;
 import com.example.studenthousing.ui.post.SavedHousesActivity;
@@ -59,7 +58,9 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(intent);
             });
         }
-        bindInHeader(R.id.btnStatExchanges, ExchangeHistoryActivity.class);
+        View btnExchanges = binding.includeProfileHeader.getRoot().findViewById(R.id.btnStatExchanges);
+        if (btnExchanges != null) btnExchanges.setVisibility(View.GONE);
+
         bindInHeader(R.id.btnStatPosts, MyPostsActivity.class);
 
         bind(R.id.btnKyc, KycActivity.class);

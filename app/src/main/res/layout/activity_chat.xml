@@ -63,13 +63,6 @@
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/btnProposal"
-            style="@style/Widget.App.IconButton"
-            android:contentDescription="@string/cd_proposal"
-            android:src="@drawable/ic_swap"
-            app:tint="@color/primary" />
-
-        <ImageView
             android:id="@+id/btnCall"
             style="@style/Widget.App.IconButton"
             android:contentDescription="@string/cd_call"

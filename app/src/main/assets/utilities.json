@@ -1,0 +1,47 @@
+[
+  {
+    "code": "WIFI",
+    "label": "Wi-Fi miễn phí",
+    "icon": "ic_wifi"
+  },
+  {
+    "code": "PARKING",
+    "label": "Chỗ để xe",
+    "icon": "ic_parking"
+  },
+  {
+    "code": "AIR_CONDITIONER",
+    "label": "Máy lạnh",
+    "icon": "ic_ac"
+  },
+  {
+    "code": "WASHER",
+    "label": "Máy giặt",
+    "icon": "ic_washer"
+  },
+  {
+    "code": "FRIDGE",
+    "label": "Tủ lạnh",
+    "icon": "ic_fridge"
+  },
+  {
+    "code": "PRIVATE_BATHROOM",
+    "label": "Vệ sinh riêng",
+    "icon": "ic_bath"
+  },
+  {
+    "code": "SECURITY",
+    "label": "An ninh 24/7",
+    "icon": "ic_security"
+  },
+  {
+    "code": "ELEVATOR",
+    "label": "Thang máy",
+    "icon": "ic_elevator"
+  },
+  {
+    "code": "PET_ALLOWED",
+    "label": "Cho phép nuôi thú cưng",
+    "icon": "ic_pet"
+  }
+]

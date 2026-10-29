@@ -1,8 +1,10 @@
 package com.example.studenthousing.util;
 
-import com.example.studenthousing.data.local.UniversityData;
+import android.content.Context;
+
+import com.example.studenthousing.data.model.Campus;
 import com.example.studenthousing.data.model.NearbyCampus;
-import com.example.studenthousing.data.model.University;
+import com.example.studenthousing.data.repository.CampusRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,61 +17,59 @@ public class NearbyCampusService {
         void onResult(List<NearbyCampus> campuses);
     }
 
-    public static List<NearbyCampus> calculateNearby(double lat, double lon) {
+    public static List<NearbyCampus> calculateNearby(Context context, double lat, double lon) {
         List<NearbyCampus> result = new ArrayList<>();
-        if (lat == 0.0 && lon == 0.0) return result;
-        List<University> unis = UniversityData.getUniversities();
-        for (University u : unis) {
-            double km = DistanceCalculator.calculateHaversineKm(lat, lon, u.getLatitude(), u.getLongitude()) * 1.35;
+        if ((lat == 0.0 && lon == 0.0) || context == null) return result;
+        List<Campus> campuses = CampusRepository.getInstance(context).getAllCampuses();
+        for (Campus c : campuses) {
+            if (c == null || (c.getLat() == 0.0 && c.getLon() == 0.0)) continue;
+            double km = DistanceCalculator.calculateHaversineKm(lat, lon, c.getLat(), c.getLon()) * 1.35;
             double rounded = Math.round(km * 10.0) / 10.0;
-            result.add(new NearbyCampus(u.getCode(), rounded, true));
+            result.add(new NearbyCampus(c.getCode(), rounded, true));
         }
         result.sort((a, b) -> Double.compare(a.getKm(), b.getKm()));
         return result;
     }
 
-    /**
-     * Calculate nearby universities using road routing (OSRM).
-     * Filters results to within 5km.
-     * Runs asynchronously and returns results via callback.
-     */
-    public static void calculateNearbyWithRouting(double lat, double lon, NearbyCallback callback) {
-        if (lat == 0.0 && lon == 0.0) {
+    public static void calculateNearbyWithRouting(Context context, double lat, double lon, NearbyCallback callback) {
+        if ((lat == 0.0 && lon == 0.0) || context == null) {
             callback.onResult(Collections.emptyList());
             return;
         }
 
-        List<University> unis = UniversityData.getUniversities();
+        List<Campus> campuses = CampusRepository.getInstance(context).getAllCampuses();
         List<NearbyCampus> results = Collections.synchronizedList(new ArrayList<>());
-        CountDownLatch latch = new CountDownLatch(unis.size());
+        CountDownLatch latch = new CountDownLatch(campuses.size());
 
         DistanceCalculator calc = new DistanceCalculator();
-        for (University u : unis) {
-            double uniLat = u.getLatitude();
-            double uniLon = u.getLongitude();
-            
-            // Quick haversine pre-filter to skip obviously far ones
-            double estKm = DistanceCalculator.calculateHaversineKm(lat, lon, uniLat, uniLon) * 1.35;
-            if (estKm > 7.0) { // Skip if estimated > 7km (buffer for 5km road distance)
+        for (Campus c : campuses) {
+            if (c == null || (c.getLat() == 0.0 && c.getLon() == 0.0)) {
+                latch.countDown();
+                continue;
+            }
+            double cLat = c.getLat();
+            double cLon = c.getLon();
+
+            double estKm = DistanceCalculator.calculateHaversineKm(lat, lon, cLat, cLon) * 1.35;
+            if (estKm > 7.0) {
                 latch.countDown();
                 continue;
             }
 
-            calc.calculateDistance(lat, lon, uniLat, uniLon, new DistanceCalculator.DistanceResultCallback() {
+            calc.calculateDistance(lat, lon, cLat, cLon, new DistanceCalculator.DistanceResultCallback() {
                 @Override
                 public void onSuccess(double distanceKm, String source, boolean isEstimate) {
                     if (distanceKm <= 5.0) {
-                        results.add(new NearbyCampus(u.getCode(), distanceKm, isEstimate));
+                        results.add(new NearbyCampus(c.getCode(), distanceKm, isEstimate));
                     }
                     latch.countDown();
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    // Fallback to haversine estimate
                     double fallbackKm = Math.round(estKm * 10.0) / 10.0;
                     if (fallbackKm <= 5.0) {
-                        results.add(new NearbyCampus(u.getCode(), fallbackKm, true));
+                        results.add(new NearbyCampus(c.getCode(), fallbackKm, true));
                     }
                     latch.countDown();
                 }

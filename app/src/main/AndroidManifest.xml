@@ -29,7 +29,6 @@
             </intent-filter>
         </activity>
 
-        <!-- ⚠️ TẠM đổi true để test bằng adb - ĐỔI LẠI false TRƯỚC KHI COMMIT -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -44,7 +43,6 @@
             android:name=".RegisterStep2Activity"
             android:exported="false" />
 
-        <!-- ⚠️ TẠM đổi true để test bằng adb -->
         <activity
             android:name=".ui.review.ReviewActivity"
             android:exported="true" />
@@ -75,11 +73,6 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.exchange.ProposalActivity"
-            android:exported="false" />
-
-        <!-- ⚠️ TẠM đổi true để test bằng adb -->
-        <activity
             android:name=".ui.verify.ResidenceVerificationActivity"
             android:exported="true" />
 
@@ -93,10 +86,6 @@
 
         <activity
             android:name=".ui.review.UserReviewsActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".ui.exchange.ExchangeHistoryActivity"
             android:exported="false" />
 
         <activity
@@ -116,10 +105,6 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.exchange.ProposalDetailActivity"
-            android:exported="false" />
-
-        <activity
             android:name=".ui.post.CreatePostActivity"
             android:exported="false" />
 
@@ -129,10 +114,6 @@
 
         <activity
             android:name=".ui.partner.PublicHostProfileActivity"
-            android:exported="false" />
-
-        <receiver
-            android:name=".util.AutoTransitionReceiver"
             android:exported="false" />
 
     </application>

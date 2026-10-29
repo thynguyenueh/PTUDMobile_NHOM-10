@@ -13,11 +13,12 @@ import androidx.core.content.ContextCompat;
 
 import com.example.studenthousing.R;
 import com.example.studenthousing.data.local.UserDao;
+import com.example.studenthousing.data.model.Campus;
 import com.example.studenthousing.data.model.User;
+import com.example.studenthousing.data.repository.CampusRepository;
 import com.example.studenthousing.data.repository.UserRepository;
 import com.example.studenthousing.ui.home.HomeActivity;
 import com.example.studenthousing.util.AppCallback;
-import com.example.studenthousing.util.LocationData;
 import com.example.studenthousing.util.OtpHelper;
 import com.example.studenthousing.ui.dialog.SearchListDialog;
 import com.example.studenthousing.util.SessionManager;
@@ -26,42 +27,9 @@ import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-public class RegisterActivity extends AppCompatActivity {
+import java.util.List;
 
-    private static final String[] UNIVERSITIES = {
-            "Đại học Bách Khoa Hà Nội (HUST)",
-            "Đại học Quốc gia Hà Nội (VNU-HN)",
-            "Đại học Kinh tế Quốc dân (NEU)",
-            "Đại học Ngoại thương (FTU)",
-            "Đại học Y Hà Nội (HMU)",
-            "Học viện Công nghệ Bưu chính Viễn thông (PTIT)",
-            "Đại học Quốc gia Thành phố Hồ Chí Minh (VNU-HCM)",
-            "Trường Đại học Bách Khoa - ĐHQG TP.HCM (HCMUT)",
-            "Trường Đại học Kinh tế TP. Hồ Chí Minh (UEH)",
-            "Trường Đại học Khoa học Tự nhiên - ĐHQG TP.HCM (HCMUS)",
-            "Trường Đại học Khoa học Xã hội và Nhân văn - ĐHQG TP.HCM (USSH)",
-            "Trường Đại học Công nghệ Thông tin - ĐHQG TP.HCM (UIT)",
-            "Trường Đại học Quốc tế - ĐHQG TP.HCM (IU)",
-            "Trường Đại học Ngoại thương Cơ sở II (FTU CS2)",
-            "Trường Đại học Sư phạm TP.HCM (HCMUE)",
-            "Trường Đại học Y Dược TP.HCM (UMP)",
-            "Trường Đại học Sư phạm Kỹ thuật TP.HCM (HCMUTE)",
-            "Trường Đại học Tôn Đức Thắng (TDTU)",
-            "Trường Đại học Công nghiệp TP.HCM (IUH)",
-            "Trường Đại học Ngân hàng TP.HCM (HUB)",
-            "Trường Đại học Luật TP.HCM (ULH)",
-            "Trường Đại học Cần Thơ (CTU)",
-            "Đại học Đà Nẵng (UD)",
-            "Đại học Huế (HueU)",
-            "Trường Đại học Nha Trang (NTU)",
-            "Trường Đại học Mở TP.HCM (HCMOU)",
-            "Trường Đại học Kinh tế - Luật ĐHQG TP.HCM (UEL)",
-            "Trường Đại học FPT",
-            "Trường Đại học RMIT Việt Nam",
-            "Trường Đại học Văn Lang",
-            "Trường Đại học Hoa Sen",
-            "Trường Đại học Kiến trúc TP.HCM"
-    };
+public class RegisterActivity extends AppCompatActivity {
 
     private ImageView btnBack;
     private TextInputLayout tilParentName, tilPhone, tilPassword, tilUniversity;
@@ -150,14 +118,21 @@ public class RegisterActivity extends AppCompatActivity {
         if (tvLoginLink != null) tvLoginLink.setOnClickListener(v -> finish());
         if (btnContinue != null) btnContinue.setOnClickListener(v -> handleContinueOrSave());
 
-        View.OnClickListener selectUniListener = v ->
-                SearchListDialog.show(this, "Chọn trường đại học", UNIVERSITIES, value -> {
-                    if (tvUniversity != null) {
-                        tvUniversity.setText(value);
-                        tvUniversity.setTextColor(ContextCompat.getColor(this, R.color.text_main));
-                    }
-                    if (tilUniversity != null) tilUniversity.setError(null);
-                });
+        View.OnClickListener selectUniListener = v -> {
+            List<Campus> campusList = CampusRepository.getInstance(this).getAllCampuses();
+            String[] items = new String[campusList.size()];
+            for (int i = 0; i < campusList.size(); i++) {
+                items[i] = campusList.get(i).getDisplayName();
+            }
+
+            SearchListDialog.show(this, "Chọn trường đại học / cao đẳng (TP.HCM)", items, value -> {
+                if (tvUniversity != null) {
+                    tvUniversity.setText(value);
+                    tvUniversity.setTextColor(ContextCompat.getColor(this, R.color.text_main));
+                }
+                if (tilUniversity != null) tilUniversity.setError(null);
+            });
+        };
 
         if (tilUniversity != null) tilUniversity.setOnClickListener(selectUniListener);
         if (tvUniversity != null) tvUniversity.setOnClickListener(selectUniListener);
@@ -168,6 +143,12 @@ public class RegisterActivity extends AppCompatActivity {
         if (tilPhone != null) tilPhone.setError(null);
         if (tilPassword != null) tilPassword.setError(null);
         if (tilUniversity != null) tilUniversity.setError(null);
+    }
+
+    private String cleanSelectedText(String selected) {
+        if (selected == null) return "";
+        String s = selected.trim();
+        return s.startsWith("Chọn") ? "" : s;
     }
 
     private void handleContinueOrSave() {
@@ -186,7 +167,7 @@ public class RegisterActivity extends AppCompatActivity {
         if (isEditMode) {
             String phoneEdit = !TextUtils.isEmpty(rawPhone) ? OtpHelper.toLocal(rawPhone) : session.getUserPhone();
             String universityEdit = tvUniversity != null && tvUniversity.getText() != null
-                    ? LocationData.clean(tvUniversity.getText().toString()) : "";
+                    ? cleanSelectedText(tvUniversity.getText().toString()) : "";
             registerOrUpdateUser(parentName, phoneEdit, universityEdit, session.getUserId(), null);
             return;
         }
@@ -221,7 +202,7 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        final String university = tvUniversity != null && tvUniversity.getText() != null ? LocationData.clean(tvUniversity.getText().toString()) : "";
+        final String university = tvUniversity != null && tvUniversity.getText() != null ? cleanSelectedText(tvUniversity.getText().toString()) : "";
         String newUid = "user_" + System.currentTimeMillis();
         registerOrUpdateUser(parentName, phone, university, newUid, password);
     }

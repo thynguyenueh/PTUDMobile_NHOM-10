@@ -19,8 +19,6 @@ import com.bumptech.glide.Glide;
 import com.example.studenthousing.R;
 import com.example.studenthousing.data.model.AccommodationPost;
 import com.example.studenthousing.data.model.ChatRoom;
-import com.example.studenthousing.data.model.ExchangeRequest;
-import com.example.studenthousing.data.model.MatchSuggestion;
 import com.example.studenthousing.data.model.User;
 import com.example.studenthousing.databinding.ActivityHomeBinding;
 import com.example.studenthousing.domain.FilterCriteria;
@@ -33,7 +31,6 @@ import com.example.studenthousing.ui.profile.NotificationsActivity;
 import com.example.studenthousing.ui.profile.ProfileActivity;
 import com.example.studenthousing.ui.viewmodel.HomeViewModel;
 import com.example.studenthousing.util.AppCallback;
-import com.example.studenthousing.util.Constants;
 import com.example.studenthousing.util.SessionManager;
 import com.example.studenthousing.util.UiState;
 
@@ -42,7 +39,6 @@ import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
 
-    // Đã bỏ LOADING vì không dùng — loading dùng SwipeRefresh thay vì state
     private enum State { CONTENT, EMPTY, ERROR }
 
     private ActivityHomeBinding binding;
@@ -78,7 +74,6 @@ public class HomeActivity extends AppCompatActivity {
         session = new SessionManager(this);
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
-        // ✅ bindHeader() CHỈ gọi 1 lần — không gọi lại ở onResume để tránh reset UI
         bindHeader();
         setupHouseList();
         observeViewModel();
@@ -101,7 +96,6 @@ public class HomeActivity extends AppCompatActivity {
             binding.swipeRefreshHome.setRefreshing(true);
             viewModel.refreshPosts();
             viewModel.refreshProfile(session.getUserId());
-            loadMatchRequests(session.getUserId());
         });
         binding.swipeRefreshHome.setColorSchemeResources(R.color.primary);
     }
@@ -109,11 +103,8 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // ❌ KHÔNG gọi bindHeader() ở đây (sẽ reset tên/avatar)
-        // ✅ Dùng refresh* để buộc load lại từ SQLite + Firestore mỗi lần quay về Home
         viewModel.refreshProfile(session.getUserId());
         viewModel.refreshPosts();
-        loadMatchRequests(session.getUserId());
         updateMessagesBadge();
         try {
             com.google.android.material.bottomnavigation.BottomNavigationView nav = findViewById(R.id.bottomNav);
@@ -137,7 +128,6 @@ public class HomeActivity extends AppCompatActivity {
             }
             allPosts = state.getContent() == null ? new ArrayList<>() : state.getContent();
             applyFilter();
-            updateMatchCard();
         });
         viewModel.getProfile().observe(this, state -> {
             if (state == null) return;
@@ -159,11 +149,6 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Chỉ gọi 1 lần trong onCreate để set placeholder ban đầu.
-     * Observer sẽ ghi đè bằng dữ liệu thật sau khi loadProfile xong.
-     * KHÔNG gọi trong onResume — sẽ làm mất tên/avatar đã hiển thị.
-     */
     private void bindHeader() {
         binding.tvHomeUserName.setText("Bạn");
         ImageView avatar = binding.getRoot().findViewById(R.id.ivHomeAvatarImg);
@@ -203,15 +188,6 @@ public class HomeActivity extends AppCompatActivity {
                     String pWard = post.getWardName() != null ? post.getWardName().toLowerCase() : "";
 
                     matchesUni = pAddr.contains(userUni) || pTitle.contains(userUni) || pDesc.contains(userUni) || pWard.contains(userUni);
-                    if (!matchesUni) {
-                        if (userUni.contains("ueh") || userUni.contains("kinh tế")) {
-                            matchesUni = pAddr.contains("quận 1") || pAddr.contains("quận 3") || pAddr.contains("quận 10") || pAddr.contains("phú nhuận");
-                        } else if (userUni.contains("bách khoa") || userUni.contains("hcmut") || userUni.contains("đhqg")) {
-                            matchesUni = pAddr.contains("thủ đức") || pAddr.contains("linh trung") || pAddr.contains("dĩ an") || pAddr.contains("quận 10");
-                        } else {
-                            matchesUni = true;
-                        }
-                    }
                 }
                 if (matchesUni) filtered.add(post);
             } else {
@@ -219,7 +195,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
 
-        // Sort posts from newest to oldest (createdAt descending)
         filtered.sort((p1, p2) -> Long.compare(p2.getCreatedAt(), p1.getCreatedAt()));
 
         adapter.updateData(filtered);
@@ -257,98 +232,6 @@ public class HomeActivity extends AppCompatActivity {
         binding.tvEmptyDesc.setText(desc);
         binding.btnEmptyAction.setText(action);
         emptyAction = onAction;
-    }
-
-    private final List<MatchSuggestion> currentSuggestions = new ArrayList<>();
-    private final java.util.Set<String> activePartnerPostIds = new java.util.HashSet<>();
-    private final java.util.Set<String> settledMyPostIds = new java.util.HashSet<>();
-    private boolean matchRequestsLoaded = false;
-
-    private void loadMatchRequests(String userId) {
-        matchRequestsLoaded = false;
-        activePartnerPostIds.clear();
-        settledMyPostIds.clear();
-        if (userId == null || userId.isEmpty()) {
-            matchRequestsLoaded = true;
-            updateMatchCard();
-            return;
-        }
-        new com.example.studenthousing.data.repository.ExchangeRepository(this).getAllForUser(userId,
-                new AppCallback<>() {
-                    @Override public void onSuccess(List<ExchangeRequest> requests) {
-                        activePartnerPostIds.clear();
-                        settledMyPostIds.clear();
-                        if (requests != null) for (ExchangeRequest req : requests) {
-                            String status = req.getStatus();
-                            boolean isSettled = Constants.REQ_EXCHANGING.equalsIgnoreCase(status)
-                                    || Constants.REQ_COMPLETED.equalsIgnoreCase(status);
-                            boolean isActive = isSettled || "PENDING".equalsIgnoreCase(status);
-
-                            if (userId.equals(req.getSenderId())) {
-                                if (isActive && req.getReceiverPostId() != null) activePartnerPostIds.add(req.getReceiverPostId());
-                                if (isSettled && req.getSenderPostId() != null) settledMyPostIds.add(req.getSenderPostId());
-                            } else if (userId.equals(req.getReceiverId())) {
-                                if (isActive && req.getSenderPostId() != null) activePartnerPostIds.add(req.getSenderPostId());
-                                if (isSettled && req.getReceiverPostId() != null) settledMyPostIds.add(req.getReceiverPostId());
-                            }
-                        }
-                        matchRequestsLoaded = true;
-                        runOnUiThread(HomeActivity.this::updateMatchCard);
-                    }
-                    @Override public void onError(Exception e) {
-                        matchRequestsLoaded = false;
-                        currentSuggestions.clear();
-                        runOnUiThread(() -> binding.cardMatchSuggestion.setVisibility(View.GONE));
-                    }
-                });
-    }
-
-    private void updateMatchCard() {
-        String uid = session == null ? null : session.getUserId();
-        if (uid == null || uid.isEmpty()) {
-            binding.cardMatchSuggestion.setVisibility(View.GONE);
-            return;
-        }
-
-        AccommodationPost mine = null;
-        if (allPosts != null) {
-            for (AccommodationPost p : allPosts) {
-                if (p != null && uid.equals(p.getUserId()) && isAvailable(p)
-                        && (!matchRequestsLoaded || !settledMyPostIds.contains(p.getPostId()))) {
-                    mine = p;
-                    break;
-                }
-            }
-        }
-
-        currentSuggestions.clear();
-        if (mine != null && matchRequestsLoaded && allPosts != null) {
-            // ✅ Đã bỏ điều kiện `uid == null` vì nếu mine != null thì uid chắc chắn != null
-            for (AccommodationPost p : allPosts) {
-                if (p == null || uid.equals(p.getUserId()) || !isAvailable(p)
-                        || (p.getPostId() != null && activePartnerPostIds.contains(p.getPostId()))) continue;
-                currentSuggestions.add(new MatchSuggestion(mine, p));
-            }
-        }
-
-        if (binding == null) return;
-        if (mine == null || currentSuggestions.isEmpty()) {
-            binding.cardMatchSuggestion.setVisibility(View.GONE);
-            return;
-        }
-
-        binding.cardMatchSuggestion.setVisibility(View.VISIBLE);
-        binding.tvMatchSummary.setText("Có " + currentSuggestions.size() + " gợi ý đổi nhà");
-
-        binding.cardMatchSuggestion.setOnClickListener(v -> {
-            SuggestionsHolder.setSuggestions(HomeActivity.this, currentSuggestions);
-            Intent intent = new Intent(HomeActivity.this, SuggestionsActivity.class);
-            startActivity(intent);
-        });
-    }
-
-    private static boolean isAvailable(AccommodationPost post) {
-        return post != null && "AVAILABLE".equalsIgnoreCase(post.getStatus());
     }
 
     private void setupHouseList() {

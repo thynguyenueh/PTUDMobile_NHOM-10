@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 
 import com.example.studenthousing.data.local.ChatRoomDao;
-import com.example.studenthousing.data.local.ExchangeDao;
 import com.example.studenthousing.data.local.MessageDao;
 import com.example.studenthousing.data.local.PostDao;
 import com.example.studenthousing.data.local.ReviewDao;
@@ -14,7 +13,6 @@ import com.example.studenthousing.data.local.VerifiedAddressDao;
 import com.example.studenthousing.data.model.AccommodationPost;
 import com.example.studenthousing.data.remote.PostRemote;
 import com.example.studenthousing.data.model.ChatRoom;
-import com.example.studenthousing.data.model.ExchangeRequest;
 import com.example.studenthousing.data.model.Message;
 import com.example.studenthousing.data.model.Review;
 import com.example.studenthousing.data.model.User;
@@ -39,7 +37,6 @@ public class DemoDataSeeder {
             VerifiedAddressDao addressDao = new VerifiedAddressDao(appCtx);
             VerificationTicketDao ticketDao = new VerificationTicketDao(appCtx);
             PostDao postDao = new PostDao(appCtx);
-            ExchangeDao exchangeDao = new ExchangeDao(appCtx);
             ReviewDao reviewDao = new ReviewDao(appCtx);
             MessageDao messageDao = new MessageDao(appCtx);
             ChatRoomDao chatRoomDao = new ChatRoomDao(appCtx);
@@ -68,12 +65,6 @@ public class DemoDataSeeder {
                 postDao.upsert(p);
             }
 
-            // Seed Exchange Requests
-            List<ExchangeRequest> requests = buildRequests();
-            for (ExchangeRequest r : requests) {
-                exchangeDao.upsert(r);
-            }
-
             // Seed Reviews
             List<Review> reviews = buildReviews();
             for (Review rv : reviews) {
@@ -95,7 +86,7 @@ public class DemoDataSeeder {
 
             // Sync to Firestore if online
             if (NetworkUtils.isOnline(appCtx)) {
-                syncToFirestore(users, addresses, posts, requests, reviews, rooms, msgs);
+                syncToFirestore(users, addresses, posts, reviews, rooms, msgs);
             }
         } catch (Exception e) {
             Log.e(TAG, "Error seeding demo data: " + e.getMessage(), e);
@@ -103,7 +94,7 @@ public class DemoDataSeeder {
     }
 
     private static void syncToFirestore(List<User> users, List<VerifiedAddress> addresses,
-                                        List<AccommodationPost> posts, List<ExchangeRequest> requests,
+                                        List<AccommodationPost> posts,
                                         List<Review> reviews, List<ChatRoom> rooms, List<Message> msgs) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -125,13 +116,6 @@ public class DemoDataSeeder {
         for (AccommodationPost p : posts) {
             if (p.getPostId() != null) {
                 db.collection("accommodation_posts").document(p.getPostId()).set(PostRemote.toPublicPostData(p));
-            }
-        }
-
-        // Exchange Requests
-        for (ExchangeRequest r : requests) {
-            if (r.getRequestId() != null) {
-                db.collection("exchange_requests").document(r.getRequestId()).set(r);
             }
         }
 
@@ -648,63 +632,7 @@ public class DemoDataSeeder {
         }
     }
 
-    // ===================================================================
-    // BUILD REQUESTS
-    // ===================================================================
-    private static List<ExchangeRequest> buildRequests() {
-        long now = System.currentTimeMillis();
-        List<ExchangeRequest> list = new ArrayList<>();
 
-        ExchangeRequest r1 = new ExchangeRequest();
-        r1.setRequestId("req_001");
-        r1.setSenderId("user_001");
-        r1.setReceiverId("user_003");
-        r1.setSenderPostId("post_001");
-        r1.setReceiverPostId("post_003");
-        r1.setChatRoomId("room_001");
-        r1.setExchangePeriod("6 tháng");
-        r1.setStartDate(now + 7 * DAY);
-        r1.setEndDate(now + 187 * DAY);
-        r1.setMessage("Mình muốn đổi nhà để tiện di chuyển sang cơ sở học hơn.");
-        r1.setStatus(Constants.REQ_PENDING);
-        r1.setCreatedAt(now - DAY);
-        list.add(r1);
-
-        ExchangeRequest r2 = new ExchangeRequest();
-        r2.setRequestId("req_002");
-        r2.setSenderId("user_002");
-        r2.setReceiverId("user_001");
-        r2.setSenderPostId("post_002");
-        r2.setReceiverPostId("post_001");
-        r2.setChatRoomId("room_002");
-        r2.setExchangePeriod("1 năm");
-        r2.setStartDate(now + 2 * DAY);
-        r2.setEndDate(now + 367 * DAY);
-        r2.setMessage("Nhà bạn gần trường quá, mình muốn trao đổi.");
-        r2.setStatus(Constants.REQ_EXCHANGING);
-        r2.setCreatedAt(now - 3 * DAY);
-        r2.setRespondedAt(now - 2 * DAY);
-        list.add(r2);
-
-        ExchangeRequest r3 = new ExchangeRequest();
-        r3.setRequestId("req_003");
-        r3.setSenderId("user_003");
-        r3.setReceiverId("user_005");
-        r3.setSenderPostId("post_003");
-        r3.setReceiverPostId("post_006");
-        r3.setChatRoomId("room_003");
-        r3.setExchangePeriod("3 tháng");
-        r3.setStartDate(now - 90 * DAY);
-        r3.setEndDate(now - DAY);
-        r3.setMessage("Đổi nhà ngắn hạn kỳ thực tập.");
-        r3.setStatus(Constants.REQ_COMPLETED);
-        r3.setCreatedAt(now - 95 * DAY);
-        r3.setRespondedAt(now - 94 * DAY);
-        r3.setCompletedAt(now - DAY);
-        list.add(r3);
-
-        return list;
-    }
 
     private static List<Review> buildReviews() {
         long now = System.currentTimeMillis();

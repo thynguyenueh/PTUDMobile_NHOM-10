@@ -14,26 +14,22 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.studenthousing.R;
-import com.example.studenthousing.data.local.ExchangeDao;
-import com.example.studenthousing.data.local.UniversityData;
 import com.example.studenthousing.data.model.AccommodationPost;
-import com.example.studenthousing.data.model.ExchangeRequest;
+import com.example.studenthousing.data.model.Campus;
 import com.example.studenthousing.data.model.NearbyCampus;
 import com.example.studenthousing.data.model.Review;
-import com.example.studenthousing.data.model.University;
 import com.example.studenthousing.data.model.User;
+import com.example.studenthousing.data.repository.CampusRepository;
 import com.example.studenthousing.data.repository.PostRepository;
 import com.example.studenthousing.databinding.ActivityDetailBinding;
 import com.example.studenthousing.ui.adapter.PhotoPagerAdapter;
 import com.example.studenthousing.ui.chat.ChatActivity;
-import com.example.studenthousing.ui.exchange.ProposalActivity;
 import com.example.studenthousing.ui.review.UserReviewsActivity;
 import com.example.studenthousing.ui.viewmodel.DetailViewModel;
 import com.example.studenthousing.util.AppCallback;
 import com.example.studenthousing.util.Constants;
 import com.example.studenthousing.util.SessionManager;
 import com.example.studenthousing.util.UiState;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -146,17 +142,9 @@ public class DetailActivity extends AppCompatActivity {
         });
 
         btnProposeSwap = findViewById(R.id.btnProposeSwap);
-        if (btnProposeSwap != null) btnProposeSwap.setOnClickListener(v -> {
-            Intent intent = new Intent(DetailActivity.this, ProposalActivity.class);
-            if (currentPost != null) {
-                intent.putExtra("receiver_post_id", currentPost.getPostId());
-                intent.putExtra("receiver_user_id", currentPost.getUserId());
-                intent.putExtra("HOST_NAME", currentPost.getFamilyName());
-            } else {
-                intent.putExtra("HOST_NAME", getString(R.string.detail_host_name));
-            }
-            startActivity(intent);
-        });
+        if (btnProposeSwap != null) {
+            btnProposeSwap.setVisibility(View.GONE);
+        }
     }
 
     private void renderPostImmediately(AccommodationPost post) {
@@ -197,7 +185,7 @@ public class DetailActivity extends AppCompatActivity {
         }
         if (tvStatusBadge != null) {
             boolean available = Constants.POST_AVAILABLE.equalsIgnoreCase(post.getStatus());
-            tvStatusBadge.setText(available ? "Sẵn sàng đổi" : "Đã đổi");
+            tvStatusBadge.setText(available ? "Sẵn sàng" : "Đã cho thuê");
             tvStatusBadge.setBackgroundResource(available
                     ? R.drawable.bg_badge_verified
                     : R.drawable.bg_badge_distance);
@@ -240,32 +228,8 @@ public class DetailActivity extends AppCompatActivity {
                     startActivity(intent);
                 });
             }
-            if (btnProposeSwap != null && btnProposeSwap instanceof com.google.android.material.button.MaterialButton) {
-                ((com.google.android.material.button.MaterialButton) btnProposeSwap).setText("Xóa bài");
-                btnProposeSwap.setVisibility(View.VISIBLE);
-                btnProposeSwap.setOnClickListener(v -> {
-                    new androidx.appcompat.app.AlertDialog.Builder(this)
-                            .setTitle("Xóa bài đăng?")
-                            .setMessage("Bạn có chắc chắn muốn xóa bài đăng này không?")
-                            .setPositiveButton("Xóa", (dialog, which) -> {
-                                new PostRepository(this).deletePost(post.getPostId(), new AppCallback<Void>() {
-                                    @Override public void onSuccess(Void d) {
-                                        runOnUiThread(() -> {
-                                            android.widget.Toast.makeText(DetailActivity.this, "Đã xóa bài đăng", android.widget.Toast.LENGTH_SHORT).show();
-                                            finish();
-                                        });
-                                    }
-                                    @Override public void onError(Exception e) {
-                                        runOnUiThread(() -> {
-                                            android.widget.Toast.makeText(DetailActivity.this, "Đã xóa bài đăng", android.widget.Toast.LENGTH_SHORT).show();
-                                            finish();
-                                        });
-                                    }
-                                });
-                            })
-                            .setNegativeButton("Hủy", null)
-                            .show();
-                });
+            if (btnProposeSwap != null) {
+                btnProposeSwap.setVisibility(View.GONE);
             }
         } else {
             boolean available = Constants.POST_AVAILABLE.equalsIgnoreCase(post.getStatus());
@@ -282,20 +246,8 @@ public class DetailActivity extends AppCompatActivity {
                     startActivity(intent);
                 });
             }
-            if (btnProposeSwap != null && btnProposeSwap instanceof com.google.android.material.button.MaterialButton) {
-                ((com.google.android.material.button.MaterialButton) btnProposeSwap).setText(R.string.action_propose_swap);
-                btnProposeSwap.setVisibility(available ? View.VISIBLE : View.GONE);
-                btnProposeSwap.setOnClickListener(v -> {
-                    Intent intent = new Intent(DetailActivity.this, ProposalActivity.class);
-                    if (currentPost != null) {
-                        intent.putExtra("receiver_post_id", currentPost.getPostId());
-                        intent.putExtra("receiver_user_id", currentPost.getUserId());
-                        intent.putExtra("HOST_NAME", currentPost.getFamilyName());
-                    } else {
-                        intent.putExtra("HOST_NAME", getString(R.string.detail_host_name));
-                    }
-                    startActivity(intent);
-                });
+            if (btnProposeSwap != null) {
+                btnProposeSwap.setVisibility(View.GONE);
             }
         }
     }
@@ -318,15 +270,9 @@ public class DetailActivity extends AppCompatActivity {
 
         String currentUid = SessionManager.getUid(this);
         boolean isOwner = currentUid != null && post.getUserId() != null && currentUid.equals(post.getUserId());
-        boolean hasActiveExchange = isOwner;
-        if (!isOwner && currentUid != null && post.getPostId() != null) {
-            ExchangeDao exchangeDao = new ExchangeDao(this);
-            hasActiveExchange = hasActiveExchangeForPost(exchangeDao.getBySender(currentUid), post.getPostId())
-                    || hasActiveExchangeForPost(exchangeDao.getByReceiver(currentUid), post.getPostId());
-        }
 
         if (tvLocation != null) {
-            tvLocation.setText(formatPublicAddress(post, hasActiveExchange));
+            tvLocation.setText(formatPublicAddress(post, isOwner));
         }
         bindPostMetadata(post);
         updateActionAvailability(isOwner, post);
@@ -372,15 +318,6 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    private boolean hasActiveExchangeForPost(List<ExchangeRequest> requests, String postId) {
-        if (requests == null) return false;
-        for (ExchangeRequest request : requests) {
-            if (request == null || !(Constants.REQ_EXCHANGING.equalsIgnoreCase(request.getStatus()))) continue;
-            if (postId.equals(request.getSenderPostId()) || postId.equals(request.getReceiverPostId())) return true;
-        }
-        return false;
-    }
-
     private void setupNearbyCampuses(List<NearbyCampus> nearby) {
         LinearLayout container = null;
         if (container == null) return;
@@ -388,8 +325,8 @@ public class DetailActivity extends AppCompatActivity {
         if (nearby != null) {
             for (NearbyCampus campus : nearby) {
                 if (campus == null || campus.getCampusId() == null || campus.getKm() <= 0) continue;
-                University university = UniversityData.findByCode(campus.getCampusId());
-                String name = university == null ? campus.getCampusId() : university.getDisplayName();
+                Campus campusModel = CampusRepository.getInstance(this).findByCode(campus.getCampusId());
+                String name = campusModel == null ? campus.getCampusId() : campusModel.getDisplayName();
                 String distance = String.format(java.util.Locale.getDefault(), "%.1f km", campus.getKm());
                 TextView item = new TextView(this);
                 item.setText("Cách " + name + ": " + (campus.isEstimate() ? "~" + distance : distance));
@@ -456,7 +393,6 @@ public class DetailActivity extends AppCompatActivity {
             showFullScreenPhoto(safeUrls, position);
         }));
 
-        // ✅ Không dùng TabLayoutMediator nữa — tạo dot thủ công
         setupDotIndicator(safeUrls.size());
 
         if (pageCallback != null) {
@@ -481,7 +417,6 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    /** Tạo N chấm tròn 8dp, cách nhau 4dp, chấm đầu được chọn */
     private void setupDotIndicator(int totalImages) {
         LinearLayout dots = findViewById(R.id.photoIndicator);
         if (dots == null) return;
@@ -502,7 +437,6 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    /** Đổi trạng thái selected cho đúng chấm đang xem */
     private void updateDotIndicator(int position) {
         LinearLayout dots = findViewById(R.id.photoIndicator);
         if (dots == null) return;

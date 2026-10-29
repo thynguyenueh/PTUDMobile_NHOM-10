@@ -160,23 +160,6 @@ public class ChatActivity extends AppCompatActivity {
         }
         if (tvHeaderName != null) tvHeaderName.setOnClickListener(openProfile);
 
-        View btnProposal = null;
-        if (btnProposal != null) {
-            btnProposal.setOnClickListener(v -> {
-                Intent pIntent = new Intent(ChatActivity.this,
-                        com.example.studenthousing.ui.exchange.ProposalActivity.class);
-                pIntent.putExtra("receiver_user_id", chatTargetUserId);
-                pIntent.putExtra("receiver_post_id", finalPostId);
-                TextView tvHName = findViewById(R.id.tvChatHeaderName);
-                if (tvHName != null && tvHName.getText() != null) {
-                    pIntent.putExtra(
-                            com.example.studenthousing.ui.exchange.ProposalActivity.EXTRA_HOST_NAME,
-                            tvHName.getText().toString());
-                }
-                startActivity(pIntent);
-            });
-        }
-
         View btnCall = findViewById(R.id.btnCall);
         if (btnCall != null) {
             btnCall.setOnClickListener(v -> {

@@ -3,10 +3,10 @@ package com.example.studenthousing.ui.post;
 import android.content.Context;
 
 import com.example.studenthousing.R;
-import com.example.studenthousing.data.local.UniversityData;
 import com.example.studenthousing.data.model.AccommodationPost;
+import com.example.studenthousing.data.model.Campus;
 import com.example.studenthousing.data.model.NearbyCampus;
-import com.example.studenthousing.data.model.University;
+import com.example.studenthousing.data.repository.CampusRepository;
 import com.example.studenthousing.util.Constants;
 
 import java.util.ArrayList;
@@ -54,8 +54,8 @@ public final class PostDisplayFormatter {
         }
         if (nearest == null) return null;
 
-        University university = UniversityData.findByCode(nearest.getCampusId());
-        String name = university == null ? nearest.getCampusId() : university.getDisplayName();
+        Campus campusModel = CampusRepository.getInstance(context).findByCode(nearest.getCampusId());
+        String name = campusModel == null ? nearest.getCampusId() : campusModel.getDisplayName();
         String distance = String.format(Locale.getDefault(), "%.1f km", nearest.getKm());
         if (nearest.isEstimate()) distance = "~" + distance;
         return "Cách " + name + ": " + distance;

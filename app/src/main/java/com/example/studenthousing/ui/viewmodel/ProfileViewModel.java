@@ -7,13 +7,10 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.studenthousing.data.local.ExchangeDao;
 import com.example.studenthousing.data.local.PostDao;
 import com.example.studenthousing.data.local.ReviewDao;
 import com.example.studenthousing.data.local.UserDao;
-import com.example.studenthousing.data.model.ExchangeRequest;
 import com.example.studenthousing.data.model.User;
-import java.util.List;
 import com.example.studenthousing.data.repository.UserRepository;
 import com.example.studenthousing.util.AppCallback;
 import com.example.studenthousing.util.Constants;
@@ -46,7 +43,6 @@ public class ProfileViewModel extends AndroidViewModel {
     private final UserRepository userRepository;
     private final UserDao userDao;
     private final PostDao postDao;
-    private final ExchangeDao exchangeDao;
     private final ReviewDao reviewDao;
     private final MutableLiveData<UiState<ProfileData>> profileState = new MutableLiveData<>(UiState.loading());
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -56,7 +52,6 @@ public class ProfileViewModel extends AndroidViewModel {
         userRepository = new UserRepository(application);
         userDao = new UserDao(application);
         postDao = new PostDao(application);
-        exchangeDao = new ExchangeDao(application);
         reviewDao = new ReviewDao(application);
     }
 
@@ -105,15 +100,7 @@ public class ProfileViewModel extends AndroidViewModel {
     private ProfileData buildProfileData(String userId) {
         User user = userDao.getById(userId);
         int postCount = postDao.countByUserId(userId);
-        List<ExchangeRequest> allReqs = exchangeDao.getAllForUser(userId);
         int exchangeCount = 0;
-        if (allReqs != null) {
-            for (ExchangeRequest r : allReqs) {
-                if (Constants.REQ_EXCHANGING.equalsIgnoreCase(r.getStatus()) || Constants.REQ_COMPLETED.equalsIgnoreCase(r.getStatus())) {
-                    exchangeCount++;
-                }
-            }
-        }
         int reviewCount = reviewDao.getByReviewee(userId).size();
 
         String residenceStatus = (user != null && user.isResidenceVerified()) ? Constants.VERIF_APPROVED : Constants.VERIF_NONE;

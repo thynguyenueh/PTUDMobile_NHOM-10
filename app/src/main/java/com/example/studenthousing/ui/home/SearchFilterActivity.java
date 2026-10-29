@@ -12,9 +12,9 @@ import androidx.core.content.IntentCompat;
 
 import com.example.studenthousing.R;
 import com.example.studenthousing.data.local.PostDao;
-import com.example.studenthousing.data.local.UniversityData;
 import com.example.studenthousing.data.model.AccommodationPost;
-import com.example.studenthousing.data.model.University;
+import com.example.studenthousing.data.model.Campus;
+import com.example.studenthousing.data.repository.CampusRepository;
 import com.example.studenthousing.databinding.ActivityFilterBinding;
 import com.example.studenthousing.domain.FilterCriteria;
 import com.example.studenthousing.ui.dialog.SearchListDialog;
@@ -33,6 +33,7 @@ public class SearchFilterActivity extends AppCompatActivity {
         binding = ActivityFilterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        setupUtilitiesFromAsset();
         setupListeners();
 
         FilterCriteria criteria = IntentCompat.getSerializableExtra(
@@ -135,10 +136,10 @@ public class SearchFilterActivity extends AppCompatActivity {
         }
 
         if (criteria.campusId != null && !criteria.campusId.isEmpty()) {
-            University u = UniversityData.findByCode(criteria.campusId);
-            if (u != null) {
-                selectedCampusId = u.getCode();
-                binding.tvCampus.setText(u.getDisplayName());
+            Campus c = CampusRepository.getInstance(this).findByCode(criteria.campusId);
+            if (c != null) {
+                selectedCampusId = c.getCode();
+                binding.tvCampus.setText(c.getDisplayName());
                 binding.tvCampus.setTextColor(getColor(R.color.text_main));
             }
         } else {
@@ -160,6 +161,29 @@ public class SearchFilterActivity extends AppCompatActivity {
                     Chip chip = (Chip) child;
                     chip.setChecked(criteria.selectedUtilities.contains(chip.getText().toString()));
                 }
+            }
+        }
+    }
+
+    private void setupUtilitiesFromAsset() {
+        if (binding.chipGroupFilterUtilities == null) return;
+        List<com.example.studenthousing.data.model.Utility> utilities =
+                com.example.studenthousing.data.loader.UtilitiesDataLoader.loadUtilities(this);
+        for (com.example.studenthousing.data.model.Utility u : utilities) {
+            boolean exists = false;
+            for (int i = 0; i < binding.chipGroupFilterUtilities.getChildCount(); i++) {
+                View child = binding.chipGroupFilterUtilities.getChildAt(i);
+                if (child instanceof Chip && ((Chip) child).getText().toString().equalsIgnoreCase(u.getLabel())) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                Chip chip = new Chip(new android.view.ContextThemeWrapper(this, R.style.Widget_App_Chip), null, 0);
+                chip.setText(u.getLabel());
+                chip.setCheckable(true);
+                chip.setOnCheckedChangeListener((buttonView, isChecked) -> updateResultButtonCount());
+                binding.chipGroupFilterUtilities.addView(chip);
             }
         }
     }
@@ -208,12 +232,12 @@ public class SearchFilterActivity extends AppCompatActivity {
     }
 
     private void showProvincePicker() {
-        com.example.studenthousing.util.ProvincePickerHelper.showPicker(this, (province, ward) -> {
+        com.example.studenthousing.util.ProvincePickerHelper.showPicker(this, (cityName, ward) -> {
             if (ward != null) {
                 binding.tvWard.setText(ward.getName());
                 binding.tvWard.setTextColor(getColor(R.color.text_main));
-            } else if (province != null) {
-                binding.tvWard.setText(province.getName());
+            } else if (cityName != null) {
+                binding.tvWard.setText(cityName);
                 binding.tvWard.setTextColor(getColor(R.color.text_main));
             }
             updateResultButtonCount();
@@ -221,16 +245,16 @@ public class SearchFilterActivity extends AppCompatActivity {
     }
 
     private void showCampusDialog() {
-        List<University> unis = UniversityData.getUniversities();
-        String[] items = new String[unis.size()];
-        for (int i = 0; i < unis.size(); i++) {
-            University u = unis.get(i);
-            items[i] = u.getDisplayName();
+        List<Campus> campuses = CampusRepository.getInstance(this).getAllCampuses();
+        String[] items = new String[campuses.size()];
+        for (int i = 0; i < campuses.size(); i++) {
+            Campus c = campuses.get(i);
+            items[i] = c.getDisplayName();
         }
-        SearchListDialog.show(this, "Chọn trường đại học", items, value -> {
-            for (University u : unis) {
-                if (u.getDisplayName().equals(value)) {
-                    selectedCampusId = u.getCode();
+        SearchListDialog.show(this, "Chọn trường đại học / cao đẳng", items, value -> {
+            for (Campus c : campuses) {
+                if (c.getDisplayName().equals(value)) {
+                    selectedCampusId = c.getCode();
                     binding.tvCampus.setText(value);
                     binding.tvCampus.setTextColor(getColor(R.color.text_main));
                     break;

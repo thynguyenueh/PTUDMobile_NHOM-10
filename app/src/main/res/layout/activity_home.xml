@@ -178,35 +178,6 @@
                         app:tint="@color/primary" />
                 </LinearLayout>
 
-                <!-- Match suggestion card -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardMatchSuggestion"
-                    style="@style/Widget.App.Card.Tinted"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/screen_padding_wide"
-                    android:layout_marginTop="@dimen/space_md"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:visibility="gone"
-                    tools:visibility="visible">
-
-                    <TextView
-                        android:id="@+id/tvMatchSummary"
-                        style="@style/TextAppearance.App.SectionTitle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:drawablePadding="@dimen/space_md"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="@dimen/space_lg"
-                        android:paddingVertical="14dp"
-                        android:textColor="@color/primary"
-                        app:drawableStartCompat="@drawable/ic_swap"
-                        app:drawableEndCompat="@drawable/ic_chevron_right"
-                        app:drawableTint="@color/primary"
-                        tools:text="Có n gợi ý đổi nhà" />
-                </com.google.android.material.card.MaterialCardView>
-
                 <!-- Empty State -->
                 <LinearLayout
                     android:id="@+id/layoutEmpty"

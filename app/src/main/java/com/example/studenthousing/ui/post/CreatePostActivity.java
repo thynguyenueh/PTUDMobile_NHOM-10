@@ -120,6 +120,7 @@ public class CreatePostActivity extends AppCompatActivity {
         rvSelectedPhotos = null;
         progressBar = findViewById(R.id.progressBar);
         chipGroupUtilities = findViewById(R.id.chipGroupUtilities);
+        setupUtilitiesFromAsset();
 
         if (rvSelectedPhotos != null) {
             rvSelectedPhotos.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -190,6 +191,15 @@ public class CreatePostActivity extends AppCompatActivity {
         if (!text.isEmpty()) {
             addUtilityChip(text, true);
             etCustomUtility.setText("");
+        }
+    }
+
+    private void setupUtilitiesFromAsset() {
+        if (chipGroupUtilities == null) return;
+        List<com.example.studenthousing.data.model.Utility> utilities =
+                com.example.studenthousing.data.loader.UtilitiesDataLoader.loadUtilities(this);
+        for (com.example.studenthousing.data.model.Utility u : utilities) {
+            addUtilityChip(u.getLabel(), false);
         }
     }
 
@@ -374,14 +384,14 @@ public class CreatePostActivity extends AppCompatActivity {
     }
 
     private void openAddressPicker() {
-        com.example.studenthousing.util.ProvincePickerHelper.showPicker(this, (province, ward) -> {
-            if (province != null) {
+        com.example.studenthousing.util.ProvincePickerHelper.showPicker(this, (cityName, ward) -> {
+            if (cityName != null) {
                 selectedCityCode = 79;
                 selectedWardCode = ward != null ? ward.getCode() : 0;
                 selectedWardName = ward != null ? ward.getName() : "";
 
                 String wardName = selectedWardName;
-                String provName = province.getName();
+                String provName = cityName;
 
                 StringBuilder sb = new StringBuilder();
                 if (!wardName.isEmpty()) sb.append(wardName).append(", ");
