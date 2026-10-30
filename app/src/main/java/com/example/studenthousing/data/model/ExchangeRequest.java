@@ -2,9 +2,11 @@ package com.example.studenthousing.data.model;
 
 import com.example.studenthousing.util.Constants;
 import com.google.firebase.firestore.DocumentId;
+import com.google.firebase.firestore.Exclude;
 
 public class ExchangeRequest {
     @DocumentId
+    @Exclude
     private String requestId;
     private String senderId;
     private String receiverId;
@@ -18,7 +20,9 @@ public class ExchangeRequest {
     private String agreementText;
     private String status = Constants.REQ_PENDING;
     private String cancelRequestedBy;
+    @Exclude
     private long cancelRequestedAt;
+    @Exclude
     private String rejectReason;
     private long createdAt;
     private long respondedAt;
@@ -31,6 +35,7 @@ public class ExchangeRequest {
     public String getSyncStatus() { return syncStatus; }
     public void setSyncStatus(String syncStatus) { this.syncStatus = syncStatus; }
 
+    @Exclude
     public String getRequestId() { return requestId; }
     public void setRequestId(String requestId) { this.requestId = requestId; }
 
@@ -70,9 +75,11 @@ public class ExchangeRequest {
     public String getCancelRequestedBy() { return cancelRequestedBy; }
     public void setCancelRequestedBy(String cancelRequestedBy) { this.cancelRequestedBy = cancelRequestedBy; }
 
+    @Exclude
     public long getCancelRequestedAt() { return cancelRequestedAt; }
     public void setCancelRequestedAt(long cancelRequestedAt) { this.cancelRequestedAt = cancelRequestedAt; }
 
+    @Exclude
     public String getRejectReason() { return rejectReason; }
     public void setRejectReason(String rejectReason) { this.rejectReason = rejectReason; }
 

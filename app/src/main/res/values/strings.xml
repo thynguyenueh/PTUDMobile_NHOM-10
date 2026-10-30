@@ -126,6 +126,7 @@
     <!-- ============================================ -->
     <string name="nav_home">Trang chủ</string>
     <string name="nav_saved">Đã thích</string>
+    <string name="nav_manage_posts">Bài đăng</string>
     <string name="nav_messages">Tin nhắn</string>
     <string name="nav_profile">Hồ sơ</string>
 

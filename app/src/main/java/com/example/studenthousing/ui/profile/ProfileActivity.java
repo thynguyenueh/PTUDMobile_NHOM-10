@@ -81,7 +81,10 @@ public class ProfileActivity extends AppCompatActivity {
         if (state == null || state.getContent() == null) return;
         ProfileViewModel.ProfileData data = state.getContent();
         com.example.studenthousing.data.model.User user = data.user;
-        String familyName = user == null || user.getFamilyName() == null ? "Thành viên" : user.getFamilyName();
+        String sessionName = session.getUserFamilyName();
+        String familyName = (user != null && user.getFamilyName() != null && !user.getFamilyName().isEmpty())
+                ? user.getFamilyName()
+                : (sessionName != null && !sessionName.isEmpty() ? sessionName : "Người dùng");
         String avatarUrl = user == null ? null : user.getAvatarUrl();
         String phone = user == null ? null : user.getPhone();
 
@@ -92,7 +95,9 @@ public class ProfileActivity extends AppCompatActivity {
             tvProfilePhone.setText(maskedPhone + " · TP. Hồ Chí Minh");
         }
 
-        String uni = user != null && user.getUniversityName() != null ? user.getUniversityName() : "Đại học Quốc gia TP.HCM";
+        String uni = user != null && user.getUniversityName() != null && !user.getUniversityName().trim().isEmpty()
+                ? user.getUniversityName()
+                : "Chưa cập nhật";
         View headerRoot = binding.includeProfileHeader.getRoot();
         if (headerRoot != null) {
             ProfileHeader.bind(headerRoot, familyName, uni, avatarUrl,
@@ -201,25 +206,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void updateMessagesBadge() {
-        com.google.android.material.bottomnavigation.BottomNavigationView nav = findViewById(R.id.bottomNav);
-        if (nav == null) return;
-        com.google.android.material.badge.BadgeDrawable badge = nav.getOrCreateBadge(R.id.nav_messages);
-        String userId = session.getUserId();
-        new com.example.studenthousing.data.repository.ChatRepository(this).getUserRooms(userId,
-                new com.example.studenthousing.util.AppCallback<java.util.List<com.example.studenthousing.data.model.ChatRoom>>() {
-                    @Override public void onSuccess(java.util.List<com.example.studenthousing.data.model.ChatRoom> rooms) {
-                        runOnUiThread(() -> {
-                            int count = 0;
-                            if (rooms != null) for (com.example.studenthousing.data.model.ChatRoom room : rooms) {
-                                if (room != null && room.getLastMessageTime() > 0 && room.getLastSenderId() != null
-                                        && !userId.equals(room.getLastSenderId())) count++;
-                            }
-                            badge.setVisible(count > 0);
-                            if (count > 0) badge.setNumber(count);
-                        });
-                    }
-                    @Override public void onError(Exception error) { runOnUiThread(() -> badge.setVisible(false)); }
-                });
+        // Chat replaced with Manage Posts
     }
 
     private void setupBottomNav() {
@@ -234,8 +221,8 @@ public class ProfileActivity extends AppCompatActivity {
                 } else if (itemId == R.id.nav_saved) {
                     navigateTo(SavedHousesActivity.class);
                     return true;
-                } else if (itemId == R.id.nav_messages) {
-                    navigateTo(ChatListActivity.class);
+                } else if (itemId == R.id.nav_manage_posts) {
+                    navigateTo(MyPostsActivity.class);
                     return true;
                 } else if (itemId == R.id.nav_profile) {
                     return true;

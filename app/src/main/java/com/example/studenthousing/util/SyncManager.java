@@ -187,13 +187,10 @@ public class SyncManager {
     }
 
     private boolean syncPosts() {
-        String activeUid = SessionManager.getUid(ctx);
-        if (activeUid == null) return true;
-
         List<AccommodationPost> pendingCreates = postDao.getAll();
         if (pendingCreates != null) {
             for (AccommodationPost p : pendingCreates) {
-                if (Constants.SYNC_PENDING_CREATE.equals(p.getSyncStatus()) && activeUid.equals(p.getUserId())) {
+                if (Constants.SYNC_PENDING_CREATE.equals(p.getSyncStatus()) || Constants.SYNC_PENDING_UPDATE.equals(p.getSyncStatus())) {
                     p.setSyncStatus(Constants.SYNC_SYNCING);
                     postDao.upsert(p);
                     uploadLocalImagesAndRemoteCreate(p);
@@ -212,6 +209,10 @@ public class SyncManager {
                 postRemote.create(p, new AppCallback<String>() {
                     @Override
                     public void onSuccess(String id) {
+                        String oldId = p.getPostId();
+                        if (oldId != null && oldId.startsWith("temp_") && !oldId.equals(id)) {
+                            postDao.deleteById(oldId);
+                        }
                         p.setPostId(id);
                         p.setSyncStatus(Constants.SYNC_SYNCED);
                         postDao.upsert(p);

@@ -33,7 +33,11 @@ import com.example.studenthousing.util.AppCallback;
 import com.example.studenthousing.util.Constants;
 import com.example.studenthousing.util.SessionManager;
 import com.example.studenthousing.util.UiState;
+import android.widget.EditText;
+import android.widget.RatingBar;
 import android.widget.Toast;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,13 +52,19 @@ public class DetailActivity extends AppCompatActivity {
 
     private TextView tvTitle, tvLocation, tvHostName, tvDescription,
             tvPhotoCounter, tvDescriptionLabel,
-            tvStatusBadge, tvHostRating, tvAreaMeta;
+            tvStatusBadge, tvAreaMeta;
     private View tvHostVerified;
     private View cardHost, cardDistance, cardDescription, detailBottomBar;
     private View btnChat;
-    private ImageView ivStar;
     private GridLayout gridAmenities;
     private TextView tvAmenitiesEmpty;
+
+    private EditText etCommentInput;
+    private View btnSubmitComment;
+    private RecyclerView rvComments;
+    private TextView tvCommentsEmpty;
+    private com.example.studenthousing.ui.adapter.UserReviewAdapter commentAdapter;
+    private com.example.studenthousing.data.repository.ReviewRepository reviewRepository;
 
     private ViewPager2.OnPageChangeCallback pageCallback;
 
@@ -87,14 +97,29 @@ public class DetailActivity extends AppCompatActivity {
         tvStatusBadge = findViewById(R.id.tvStatusBadge);
         tvAreaMeta = findViewById(R.id.tvAreaMeta);
         tvHostVerified = findViewById(R.id.tvHostVerified);
-        tvHostRating = findViewById(R.id.tvHostRating);
         cardHost = findViewById(R.id.cardHost);
         cardDistance = findViewById(R.id.cardDistance);
         cardDescription = null;
         detailBottomBar = null;
-        ivStar = findViewById(R.id.ivStar);
         gridAmenities = findViewById(R.id.gridAmenities);
         tvAmenitiesEmpty = findViewById(R.id.tvAmenitiesEmpty);
+
+        etCommentInput = findViewById(R.id.etCommentInput);
+        btnSubmitComment = findViewById(R.id.btnSubmitComment);
+        rvComments = findViewById(R.id.rvComments);
+        tvCommentsEmpty = findViewById(R.id.tvCommentsEmpty);
+
+        reviewRepository = new com.example.studenthousing.data.repository.ReviewRepository(this);
+
+        if (rvComments != null) {
+            rvComments.setLayoutManager(new LinearLayoutManager(this));
+            commentAdapter = new com.example.studenthousing.ui.adapter.UserReviewAdapter();
+            rvComments.setAdapter(commentAdapter);
+        }
+
+        if (btnSubmitComment != null) {
+            btnSubmitComment.setOnClickListener(v -> submitComment());
+        }
 
         ImageButton btnBack = findViewById(R.id.btnBack);
         ImageButton btnFavorite = findViewById(R.id.btnFavorite);
@@ -155,13 +180,9 @@ public class DetailActivity extends AppCompatActivity {
 
         btnChat = findViewById(R.id.btnChat);
         if (btnChat != null) btnChat.setOnClickListener(v -> {
-            Intent intent = new Intent(DetailActivity.this, ChatActivity.class);
             if (currentPost != null) {
-                intent.putExtra("target_user_id", currentPost.getUserId());
-                intent.putExtra("ROOM_NAME", currentPost.getFamilyName());
-                intent.putExtra("POST_ID", currentPost.getPostId());
+                openSmsApp(currentPost.getUserId(), "Xin chào, tôi quan tâm đến bài đăng của bạn.");
             }
-            startActivity(intent);
         });
     }
 
@@ -174,6 +195,7 @@ public class DetailActivity extends AppCompatActivity {
         bindPostMetadata(post);
         bindDescription(post.getDescription());
         setupAmenities(post.getUtilities());
+        loadComments();
         String currentUid = SessionManager.getUid(this);
         boolean isOwner = currentUid != null && currentUid.equals(post.getUserId());
         updateActionAvailability(isOwner, post);
@@ -304,13 +326,9 @@ public class DetailActivity extends AppCompatActivity {
                 ((com.google.android.material.button.MaterialButton) btnChat).setText(R.string.action_message);
                 btnChat.setVisibility(available ? View.VISIBLE : View.GONE);
                 btnChat.setOnClickListener(v -> {
-                    Intent intent = new Intent(DetailActivity.this, ChatActivity.class);
                     if (currentPost != null) {
-                        intent.putExtra("target_user_id", currentPost.getUserId());
-                        intent.putExtra("ROOM_NAME", currentPost.getFamilyName());
-                        intent.putExtra("POST_ID", currentPost.getPostId());
+                        openSmsApp(currentPost.getUserId(), "Xin chào, tôi quan tâm đến bài đăng của bạn.");
                     }
-                    startActivity(intent);
                 });
             }
         }
@@ -373,19 +391,7 @@ public class DetailActivity extends AppCompatActivity {
             }
         }
 
-        List<Review> reviews = data.hostReviews;
-        if (reviews == null || reviews.isEmpty()) {
-            if (tvHostRating != null) tvHostRating.setText("Chưa có đánh giá");
-            if (ivStar != null) ivStar.setVisibility(View.GONE);
-        } else {
-            double sum = 0;
-            for (Review r : reviews) sum += r.getRating();
-            double avg = sum / reviews.size();
-            if (tvHostRating != null) {
-                tvHostRating.setText(String.format(java.util.Locale.US, "%.1f (%d đánh giá)", avg, reviews.size()));
-            }
-            if (ivStar != null) ivStar.setVisibility(View.VISIBLE);
-        }
+        loadComments();
     }
 
     private boolean hasActiveExchangeForPost(List<ExchangeRequest> requests, String postId) {
@@ -562,5 +568,108 @@ public class DetailActivity extends AppCompatActivity {
 
     private void toggleFavorite() {
         viewModel.toggleFavorite(postId);
+    }
+
+    private void loadComments() {
+        if (currentPost == null) return;
+        String key = currentPost.getPostId() != null ? currentPost.getPostId() : currentPost.getUserId();
+        if (key == null) return;
+
+        com.example.studenthousing.data.local.ReviewDao dao = new com.example.studenthousing.data.local.ReviewDao(DetailActivity.this);
+        List<Review> local = dao.getByReviewee(key);
+        if (local == null || local.isEmpty()) {
+            local = dao.getByRequest(key);
+        }
+        if ((local == null || local.isEmpty()) && currentPost.getUserId() != null) {
+            local = dao.getByReviewee(currentPost.getUserId());
+        }
+
+        final List<Review> displayList = local != null ? local : new ArrayList<>();
+        if (commentAdapter != null) commentAdapter.submitList(displayList);
+        if (rvComments != null) rvComments.setVisibility(displayList.isEmpty() ? View.GONE : View.VISIBLE);
+        if (tvCommentsEmpty != null) tvCommentsEmpty.setVisibility(displayList.isEmpty() ? View.VISIBLE : View.GONE);
+
+        reviewRepository.getByReviewee(key, new AppCallback<List<Review>>() {
+            @Override
+            public void onSuccess(List<Review> reviews) {
+                runOnUiThread(() -> {
+                    List<Review> freshLocal = dao.getByReviewee(key);
+                    if (freshLocal != null && !freshLocal.isEmpty()) {
+                        if (commentAdapter != null) commentAdapter.submitList(freshLocal);
+                        if (rvComments != null) rvComments.setVisibility(View.VISIBLE);
+                        if (tvCommentsEmpty != null) tvCommentsEmpty.setVisibility(View.GONE);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {}
+        });
+    }
+
+    private void submitComment() {
+        if (currentPost == null || currentPost.getPostId() == null) {
+            Toast.makeText(this, "Chưa tải xong thông tin bài đăng", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String currentUserId = SessionManager.getUid(this);
+        if (currentUserId == null || currentUserId.trim().isEmpty()) {
+            Toast.makeText(this, "Vui lòng đăng nhập để bình luận", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String content = etCommentInput != null ? etCommentInput.getText().toString().trim() : "";
+        if (content.isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập nội dung bình luận", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        com.example.studenthousing.data.local.UserDao userDao = new com.example.studenthousing.data.local.UserDao(this);
+        User reviewer = userDao.getById(currentUserId);
+        String reviewerName = reviewer != null && reviewer.getFamilyName() != null ? reviewer.getFamilyName() : "Người dùng";
+
+        String targetKey = currentPost.getPostId();
+
+        Review r = new Review();
+        r.setRequestId(targetKey);
+        r.setReviewerId(currentUserId);
+        r.setReviewerName(reviewerName);
+        r.setRevieweeId(targetKey);
+        r.setRevieweeName(currentPost.getFamilyName() != null ? currentPost.getFamilyName() : "Chủ nhà");
+        r.setRating(5.0);
+        r.setComment(content);
+        r.setCreatedAt(System.currentTimeMillis());
+
+        // Save locally first so UI updates immediately
+        com.example.studenthousing.data.local.ReviewDao dao = new com.example.studenthousing.data.local.ReviewDao(this);
+        dao.upsert(r);
+
+        if (etCommentInput != null) etCommentInput.setText("");
+        Toast.makeText(DetailActivity.this, "Đã gửi bình luận!", Toast.LENGTH_SHORT).show();
+        loadComments();
+
+        reviewRepository.create(r, new AppCallback<String>() {
+            @Override public void onSuccess(String id) {}
+            @Override public void onError(Exception e) {}
+        });
+    }
+
+    private void openSmsApp(String targetUserId, String defaultMessage) {
+        com.example.studenthousing.data.local.UserDao userDao = new com.example.studenthousing.data.local.UserDao(this);
+        User host = targetUserId != null ? userDao.getById(targetUserId) : null;
+        String phone = host != null && host.getPhone() != null && !host.getPhone().isEmpty()
+                ? host.getPhone() : "0988123456";
+        Intent smsIntent = new Intent(Intent.ACTION_SENDTO, android.net.Uri.parse("smsto:" + phone.trim()));
+        smsIntent.putExtra("sms_body", defaultMessage);
+        try {
+            startActivity(smsIntent);
+        } catch (Exception e) {
+            try {
+                Intent viewIntent = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse("sms:" + phone.trim()));
+                viewIntent.putExtra("sms_body", defaultMessage);
+                startActivity(viewIntent);
+            } catch (Exception ex) {
+                Toast.makeText(this, "Không tìm thấy ứng dụng nhắn tin", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

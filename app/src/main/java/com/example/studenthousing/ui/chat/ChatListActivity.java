@@ -124,7 +124,6 @@ public class ChatListActivity extends AppCompatActivity implements ChatRoomAdapt
     private void setupBottomNav() {
         BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
         if (bottomNav != null) {
-            bottomNav.setSelectedItemId(R.id.nav_messages);
             bottomNav.setOnItemSelectedListener(item -> {
                 int itemId = item.getItemId();
                 if (itemId == R.id.nav_home) {
@@ -133,7 +132,8 @@ public class ChatListActivity extends AppCompatActivity implements ChatRoomAdapt
                 } else if (itemId == R.id.nav_saved) {
                     navigateTo(SavedHousesActivity.class);
                     return true;
-                } else if (itemId == R.id.nav_messages) {
+                } else if (itemId == R.id.nav_manage_posts) {
+                    navigateTo(com.example.studenthousing.ui.post.MyPostsActivity.class);
                     return true;
                 } else if (itemId == R.id.nav_profile) {
                     navigateTo(ProfileActivity.class);
@@ -161,27 +161,13 @@ public class ChatListActivity extends AppCompatActivity implements ChatRoomAdapt
         }
         if (state.getContent() == null) return;
         allRooms = state.getContent();
-        updateUnreadBadge();
         loadPartnerNames(allRooms);
         String query = binding.edtSearchChat == null ? "" : binding.edtSearchChat.getText().toString();
         filterRooms(query);
     }
 
     private void updateUnreadBadge() {
-        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
-        if (bottomNav == null) return;
-        com.google.android.material.badge.BadgeDrawable badge = bottomNav.getOrCreateBadge(R.id.nav_messages);
-        String userId = session.getUserId();
-        int unreadRooms = 0;
-        if (userId != null) {
-            for (ChatRoom room : allRooms) {
-                if (room != null && room.getLastMessageTime() > 0
-                        && room.getLastSenderId() != null
-                        && !userId.equals(room.getLastSenderId())) unreadRooms++;
-            }
-        }
-        badge.setVisible(unreadRooms > 0);
-        if (unreadRooms > 0) badge.setNumber(unreadRooms);
+        // Unread badge no longer used
     }
 
     private String getPartnerId(ChatRoom room) {

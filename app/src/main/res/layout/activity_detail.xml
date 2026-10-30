@@ -202,6 +202,67 @@
                     android:layout_marginTop="@dimen/space_sm"
                     android:text="@string/detail_amenities_empty"
                     android:visibility="gone" />
+
+                <!-- Khu vực Bình luận -->
+                <TextView
+                    style="@style/TextAppearance.App.SectionTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xl"
+                    android:textSize="@dimen/text_body_lg2"
+                    android:text="Bình luận" />
+
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.App.Card.Outlined"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_sm">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/space_md">
+
+                        <EditText
+                            android:id="@+id/etCommentInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_edittext"
+                            android:padding="@dimen/space_md"
+                            android:textSize="@dimen/text_body"
+                            android:textColor="@color/text_main"
+                            android:hint="Viết bình luận của bạn..."
+                            android:inputType="textMultiLine"
+                            android:maxLines="3"
+                            android:minLines="2" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnSubmitComment"
+                            style="@style/Widget.App.Button.Primary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/touch_target_min"
+                            android:layout_gravity="end"
+                            android:layout_marginTop="@dimen/space_sm"
+                            android:text="Gửi bình luận" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvComments"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_md"
+                    android:nestedScrollingEnabled="false" />
+
+                <TextView
+                    android:id="@+id/tvCommentsEmpty"
+                    style="@style/TextAppearance.App.BodySub"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_sm"
+                    android:text="Chưa có bình luận nào cho bài đăng này."
+                    android:visibility="gone" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

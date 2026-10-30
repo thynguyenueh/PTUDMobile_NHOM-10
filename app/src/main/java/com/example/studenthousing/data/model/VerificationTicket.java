@@ -2,9 +2,11 @@ package com.example.studenthousing.data.model;
 
 import com.example.studenthousing.util.Constants;
 import com.google.firebase.firestore.DocumentId;
+import com.google.firebase.firestore.Exclude;
 
 public class VerificationTicket {
     @DocumentId
+    @Exclude
     private String ticketId;
     private String userId;
     private String ticketType;   // STUDENT | CITIZEN | RESIDENCE
@@ -14,6 +16,7 @@ public class VerificationTicket {
     private long submittedAt;
     private long reviewedAt;
     private String syncStatus = Constants.SYNC_SYNCED;
+    @Exclude
     private long cachedAt;
 
     public VerificationTicket() {}
@@ -28,6 +31,7 @@ public class VerificationTicket {
         this.reviewedAt = 0L;
     }
 
+    @Exclude
     public String getTicketId() { return ticketId; }
     public void setTicketId(String ticketId) { this.ticketId = ticketId; }
 
@@ -43,6 +47,7 @@ public class VerificationTicket {
     public String getMetadataJson() { return metadataJson; }
     public void setMetadataJson(String metadataJson) { this.metadataJson = metadataJson; }
 
+    @Exclude
     public String getWard() {
         if (metadataJson != null && metadataJson.contains("ward")) {
             try {

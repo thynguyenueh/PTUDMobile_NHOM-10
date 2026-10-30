@@ -54,7 +54,6 @@ public class ReviewRemote {
     public void getByReviewee(String revieweeId, AppCallback<List<Review>> cb) {
         db.collection(COLLECTION)
                 .whereEqualTo("revieweeId", revieweeId)
-                .orderBy("createdAt", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(snap -> {
                     List<Review> list = new ArrayList<>();
@@ -63,6 +62,7 @@ public class ReviewRemote {
                         r.setReviewId(doc.getId());
                         list.add(r);
                     }
+                    list.sort((r1, r2) -> Long.compare(r2.getCreatedAt(), r1.getCreatedAt()));
                     cb.onSuccess(list);
                 })
                 .addOnFailureListener(cb::onError);

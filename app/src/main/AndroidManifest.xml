@@ -29,20 +29,14 @@
             </intent-filter>
         </activity>
 
-        <!-- ⚠️ TẠM đổi true để test bằng adb - ĐỔI LẠI false TRƯỚC KHI COMMIT -->
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:windowSoftInputMode="adjustResize" />
+
 
         <!-- Đăng ký -->
         <activity
             android:name=".ui.auth.RegisterActivity"
             android:exported="false" />
 
-        <activity
-            android:name=".RegisterStep2Activity"
-            android:exported="false" />
+
 
         <!-- ⚠️ TẠM đổi true để test bằng adb -->
         <activity
@@ -129,6 +123,10 @@
 
         <activity
             android:name=".ui.partner.PublicHostProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.home.SuggestionsActivity"
             android:exported="false" />
 
         <receiver

@@ -28,6 +28,7 @@ import com.example.studenthousing.ui.adapter.PostAdapter;
 import com.example.studenthousing.ui.chat.ChatListActivity;
 import com.example.studenthousing.ui.post.CreatePostActivity;
 import com.example.studenthousing.ui.post.DetailActivity;
+import com.example.studenthousing.ui.post.MyPostsActivity;
 import com.example.studenthousing.ui.post.SavedHousesActivity;
 import com.example.studenthousing.ui.profile.NotificationsActivity;
 import com.example.studenthousing.ui.profile.ProfileActivity;
@@ -82,6 +83,7 @@ public class HomeActivity extends AppCompatActivity {
         bindHeader();
         setupHouseList();
         observeViewModel();
+        viewModel.loadPosts();
 
         setupBottomNavigation();
         setupListeners();
@@ -142,9 +144,15 @@ public class HomeActivity extends AppCompatActivity {
         viewModel.getProfile().observe(this, state -> {
             if (state == null) return;
             User user = state.getContent();
+            String sessionName = session.getUserFamilyName();
+            String name = (user != null && user.getFamilyName() != null && !user.getFamilyName().isEmpty())
+                    ? user.getFamilyName()
+                    : (sessionName != null && !sessionName.isEmpty() ? sessionName : "Người dùng");
+            binding.tvHomeUserName.setText(name);
+            if (binding.tvHomeAvatar != null) {
+                binding.tvHomeAvatar.setText(name.isEmpty() ? "N" : name.substring(0, 1).toUpperCase());
+            }
             if (user != null) {
-                String name = user.getFamilyName();
-                binding.tvHomeUserName.setText((name == null || name.isEmpty()) ? "Bạn" : name);
                 userVerified = user.isVerified();
                 binding.tvKycBadge.setVisibility(userVerified ? View.VISIBLE : View.GONE);
                 ImageView avatar = binding.getRoot().findViewById(R.id.ivHomeAvatarImg);
@@ -358,30 +366,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void updateMessagesBadge() {
-        com.google.android.material.bottomnavigation.BottomNavigationView nav = findViewById(R.id.bottomNav);
-        if (nav == null) return;
-        com.google.android.material.badge.BadgeDrawable badge = nav.getOrCreateBadge(R.id.nav_messages);
-        String userId = session == null ? null : session.getUserId();
-        if (userId == null || userId.isEmpty()) {
-            badge.setVisible(false);
-            return;
-        }
-        new com.example.studenthousing.data.repository.ChatRepository(this).getUserRooms(userId,
-                new AppCallback<>() {
-                    @Override public void onSuccess(List<ChatRoom> rooms) {
-                        runOnUiThread(() -> {
-                            int count = 0;
-                            if (rooms != null) for (ChatRoom room : rooms) {
-                                if (room != null && room.getLastMessageTime() > 0
-                                        && room.getLastSenderId() != null
-                                        && !userId.equals(room.getLastSenderId())) count++;
-                            }
-                            badge.setVisible(count > 0);
-                            if (count > 0) badge.setNumber(count);
-                        });
-                    }
-                    @Override public void onError(Exception error) { runOnUiThread(() -> badge.setVisible(false)); }
-                });
+        // Chat replaced with Manage Posts
     }
 
     private void navigateTo(Class<?> target) {
@@ -404,7 +389,7 @@ public class HomeActivity extends AppCompatActivity {
             int id = item.getItemId();
             if (id == R.id.nav_home) return true;
             if (id == R.id.nav_saved) { navigateTo(SavedHousesActivity.class); return true; }
-            if (id == R.id.nav_messages) { navigateTo(ChatListActivity.class); return true; }
+            if (id == R.id.nav_manage_posts) { navigateTo(MyPostsActivity.class); return true; }
             if (id == R.id.nav_profile) { navigateTo(ProfileActivity.class); return true; }
             return false;
         });

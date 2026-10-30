@@ -36,7 +36,23 @@ public class SessionManager {
     }
 
     public String getUserPhone() { return pref.getString(KEY_USER_PHONE, null); }
-    public String getUserFamilyName() { return pref.getString(KEY_USER_FAMILY_NAME, null); }
+    public String getUserFamilyName() {
+        String name = pref.getString(KEY_USER_FAMILY_NAME, null);
+        if (name == null || name.trim().isEmpty() || name.equals("Bạn") || name.equals("Thành viên") || name.equals("Hộ gia đình sinh viên")) {
+            String uid = getUserId();
+            if (uid != null) {
+                try {
+                    com.example.studenthousing.data.local.UserDao userDao = new com.example.studenthousing.data.local.UserDao(context);
+                    com.example.studenthousing.data.model.User u = userDao.getById(uid);
+                    if (u != null && u.getFamilyName() != null && !u.getFamilyName().trim().isEmpty()) {
+                        name = u.getFamilyName();
+                        pref.edit().putString(KEY_USER_FAMILY_NAME, name).apply();
+                    }
+                } catch (Exception ignored) {}
+            }
+        }
+        return name != null && !name.trim().isEmpty() ? name : "Người dùng";
+    }
     public String getAvatarUrl() { return pref.getString(KEY_USER_AVATAR_URL, null); }
 
     public boolean isLoggedIn() {

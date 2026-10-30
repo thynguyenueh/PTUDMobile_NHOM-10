@@ -23,7 +23,15 @@ public class PostDao {
     }
 
     public void upsert(AccommodationPost p) {
+        if (p == null || p.getPostId() == null) return;
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+        if (!p.getPostId().startsWith("temp_") && p.getUserId() != null) {
+            try {
+                db.delete(DatabaseHelper.TBL_POSTS,
+                        DatabaseHelper.COL_POST_ID + " LIKE ? AND " + DatabaseHelper.COL_USER_ID + "=?",
+                        new String[]{"temp_%", p.getUserId()});
+            } catch (Exception ignored) {}
+        }
         ContentValues v = toValues(p);
         db.insertWithOnConflict(DatabaseHelper.TBL_POSTS, null, v,
                 SQLiteDatabase.CONFLICT_REPLACE);
@@ -31,7 +39,7 @@ public class PostDao {
 
     /** Replaces server-owned cache rows with a successfully fetched server snapshot, preserving pending local work. */
     public void replaceServerSnapshot(List<AccommodationPost> posts) {
-        if (posts == null || posts.isEmpty()) return;
+        if (posts == null) return;
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.beginTransaction();
         try {
@@ -44,10 +52,6 @@ public class PostDao {
                     pendingIds.add(c.getString(0));
                 }
             }
-
-            db.delete(DatabaseHelper.TBL_POSTS, DatabaseHelper.COL_SYNC_STATUS + " IS NULL OR " +
-                    DatabaseHelper.COL_SYNC_STATUS + " NOT IN (?, ?, ?, ?)",
-                    new String[]{Constants.SYNC_PENDING_CREATE, Constants.SYNC_PENDING_UPDATE, Constants.SYNC_PENDING_DELETE, Constants.SYNC_SYNCING});
 
             for (AccommodationPost p : posts) {
                 if (p.getPostId() != null && pendingIds.contains(p.getPostId())) continue;

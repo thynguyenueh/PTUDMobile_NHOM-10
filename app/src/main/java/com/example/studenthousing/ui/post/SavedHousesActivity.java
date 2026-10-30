@@ -66,25 +66,7 @@ public class SavedHousesActivity extends AppCompatActivity implements SavedHouse
     }
 
     private void updateMessagesBadge() {
-        com.google.android.material.bottomnavigation.BottomNavigationView nav = findViewById(R.id.bottomNav);
-        if (nav == null) return;
-        com.google.android.material.badge.BadgeDrawable badge = nav.getOrCreateBadge(R.id.nav_messages);
-        String userId = new com.example.studenthousing.util.SessionManager(this).getUserId();
-        new com.example.studenthousing.data.repository.ChatRepository(this).getUserRooms(userId,
-                new AppCallback<List<com.example.studenthousing.data.model.ChatRoom>>() {
-                    @Override public void onSuccess(List<com.example.studenthousing.data.model.ChatRoom> rooms) {
-                        runOnUiThread(() -> {
-                            int count = 0;
-                            if (rooms != null) for (com.example.studenthousing.data.model.ChatRoom room : rooms) {
-                                if (room != null && room.getLastMessageTime() > 0 && room.getLastSenderId() != null
-                                        && !userId.equals(room.getLastSenderId())) count++;
-                            }
-                            badge.setVisible(count > 0);
-                            if (count > 0) badge.setNumber(count);
-                        });
-                    }
-                    @Override public void onError(Exception error) { runOnUiThread(() -> badge.setVisible(false)); }
-                });
+        // Chat replaced with Manage Posts
     }
 
     private void setupBottomNav() {
@@ -98,8 +80,8 @@ public class SavedHousesActivity extends AppCompatActivity implements SavedHouse
                     return true;
                 } else if (itemId == R.id.nav_saved) {
                     return true;
-                } else if (itemId == R.id.nav_messages) {
-                    navigateTo(ChatListActivity.class);
+                } else if (itemId == R.id.nav_manage_posts) {
+                    navigateTo(MyPostsActivity.class);
                     return true;
                 } else if (itemId == R.id.nav_profile) {
                     navigateTo(ProfileActivity.class);

@@ -1,9 +1,11 @@
 package com.example.studenthousing.data.model;
 
 import com.google.firebase.firestore.DocumentId;
+import com.google.firebase.firestore.Exclude;
 
 public class VerifiedAddress {
     @DocumentId
+    @Exclude
     private String addressId;
     private String fingerprint;
     private int cityCode;
@@ -15,10 +17,12 @@ public class VerifiedAddress {
     private String verificationTicketId;
     private long verifiedAt;
     private String status; // VERIFIED, PENDING, DISPUTED
+    @Exclude
     private long cachedAt;
 
     public VerifiedAddress() {}
 
+    @Exclude
     public String getAddressId() { return addressId; }
     public void setAddressId(String addressId) { this.addressId = addressId; }
 

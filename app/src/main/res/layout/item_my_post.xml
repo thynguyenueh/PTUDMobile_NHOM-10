@@ -44,9 +44,8 @@
                 <TextView
                     android:id="@+id/tvPostTitle"
                     style="@style/TextAppearance.App.SectionTitle"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:textSize="@dimen/text_body_lg"

@@ -70,16 +70,20 @@ public class PostRemote {
 
     public void getLatest(int limit, AppCallback<List<AccommodationPost>> cb) {
         db.collection(COLLECTION)
-                .whereEqualTo("status", Constants.POST_AVAILABLE)
-                .orderBy("createdAt", Query.Direction.DESCENDING)
-                .limit(limit)
                 .get()
                 .addOnSuccessListener(snap -> {
                     List<AccommodationPost> list = new ArrayList<>();
                     for (QueryDocumentSnapshot doc : snap) {
                         AccommodationPost p = doc.toObject(AccommodationPost.class);
                         p.setPostId(doc.getId());
-                        list.add(p);
+                        String status = p.getStatus();
+                        if (status == null || status.trim().isEmpty() || "AVAILABLE".equalsIgnoreCase(status)) {
+                            list.add(p);
+                        }
+                    }
+                    list.sort((p1, p2) -> Long.compare(p2.getCreatedAt(), p1.getCreatedAt()));
+                    if (limit > 0 && list.size() > limit) {
+                        list = list.subList(0, limit);
                     }
                     cb.onSuccess(list);
                 })
@@ -135,6 +139,25 @@ public class PostRemote {
     }
 
     public void create(AccommodationPost p, AppCallback<String> cb) {
+        com.google.firebase.auth.FirebaseAuth mAuth = com.google.firebase.auth.FirebaseAuth.getInstance();
+        if (mAuth.getCurrentUser() == null) {
+            mAuth.signInAnonymously().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    executeCreatePost(p, cb);
+                } else {
+                    if (cb != null) cb.onError(task.getException() != null ? task.getException() : new Exception("Auth failed"));
+                }
+            });
+        } else {
+            executeCreatePost(p, cb);
+        }
+    }
+
+    private void executeCreatePost(AccommodationPost p, AppCallback<String> cb) {
+        com.google.firebase.auth.FirebaseUser fbUser = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
+        if (fbUser != null) {
+            p.setUserId(fbUser.getUid());
+        }
         String id = p.getPostId();
         if (id == null || id.isEmpty() || id.startsWith("temp_")) {
             id = db.collection(COLLECTION).document().getId();
@@ -158,29 +181,17 @@ public class PostRemote {
     }
 
     private void savePostPublicAndPrivate(String postId, AccommodationPost p, AppCallback<String> cb, boolean merge) {
-        // Tách số nhà/tên đường chi tiết sang subcollection location
-        Map<String, Object> locationData = new HashMap<>();
-        locationData.put("ownerUserId", p.getUserId());
-        locationData.put("fullAddress", p.getAddress());
-        locationData.put("houseNumber", p.getHouseNumber());
-        locationData.put("streetName", p.getStreetName());
-        locationData.put("latitude", p.getLatitude());
-        locationData.put("longitude", p.getLongitude());
-
         DocumentReference postRef = db.collection(COLLECTION).document(postId);
         Map<String, Object> publicPostData = toPublicPostData(p);
         Task<Void> saveTask = merge
                 ? postRef.set(publicPostData, SetOptions.merge())
                 : postRef.set(publicPostData);
         saveTask
-                .addOnSuccessListener(a -> {
-                    db.collection(COLLECTION).document(postId)
-                            .collection(PRIVATE_SUBCOLLECTION).document(LOCATION_DOC)
-                            .set(locationData)
-                            .addOnSuccessListener(unused -> cb.onSuccess(postId))
-                            .addOnFailureListener(cb::onError);
-                })
-                .addOnFailureListener(cb::onError);
+                .addOnSuccessListener(a -> cb.onSuccess(postId))
+                .addOnFailureListener(e -> {
+                    android.util.Log.e("PostRemote", "Failed to save post " + postId + ": " + e.getMessage(), e);
+                    cb.onError(e);
+                });
     }
 
     public void delete(String postId, AppCallback<Void> cb) {

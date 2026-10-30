@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:background="@color/bg_app">
+    android:background="@color/bg_app"
+    android:orientation="vertical">
 
     <!-- Header Bar -->
     <LinearLayout
         android:id="@+id/layoutHeader"
         style="@style/Widget.App.HeaderBar">
-
-        <ImageView
-            android:id="@+id/btnBack"
-            style="@style/Widget.App.HeaderBackButton" />
 
         <TextView
             android:id="@+id/tvHeaderTitle"
@@ -32,58 +29,64 @@
 
     <View
         android:id="@+id/dividerHeader"
-        style="@style/Widget.App.Divider"
-        android:layout_below="@id/layoutHeader" />
+        style="@style/Widget.App.Divider" />
 
     <!-- Content Slot -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvMyPosts"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/dividerHeader"
-        android:clipToPadding="false"
-        android:padding="@dimen/space_lg" />
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-    <LinearLayout
-        android:id="@+id/layoutMyPostsEmpty"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/dividerHeader"
-        android:layout_centerInParent="true"
-        android:layout_marginHorizontal="@dimen/space_xxl"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone"
-        tools:visibility="visible">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvMyPosts"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:padding="@dimen/space_lg" />
 
-        <TextView
-            style="@style/TextAppearance.App.Heading"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/layoutMyPostsEmpty"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:accessibilityHeading="true"
-            android:text="@string/my_posts_empty_title" />
-
-        <TextView
-            style="@style/TextAppearance.App.BodySub"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_sm"
+            android:layout_centerInParent="true"
+            android:layout_marginHorizontal="@dimen/space_xxl"
             android:gravity="center"
-            android:text="@string/my_posts_empty_desc" />
-    </LinearLayout>
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="visible">
 
-    <!-- Extended Floating Action Button -->
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/btnCreatePost"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="@dimen/space_xxl"
-        android:text="@string/my_posts_btn_create"
-        android:textColor="@color/white"
-        app:backgroundTint="@color/primary"
-        app:icon="@drawable/ic_add"
-        app:iconTint="@color/white" />
+            <TextView
+                style="@style/TextAppearance.App.Heading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:accessibilityHeading="true"
+                android:text="@string/my_posts_empty_title" />
 
-</RelativeLayout>
+            <TextView
+                style="@style/TextAppearance.App.BodySub"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_sm"
+                android:gravity="center"
+                android:text="@string/my_posts_empty_desc" />
+        </LinearLayout>
+
+        <!-- Extended Floating Action Button -->
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/btnCreatePost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="@dimen/space_xxl"
+            android:text="@string/my_posts_btn_create"
+            android:textColor="@color/white"
+            app:backgroundTint="@color/primary"
+            app:icon="@drawable/ic_add"
+            app:iconTint="@color/white" />
+    </RelativeLayout>
+
+    <!-- Bottom Navigation Bar -->
+    <include layout="@layout/layout_bottom_nav" />
+
+</LinearLayout>

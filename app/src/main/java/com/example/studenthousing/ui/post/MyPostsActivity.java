@@ -41,8 +41,6 @@ public class MyPostsActivity extends AppCompatActivity implements MyPostAdapter.
         viewModel = new ViewModelProvider(this).get(MyPostsViewModel.class);
         viewModel.getState().observe(this, this::renderPosts);
 
-        binding.btnBack.setOnClickListener(v -> finish());
-
         if (binding.rvMyPosts != null) {
             binding.rvMyPosts.setLayoutManager(new LinearLayoutManager(this));
             postAdapter = new MyPostAdapter(this);
@@ -55,7 +53,43 @@ public class MyPostsActivity extends AppCompatActivity implements MyPostAdapter.
                     startActivity(new Intent(MyPostsActivity.this, CreatePostActivity.class)));
         }
 
+        setupBottomNav();
         loadMyPosts();
+    }
+
+    private void navigateTo(Class<?> targetActivity) {
+        Intent intent = new Intent(this, targetActivity);
+        if (targetActivity == com.example.studenthousing.ui.home.HomeActivity.class) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        } else {
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        }
+        android.app.ActivityOptions options = android.app.ActivityOptions.makeCustomAnimation(this, 0, 0);
+        startActivity(intent, options.toBundle());
+        finish();
+    }
+
+    private void setupBottomNav() {
+        com.google.android.material.bottomnavigation.BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+        if (bottomNav != null) {
+            bottomNav.setSelectedItemId(R.id.nav_manage_posts);
+            bottomNav.setOnItemSelectedListener(item -> {
+                int itemId = item.getItemId();
+                if (itemId == R.id.nav_home) {
+                    navigateTo(com.example.studenthousing.ui.home.HomeActivity.class);
+                    return true;
+                } else if (itemId == R.id.nav_saved) {
+                    navigateTo(SavedHousesActivity.class);
+                    return true;
+                } else if (itemId == R.id.nav_manage_posts) {
+                    return true;
+                } else if (itemId == R.id.nav_profile) {
+                    navigateTo(com.example.studenthousing.ui.profile.ProfileActivity.class);
+                    return true;
+                }
+                return false;
+            });
+        }
     }
 
     @Override

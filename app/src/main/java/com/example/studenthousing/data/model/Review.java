@@ -2,12 +2,14 @@ package com.example.studenthousing.data.model;
 
 import com.example.studenthousing.util.Constants;
 import com.google.firebase.firestore.DocumentId;
+import com.google.firebase.firestore.Exclude;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Review {
     @DocumentId
+    @Exclude
     private String reviewId;
     private String requestId;
     private String reviewerId;
@@ -25,6 +27,7 @@ public class Review {
     public String getSyncStatus() { return syncStatus; }
     public void setSyncStatus(String syncStatus) { this.syncStatus = syncStatus; }
 
+    @Exclude
     public String getReviewId() { return reviewId; }
     public void setReviewId(String reviewId) { this.reviewId = reviewId; }
 

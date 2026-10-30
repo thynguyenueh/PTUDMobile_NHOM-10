@@ -32,29 +32,34 @@ public class PostRepository {
     }
 
     public void getLatestPosts(int limit, AppCallback<List<AccommodationPost>> cb) {
-        List<AccommodationPost> cached = local.getAll();
-
         if (NetworkUtils.isOnline(ctx)) {
             remote.getLatest(limit, new AppCallback<List<AccommodationPost>>() {
                 @Override
                 public void onSuccess(List<AccommodationPost> posts) {
-                    local.replaceServerSnapshot(posts);
-                    cb.onSuccess(posts);
+                    if (posts != null && !posts.isEmpty()) {
+                        local.replaceServerSnapshot(posts);
+                    }
+                    List<AccommodationPost> combined = local.getAll();
+                    cb.onSuccess(combined != null ? combined : new java.util.ArrayList<>());
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    if (!cached.isEmpty()) {
+                    List<AccommodationPost> cached = local.getAll();
+                    if (cached != null && !cached.isEmpty()) {
                         cb.onSuccess(cached);
                     } else {
                         cb.onError(e);
                     }
                 }
             });
-        } else if (!cached.isEmpty()) {
-            cb.onSuccess(cached);
         } else {
-            cb.onError(new Exception("Không có mạng và không có cache"));
+            List<AccommodationPost> cached = local.getAll();
+            if (cached != null && !cached.isEmpty()) {
+                cb.onSuccess(cached);
+            } else {
+                cb.onError(new Exception("Không có mạng và không có cache"));
+            }
         }
     }
 
@@ -128,7 +133,7 @@ public class PostRepository {
                 public void onError(Exception e) {
                     p.setSyncStatus(Constants.SYNC_PENDING_CREATE);
                     local.upsert(p);
-                    cb.onSuccess(p.getPostId());
+                    if (cb != null) cb.onError(e);
                 }
             });
         } else {

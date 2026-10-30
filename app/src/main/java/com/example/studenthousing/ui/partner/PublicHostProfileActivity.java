@@ -69,11 +69,27 @@ public class PublicHostProfileActivity extends AppCompatActivity {
 
         View btnChatWithHost = findViewById(R.id.btnChatWithHost);
         if (btnChatWithHost != null) {
-            btnChatWithHost.setOnClickListener(v -> {
-                Intent intent = new Intent(PublicHostProfileActivity.this, ChatActivity.class);
-                intent.putExtra("target_user_id", finalTargetUserId);
-                startActivity(intent);
-            });
+            btnChatWithHost.setOnClickListener(v -> openSmsApp(finalTargetUserId, "Xin chào, tôi muốn trao đổi về nhà ở."));
+        }
+    }
+
+    private void openSmsApp(String targetUserId, String defaultMessage) {
+        UserDao userDao = new UserDao(this);
+        User host = targetUserId != null ? userDao.getById(targetUserId) : null;
+        String phone = host != null && host.getPhone() != null && !host.getPhone().isEmpty()
+                ? host.getPhone() : "0988123456";
+        Intent smsIntent = new Intent(Intent.ACTION_SENDTO, android.net.Uri.parse("smsto:" + phone.trim()));
+        smsIntent.putExtra("sms_body", defaultMessage);
+        try {
+            startActivity(smsIntent);
+        } catch (Exception e) {
+            try {
+                Intent viewIntent = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse("sms:" + phone.trim()));
+                viewIntent.putExtra("sms_body", defaultMessage);
+                startActivity(viewIntent);
+            } catch (Exception ex) {
+                android.widget.Toast.makeText(this, "Không tìm thấy ứng dụng nhắn tin", android.widget.Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

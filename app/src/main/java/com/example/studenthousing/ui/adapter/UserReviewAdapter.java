@@ -87,21 +87,18 @@ public class UserReviewAdapter extends RecyclerView.Adapter<UserReviewAdapter.Re
             tvName.setText(name);
             tvAvatar.setText(name.substring(0, 1).toUpperCase());
 
-            int rating = (int) Math.round(r.getRating());
-            StringBuilder stars = new StringBuilder();
-            for (int i = 0; i < 5; i++) {
-                stars.append(i < rating ? "★" : "☆");
+            if (tvStars != null) {
+                tvStars.setVisibility(View.GONE);
             }
-            tvStars.setText(stars.toString());
 
             String dateStr;
             if (r.getCreatedAt() > 0) {
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
                 dateStr = sdf.format(new Date(r.getCreatedAt()));
             } else {
                 dateStr = "Gần đây";
             }
-            tvDate.setText(dateStr + " · Đối tác đổi nhà");
+            tvDate.setText(dateStr);
 
             tvComment.setText(r.getComment() != null ? r.getComment() : "");
 

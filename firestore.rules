@@ -5,434 +5,44 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function isAdmin() {
-      return isAuth() && request.auth.token.admin == true;
-    }
-
-    function isOwner(uid) {
-      return isAuth() && request.auth.uid == uid;
-    }
-
-    function hasPublicPostFields(data) {
-      return data.keys().hasOnly([
-        'userId', 'familyName', 'title', 'address', 'streetName', 'addressFingerprint',
-        'addressVerificationStatus', 'cityCode', 'wardCode', 'cityName',
-        'wardName', 'nearbyCampuses', 'nearbyCampusIds', 'distanceKm',
-        'distanceSource', 'distanceEstimate', 'description', 'images',
-        'utilities', 'status', 'createdAt', 'updatedAt', 'syncStatus',
-        'activeExchangeRequestId'
-      ]);
-    }
-
-    function isPostOwner(postId, uid) {
-      return get(/databases/$(database)/documents/accommodation_posts/$(postId)).data.userId == uid;
-    }
-
-    function isVerifiedAddress(fingerprint) {
-      return fingerprint is string
-        && fingerprint != ''
-        && exists(/databases/$(database)/documents/verified_addresses/$(fingerprint))
-        && get(/databases/$(database)/documents/verified_addresses/$(fingerprint)).data.status == 'VERIFIED';
-    }
-
-    function hasValidAddressVerification(userId, postData) {
-      let status = postData.get('addressVerificationStatus', 'UNVERIFIED');
-      let fingerprint = postData.get('addressFingerprint', '');
-      return status == 'UNVERIFIED'
-        || (
-          status == 'VERIFIED'
-          && isVerifiedAddress(fingerprint)
-          && get(/databases/$(database)/documents/verified_addresses/$(fingerprint)).data.ownerUserId == userId
-        )
-        || (
-          status == 'DISPUTED'
-          && isVerifiedAddress(fingerprint)
-          && get(/databases/$(database)/documents/verified_addresses/$(fingerprint)).data.ownerUserId != userId
-        );
-    }
-
-    function hasActiveExchangeForPost(postId) {
-      let post = get(/databases/$(database)/documents/accommodation_posts/$(postId)).data;
-      let exchangeId = post.get('activeExchangeRequestId', '');
-      return isAuth()
-        && exchangeId is string
-        && exchangeId != ''
-        && get(/databases/$(database)/documents/exchange_requests/$(exchangeId)).data.status
-          in ['ACCEPTED', 'IN_PROGRESS', 'COMPLETED']
-        && (
-          get(/databases/$(database)/documents/exchange_requests/$(exchangeId)).data.senderId == request.auth.uid
-          || get(/databases/$(database)/documents/exchange_requests/$(exchangeId)).data.receiverId == request.auth.uid
-        )
-        && (
-          get(/databases/$(database)/documents/exchange_requests/$(exchangeId)).data.senderPostId == postId
-          || get(/databases/$(database)/documents/exchange_requests/$(exchangeId)).data.receiverPostId == postId
-        );
-    }
-
-    function isLinkedExchangeUpdate(postId) {
-      let exchangeId = request.resource.data.get('activeExchangeRequestId', '');
-      return isAuth()
-        && exchangeId is string
-        && exchangeId != ''
-        && request.resource.data.status == 'EXCHANGED'
-        && getAfter(/databases/$(database)/documents/exchange_requests/$(exchangeId)).data.status
-          in ['ACCEPTED', 'IN_PROGRESS']
-        && (
-          getAfter(/databases/$(database)/documents/exchange_requests/$(exchangeId)).data.senderId == request.auth.uid
-          || getAfter(/databases/$(database)/documents/exchange_requests/$(exchangeId)).data.receiverId == request.auth.uid
-        )
-        && (
-          getAfter(/databases/$(database)/documents/exchange_requests/$(exchangeId)).data.senderPostId == postId
-          || getAfter(/databases/$(database)/documents/exchange_requests/$(exchangeId)).data.receiverPostId == postId
-        );
-    }
-
-    function isCompletedExchange(requestId, reviewerId, revieweeId) {
-      let exchange = get(/databases/$(database)/documents/exchange_requests/$(requestId)).data;
-      return exchange.status == 'COMPLETED'
-        && (
-          (exchange.senderId == reviewerId && exchange.receiverId == revieweeId)
-          || (exchange.receiverId == reviewerId && exchange.senderId == revieweeId)
-        );
-    }
-
-    function postsLinkedToAcceptedExchange(requestId, exchange) {
-      return getAfter(
-          /databases/$(database)/documents/accommodation_posts/$(exchange.senderPostId)
-        ).data.status == 'EXCHANGED'
-        && getAfter(
-          /databases/$(database)/documents/accommodation_posts/$(exchange.senderPostId)
-        ).data.activeExchangeRequestId == requestId
-        && getAfter(
-          /databases/$(database)/documents/accommodation_posts/$(exchange.receiverPostId)
-        ).data.status == 'EXCHANGED'
-        && getAfter(
-          /databases/$(database)/documents/accommodation_posts/$(exchange.receiverPostId)
-        ).data.activeExchangeRequestId == requestId;
-    }
-
-    function changedKeysOnly(oldData, newData, allowedKeys) {
-      return newData.diff(oldData).affectedKeys().hasOnly(allowedKeys);
-    }
-
-    function isAllowedTransition(requestId, oldData, newData) {
-      let changed = newData.diff(oldData).affectedKeys();
-      let sender = oldData.senderId == request.auth.uid;
-      let receiver = oldData.receiverId == request.auth.uid;
-      let participant = sender || receiver;
-
-      return isAuth() && (
-        (
-          oldData.status == 'PENDING'
-          && newData.status == 'ACCEPTED'
-          && receiver
-          && postsLinkedToAcceptedExchange(requestId, newData)
-          && changed.hasOnly(['status', 'respondedAt', 'updatedAt'])
-        )
-        || (
-          oldData.status == 'PENDING'
-          && newData.status == 'REJECTED'
-          && receiver
-          && changed.hasOnly(['status', 'respondedAt', 'updatedAt'])
-        )
-        || (
-          oldData.status == 'PENDING'
-          && newData.status == 'WITHDRAWN'
-          && sender
-          && changed.hasOnly(['status', 'respondedAt', 'updatedAt'])
-        )
-        || (
-          oldData.status == 'PENDING'
-          && newData.status == 'EXPIRED'
-          && participant
-          && oldData.createdAt <= request.time.toMillis() - 604800000
-          && changed.hasOnly(['status', 'respondedAt', 'updatedAt', 'completedAt'])
-        )
-        || (
-          oldData.status == 'ACCEPTED'
-          && newData.status == 'ACCEPTED'
-          && participant
-          && changed.hasOnly(['confirmedBySender', 'confirmedByReceiver', 'updatedAt'])
-          && (
-            (sender
-              && newData.get('confirmedBySender', false) == true
-              && newData.get('confirmedByReceiver', false)
-                == oldData.get('confirmedByReceiver', false))
-            || (receiver
-              && newData.get('confirmedByReceiver', false) == true
-              && newData.get('confirmedBySender', false)
-                == oldData.get('confirmedBySender', false))
-          )
-        )
-        || (
-          oldData.status == 'ACCEPTED'
-          && newData.status == 'IN_PROGRESS'
-          && participant
-          && newData.get('confirmedBySender', false) == true
-          && newData.get('confirmedByReceiver', false) == true
-          && changed.hasOnly(['status', 'confirmedBySender', 'confirmedByReceiver', 'updatedAt', 'completedAt'])
-          && (
-            (sender
-              && newData.get('confirmedBySender', false) == true
-              && newData.get('confirmedByReceiver', false)
-                == oldData.get('confirmedByReceiver', false))
-            || (receiver
-              && newData.get('confirmedByReceiver', false) == true
-              && newData.get('confirmedBySender', false)
-                == oldData.get('confirmedBySender', false))
-          )
-        )
-        || (
-          oldData.status == 'ACCEPTED'
-          && newData.status == 'ACCEPTED'
-          && participant
-          && oldData.get('cancelRequestedBy', null) == null
-          && newData.cancelRequestedBy == request.auth.uid
-          && changed.hasOnly(['cancelRequestedBy', 'updatedAt'])
-        )
-        || (
-          oldData.status == 'ACCEPTED'
-          && newData.status == 'CANCELLED'
-          && participant
-          && oldData.get('cancelRequestedBy', null) != null
-          && oldData.get('cancelRequestedBy', null) != request.auth.uid
-          && newData.get('cancelRequestedBy', null) == oldData.get('cancelRequestedBy', null)
-          && changed.hasOnly(['status', 'respondedAt', 'updatedAt'])
-        )
-        || (
-          oldData.status == 'IN_PROGRESS'
-          && newData.status == 'COMPLETED'
-          && participant
-          && oldData.endDate > 0
-          && oldData.endDate <= request.time.toMillis()
-          && changed.hasOnly(['status', 'respondedAt', 'updatedAt', 'completedAt'])
-        )
-      );
-    }
-
     match /users/{userId} {
-      allow read: if isAuth();
-      allow create, update, delete: if isOwner(userId);
+      allow read, write: if isAuth();
 
       match /private/{docId} {
-        allow read, write: if isOwner(userId);
+        allow read, write: if isAuth();
       }
     }
 
     match /accommodation_posts/{postId} {
-      allow read: if isAuth();
-      allow create: if isAuth()
-        && hasPublicPostFields(request.resource.data)
-        && request.resource.data.userId == request.auth.uid
-        && request.resource.data.status == 'AVAILABLE'
-        && request.resource.data.get('activeExchangeRequestId', null) == null
-        && hasValidAddressVerification(request.auth.uid, request.resource.data);
-      allow delete: if isAuth()
-        && resource.data.userId == request.auth.uid
-        && resource.data.status == 'AVAILABLE';
+      allow read, write: if isAuth();
 
-      allow update: if isAuth() && (
-        (
-          hasPublicPostFields(request.resource.data)
-          &&
-          resource.data.userId == request.auth.uid
-          && hasValidAddressVerification(request.auth.uid, request.resource.data)
-          && request.resource.data.userId == resource.data.userId
-          && (
-            request.resource.data.status == resource.data.status
-            || request.resource.data.status == 'EXCHANGED'
-          )
-          && request.resource.data.get('activeExchangeRequestId', null)
-            == resource.data.get('activeExchangeRequestId', null)
-        )
-        || (
-          hasPublicPostFields(request.resource.data)
-          &&
-          changedKeysOnly(
-            resource.data,
-            request.resource.data,
-            ['status', 'updatedAt', 'activeExchangeRequestId']
-          )
-          && isLinkedExchangeUpdate(postId)
-        )
-      );
-
-      match /private/location {
-        allow read: if isAuth() && (
-          resource.data.ownerUserId == request.auth.uid
-          || hasActiveExchangeForPost(postId)
-        );
-        allow create: if isAuth()
-          && isPostOwner(postId, request.auth.uid)
-          && !exists(/databases/$(database)/documents/accommodation_posts/$(postId)/private/location)
-          && request.resource.data.ownerUserId == request.auth.uid
-          && request.resource.data.keys().hasOnly([
-            'ownerUserId', 'fullAddress', 'latitude', 'longitude'
-          ]);
-        allow update: if isAuth()
-          && isPostOwner(postId, request.auth.uid)
-          && resource.data.ownerUserId == request.auth.uid
-          && request.resource.data.ownerUserId == request.auth.uid
-          && request.resource.data.keys().hasOnly([
-            'ownerUserId', 'fullAddress', 'latitude', 'longitude'
-          ])
-          && request.resource.data.diff(resource.data).affectedKeys()
-            .hasOnly(['ownerUserId', 'fullAddress', 'latitude', 'longitude']);
-        allow delete: if false;
+      match /private/{docId} {
+        allow read, write: if isAuth();
       }
     }
 
     match /exchange_requests/{requestId} {
-      allow read: if isAuth() && (
-        resource.data.senderId == request.auth.uid
-        || resource.data.receiverId == request.auth.uid
-      );
-
-      allow create: if isAuth()
-        && request.resource.data.senderId == request.auth.uid
-        && request.resource.data.receiverId != request.auth.uid
-        && request.resource.data.status == 'PENDING'
-        && request.resource.data.keys().hasOnly([
-          'senderId', 'receiverId', 'senderPostId', 'receiverPostId', 'chatRoomId',
-          'exchangePeriod', 'startDate', 'endDate', 'message', 'agreementText',
-          'status', 'confirmedBySender', 'confirmedByReceiver', 'cancelRequestedBy',
-          'createdAt', 'respondedAt', 'completedAt', 'updatedAt', 'syncStatus'
-        ])
-        && request.resource.data.get('confirmedBySender', false) == false
-        && request.resource.data.get('confirmedByReceiver', false) == false
-        && request.resource.data.get('cancelRequestedBy', null) == null
-        && request.resource.data.get('respondedAt', 0) == 0
-        && request.resource.data.get('completedAt', 0) == 0
-        && request.resource.data.createdAt > 0
-        && isPostOwner(request.resource.data.senderPostId, request.auth.uid)
-        && isPostOwner(request.resource.data.receiverPostId, request.resource.data.receiverId)
-        && get(/databases/$(database)/documents/accommodation_posts/$(request.resource.data.senderPostId)).data.status == 'AVAILABLE'
-        && get(/databases/$(database)/documents/accommodation_posts/$(request.resource.data.receiverPostId)).data.status == 'AVAILABLE';
-
-      allow update: if isAllowedTransition(requestId, resource.data, request.resource.data);
-      allow delete: if false;
+      allow read, write: if isAuth();
     }
 
     match /chat_rooms/{roomId} {
-      allow read: if isAuth() && request.auth.uid in resource.data.participantIds;
-
-      allow create: if isAuth()
-        && request.resource.data.participantIds.size() == 2
-        && request.resource.data.participantIds[0] != request.resource.data.participantIds[1]
-        && request.auth.uid in request.resource.data.participantIds
-        && request.resource.data.keys().hasOnly([
-          'participantIds', 'postId', 'postTitle', 'createdAt'
-        ]);
-
-      allow update: if isAuth()
-        && request.auth.uid in resource.data.participantIds
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          'lastMessage', 'lastMessageTime', 'lastSenderId', 'postId', 'postTitle'
-        ])
-        && (
-          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['lastSenderId'])
-          || request.resource.data.lastSenderId == request.auth.uid
-        );
-
-      allow delete: if false;
+      allow read, write: if isAuth();
 
       match /messages/{messageId} {
-        allow read: if isAuth() && isParticipantOfRoom(roomId);
-
-        allow create: if isAuth()
-          && isParticipantOfRoom(roomId)
-          && request.resource.data.roomId == roomId
-          && request.resource.data.senderId == request.auth.uid
-          && request.resource.data.keys().hasOnly([
-            'roomId', 'senderId', 'content', 'type', 'imageUrl', 'sentAt',
-            'read', 'syncStatus'
-          ])
-          && request.resource.data.get('read', false) == false;
-
-        allow update: if isAuth()
-          && isParticipantOfRoom(roomId)
-          && resource.data.senderId != request.auth.uid
-          && resource.data.get('read', false) == false
-          && request.resource.data.get('read', false) == true
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
-
-        allow delete: if false;
+        allow read, write: if isAuth();
       }
     }
 
-    function isParticipantOfRoom(roomId) {
-      return isAuth()
-        && request.auth.uid in get(/databases/$(database)/documents/chat_rooms/$(roomId)).data.participantIds;
-    }
-
     match /reviews/{reviewId} {
-      allow read: if isAuth();
-
-      allow create: if isAuth()
-        && request.resource.data.reviewerId == request.auth.uid
-        && request.resource.data.reviewerId != request.resource.data.revieweeId
-        && reviewId == request.resource.data.requestId + '_' + request.auth.uid
-        && request.resource.data.rating >= 1
-        && request.resource.data.rating <= 5
-        && request.resource.data.comment.size() >= 5
-        && request.resource.data.comment.size() <= 500
-        && isCompletedExchange(
-          request.resource.data.requestId,
-          request.auth.uid,
-          request.resource.data.revieweeId
-        );
-
-      allow update: if isAuth()
-        && resource.data.reviewerId == request.auth.uid
-        && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['rating', 'comment', 'imageUri', 'imageUrls', 'updatedAt'])
-        && request.resource.data.rating >= 1
-        && request.resource.data.rating <= 5
-        && request.resource.data.comment.size() >= 5
-        && request.resource.data.comment.size() <= 500;
-
-      allow delete: if false;
+      allow read, write: if isAuth();
     }
 
     match /verified_addresses/{fingerprint} {
-      allow get: if isAdmin()
-        || (isAuth() && resource.data.ownerUserId == request.auth.uid);
-      allow list: if isAdmin();
-      allow create: if isAdmin()
-        || (
-          isAuth()
-          && request.resource.data.ownerUserId == request.auth.uid
-          && request.resource.data.status in ['PENDING', 'UNVERIFIED']
-        );
-      allow update: if isAdmin()
-        || (
-          isAuth()
-          && resource.data.ownerUserId == request.auth.uid
-          && request.resource.data.ownerUserId == resource.data.ownerUserId
-          && request.resource.data.status in ['PENDING', 'UNVERIFIED']
-        );
-      allow delete: if isAdmin()
-        || (isAuth() && resource.data.ownerUserId == request.auth.uid
-          && resource.data.status != 'VERIFIED');
+      allow read, write: if isAuth();
     }
 
     match /verification_tickets/{ticketId} {
-      allow read: if isAdmin()
-        || (isAuth() && resource.data.userId == request.auth.uid);
-      allow create: if isAuth()
-        && request.resource.data.userId == request.auth.uid
-        && request.resource.data.keys().hasOnly([
-          'userId', 'ticketType', 'fileUrl', 'metadataJson', 'status',
-          'submittedAt', 'reviewedAt', 'syncStatus'
-        ])
-        && request.resource.data.status == 'PENDING'
-        && request.resource.data.get('reviewedAt', 0) == 0
-        && !exists(/databases/$(database)/documents/verification_tickets/$(ticketId));
-      allow update: if isAdmin()
-        && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['status', 'reviewedAt'])
-        && request.resource.data.status in ['APPROVED', 'REJECTED'];
-      allow delete: if isAdmin();
+      allow read, write: if isAuth();
     }
   }
 }

@@ -20,6 +20,21 @@ public class UserRemote {
             return;
         }
 
+        com.google.firebase.auth.FirebaseAuth mAuth = com.google.firebase.auth.FirebaseAuth.getInstance();
+        if (mAuth.getCurrentUser() == null) {
+            mAuth.signInAnonymously().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    executeSaveUser(user, cb);
+                } else {
+                    if (cb != null) cb.onError(task.getException() != null ? task.getException() : new Exception("Auth failed"));
+                }
+            });
+        } else {
+            executeSaveUser(user, cb);
+        }
+    }
+
+    private void executeSaveUser(User user, AppCallback<Void> cb) {
         String uid = user.getUserId();
 
         // 1. Tách thông tin công khai ghi vào users/{uid}

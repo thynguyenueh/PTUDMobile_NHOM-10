@@ -47,6 +47,7 @@ public class AccommodationPost {
     public String getSyncStatus() { return syncStatus; }
     public void setSyncStatus(String syncStatus) { this.syncStatus = syncStatus; }
 
+    @Exclude
     public String getPostId() { return postId; }
     public void setPostId(String postId) { this.postId = postId; }
 
@@ -83,15 +84,19 @@ public class AccommodationPost {
     public String getStreetName() { return streetName; }
     public void setStreetName(String streetName) { this.streetName = streetName; }
 
+    @Exclude
     public String getHouseNumber() { return houseNumber; }
     public void setHouseNumber(String houseNumber) { this.houseNumber = houseNumber; }
 
+    @Exclude
     public double getLatitude() { return latitude; }
     public void setLatitude(double latitude) { this.latitude = latitude; }
 
+    @Exclude
     public double getLongitude() { return longitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
 
+    @Exclude
     public String getVerificationBadge() { return verificationBadge; }
     public void setVerificationBadge(String verificationBadge) { this.verificationBadge = verificationBadge; }
 
