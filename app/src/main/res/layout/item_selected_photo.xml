@@ -13,8 +13,9 @@
         android:contentDescription="@string/cd_photo"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
 
+    <!-- Label "Mặt trước" / "Mặt sau" -->
     <TextView
-        android:id="@+id/tvCoverBadge"
+        android:id="@+id/tvPhotoLabel"
         style="@style/TextAppearance.App.Caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,7 +27,7 @@
         android:textColor="@color/white"
         android:textSize="@dimen/text_caption"
         android:textStyle="bold"
-        android:text="@string/create_post_photo_cover_badge" />
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/btnRemovePhoto"

@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "studenthousing.db";
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 3; // ✅ Tăng version để trigger onUpgrade
 
     // Table: posts_cache
     public static final String TBL_POSTS = "posts_cache";
@@ -67,8 +67,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_SENT_AT = "sent_at";
     public static final String COL_IS_READ = "is_read";
 
-
-
     // Table: users_cache
     public static final String TBL_USERS = "users_cache";
     public static final String COL_PHONE = "phone";
@@ -80,6 +78,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_UNIVERSITY_CODE = "university_code";
     public static final String COL_UNIVERSITY_NAME = "university_name";
     public static final String COL_CITIZEN_ID_HASH = "citizen_id_hash";
+    // ✅ THÊM 3 CỘT MỚI
+    public static final String COL_CITIZEN_ID_FRONT_URL = "citizen_id_front_url";
+    public static final String COL_CITIZEN_ID_BACK_URL = "citizen_id_back_url";
+    public static final String COL_STUDENT_CARD_URL = "student_card_url";
+
     public static final String COL_RESIDENCE_VERIFIED = "residence_verified";
     public static final String COL_RESIDENCE_VERIFIED_AT = "residence_verified_at";
     public static final String COL_FULLY_VERIFIED = "fully_verified";
@@ -124,6 +127,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COL_UNIVERSITY_CODE + " TEXT, " +
                 COL_UNIVERSITY_NAME + " TEXT, " +
                 COL_CITIZEN_ID_HASH + " TEXT, " +
+                // ✅ THÊM 3 CỘT MỚI
+                COL_CITIZEN_ID_FRONT_URL + " TEXT, " +
+                COL_CITIZEN_ID_BACK_URL + " TEXT, " +
+                COL_STUDENT_CARD_URL + " TEXT, " +
                 COL_RESIDENCE_VERIFIED + " INTEGER DEFAULT 0, " +
                 COL_RESIDENCE_VERIFIED_AT + " INTEGER DEFAULT 0, " +
                 COL_FULLY_VERIFIED + " INTEGER DEFAULT 0, " +
@@ -223,8 +230,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COL_CACHED_AT + " INTEGER" +
                 ")");
 
-
-
         db.execSQL("CREATE TABLE " + TBL_SAVED_HOUSES + " (" +
                 COL_USER_ID + " TEXT, " +
                 COL_POST_ID + " TEXT, " +
@@ -235,12 +240,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion < newVersion) {
-            dropAllLocalTables(db);
-            onCreate(db);
+        // ✅ Sửa: Chỉ Alter Table để thêm cột, KHÔNG gọi onCreate() để tránh lỗi "table already exists"
+        if (oldVersion < 3) {
+            try {
+                db.execSQL("ALTER TABLE " + TBL_USERS + " ADD COLUMN " + COL_CITIZEN_ID_FRONT_URL + " TEXT");
+                db.execSQL("ALTER TABLE " + TBL_USERS + " ADD COLUMN " + COL_CITIZEN_ID_BACK_URL + " TEXT");
+                db.execSQL("ALTER TABLE " + TBL_USERS + " ADD COLUMN " + COL_STUDENT_CARD_URL + " TEXT");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
-
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         dropAllLocalTables(db);

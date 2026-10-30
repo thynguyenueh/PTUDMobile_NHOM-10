@@ -57,6 +57,12 @@ public class UserDao {
         v.put(DatabaseHelper.COL_UNIVERSITY_CODE, u.getUniversityCode());
         v.put(DatabaseHelper.COL_UNIVERSITY_NAME, u.getUniversityName());
         v.put(DatabaseHelper.COL_CITIZEN_ID_HASH, u.getCitizenIdHash());
+
+        // ✅ THÊM 3 DÒNG NÀY
+        v.put(DatabaseHelper.COL_CITIZEN_ID_FRONT_URL, u.getCitizenIdFrontUrl());
+        v.put(DatabaseHelper.COL_CITIZEN_ID_BACK_URL, u.getCitizenIdBackUrl());
+        v.put(DatabaseHelper.COL_STUDENT_CARD_URL, u.getStudentCardUrl());
+
         v.put(DatabaseHelper.COL_RESIDENCE_VERIFIED, u.isResidenceVerified() ? 1 : 0);
         v.put(DatabaseHelper.COL_RESIDENCE_VERIFIED_AT, u.getResidenceVerifiedAt());
         v.put(DatabaseHelper.COL_FULLY_VERIFIED, u.isFullyVerified() ? 1 : 0);
@@ -86,6 +92,12 @@ public class UserDao {
         u.setUniversityCode(getStringOrNull(c, DatabaseHelper.COL_UNIVERSITY_CODE));
         u.setUniversityName(getStringOrNull(c, DatabaseHelper.COL_UNIVERSITY_NAME));
         u.setCitizenIdHash(getStringOrNull(c, DatabaseHelper.COL_CITIZEN_ID_HASH));
+
+        // ✅ THÊM 3 DÒNG NÀY
+        u.setCitizenIdFrontUrl(getStringOrNull(c, DatabaseHelper.COL_CITIZEN_ID_FRONT_URL));
+        u.setCitizenIdBackUrl(getStringOrNull(c, DatabaseHelper.COL_CITIZEN_ID_BACK_URL));
+        u.setStudentCardUrl(getStringOrNull(c, DatabaseHelper.COL_STUDENT_CARD_URL));
+
         u.setResidenceVerified(getIntAsBool(c, DatabaseHelper.COL_RESIDENCE_VERIFIED));
         u.setResidenceVerifiedAt(getLongOrDefault(c, DatabaseHelper.COL_RESIDENCE_VERIFIED_AT, 0L));
         u.setFullyVerified(getIntAsBool(c, DatabaseHelper.COL_FULLY_VERIFIED));
@@ -119,30 +131,5 @@ public class UserDao {
     private long getLongOrDefault(Cursor c, String columnName, long def) {
         int idx = c.getColumnIndex(columnName);
         return (idx != -1 && !c.isNull(idx)) ? c.getLong(idx) : def;
-    }
-
-    private static String listToJson(java.util.List<String> list) {
-        if (list == null || list.isEmpty()) return "[]";
-        org.json.JSONArray arr = new org.json.JSONArray();
-        for (String s : list) arr.put(s);
-        return arr.toString();
-    }
-
-    private static java.util.List<String> jsonToList(String json) {
-        java.util.List<String> list = new java.util.ArrayList<>();
-        if (json == null || json.trim().isEmpty()) return list;
-        try {
-            org.json.JSONArray arr = new org.json.JSONArray(json);
-            for (int i = 0; i < arr.length(); i++) {
-                list.add(arr.getString(i));
-            }
-            return list;
-        } catch (Exception ignored) {}
-        String[] parts = json.split(",");
-        for (String s : parts) {
-            String trimmed = s.trim();
-            if (!trimmed.isEmpty()) list.add(trimmed);
-        }
-        return list;
     }
 }

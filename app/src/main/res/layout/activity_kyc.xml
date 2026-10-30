@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
@@ -11,8 +10,8 @@
     <LinearLayout style="@style/Widget.App.HeaderBar">
         <ImageView
             android:id="@+id/btnBack"
-            style="@style/Widget.App.HeaderBackButton" />
-
+            style="@style/Widget.App.HeaderBackButton"
+            android:contentDescription="@string/cd_back" />
         <TextView
             style="@style/Widget.App.HeaderTitle"
             android:text="@string/kyc_title" />
@@ -39,39 +38,32 @@
                 style="@style/Widget.App.Card.Tinted"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:padding="14dp">
-
                     <ImageView
                         android:layout_width="@dimen/icon_lg"
                         android:layout_height="@dimen/icon_lg"
                         android:contentDescription="@string/cd_security"
                         android:src="@drawable/ic_shield_check"
                         app:tint="@color/primary" />
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/space_md"
                         android:orientation="vertical">
-
                         <TextView
                             style="@style/TextAppearance.App.SectionTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/kyc_banner_title" />
-
                         <TextView
                             style="@style/TextAppearance.App.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/space_xxs"
-                            android:lineSpacingExtra="2dp"
                             android:text="@string/kyc_banner_desc" />
                     </LinearLayout>
                 </LinearLayout>
@@ -88,7 +80,6 @@
                 style="@style/TextAppearance.App.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_xxs"
                 android:layout_marginBottom="@dimen/space_md"
                 android:text="@string/kyc_section_upload_desc" />
 
@@ -98,25 +89,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/space_md">
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="14dp">
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:baselineAligned="false"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
-
                         <FrameLayout
                             android:layout_width="@dimen/avatar_size_lg"
                             android:layout_height="@dimen/avatar_size_lg"
                             android:background="@drawable/bg_gray_square_icon">
-
                             <ImageView
                                 android:layout_width="@dimen/icon_md"
                                 android:layout_height="@dimen/icon_md"
@@ -125,47 +112,37 @@
                                 android:src="@drawable/ic_id_card"
                                 app:tint="@color/primary" />
                         </FrameLayout>
-
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/space_md"
                             android:layout_weight="1"
                             android:orientation="vertical">
-
                             <TextView
                                 style="@style/TextAppearance.App.SectionTitle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/kyc_parent_id_title" />
-
                             <TextView
                                 style="@style/TextAppearance.App.Caption"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/space_xxs"
                                 android:text="@string/kyc_parent_id_desc" />
-
                             <TextView
                                 android:id="@+id/tvParentIdStatus"
                                 style="@style/TextAppearance.App.Caption"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/space_xs"
                                 android:textStyle="bold"
                                 android:text="@string/kyc_status_not_uploaded" />
                         </LinearLayout>
-
                         <FrameLayout
                             android:id="@+id/btnAddParentId"
                             android:layout_width="@dimen/icon_btn_size"
                             android:layout_height="@dimen/icon_btn_size"
-                            android:layout_marginStart="@dimen/space_sm"
                             android:background="@drawable/bg_dark_circle_button"
                             android:clickable="true"
-                            android:focusable="true"
-                            android:foreground="?attr/selectableItemBackgroundBorderless">
-
+                            android:focusable="true">
                             <ImageView
                                 android:layout_width="@dimen/icon_sm"
                                 android:layout_height="@dimen/icon_sm"
@@ -175,94 +152,13 @@
                                 app:tint="@color/white" />
                         </FrameLayout>
                     </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/layoutParentPreviews"
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvParentPhotos"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/space_md"
                         android:orientation="horizontal"
-                        android:visibility="gone">
-
-                        <FrameLayout
-                            android:id="@+id/layoutParentFrontPreview"
-                            android:layout_width="@dimen/kyc_thumb_w"
-                            android:layout_height="@dimen/kyc_thumb_h"
-                            android:layout_marginEnd="@dimen/space_md"
-                            android:visibility="gone">
-
-                            <com.google.android.material.imageview.ShapeableImageView
-                                android:id="@+id/ivParentFrontPreview"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:scaleType="centerCrop"
-                                app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Image12" />
-
-                            <TextView
-                                style="@style/TextAppearance.App.Caption"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="bottom|start"
-                                android:layout_margin="@dimen/space_xs"
-                                android:background="@drawable/bg_pill_scrim"
-                                android:paddingHorizontal="@dimen/space_xs"
-                                android:paddingVertical="@dimen/space_xxs"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/text_caption"
-                                android:textStyle="bold"
-                                android:text="@string/kyc_photo_front" />
-
-                            <ImageView
-                                android:id="@+id/btnRemoveParentFront"
-                                android:layout_width="@dimen/icon_lg"
-                                android:layout_height="@dimen/icon_lg"
-                                android:layout_gravity="top|end"
-                                android:layout_margin="3dp"
-                                android:background="@drawable/bg_dark_circle_button"
-                                android:contentDescription="@string/cd_remove_photo"
-                                android:padding="@dimen/space_xs"
-                                android:src="@drawable/ic_close" />
-                        </FrameLayout>
-
-                        <FrameLayout
-                            android:id="@+id/layoutParentBackPreview"
-                            android:layout_width="@dimen/kyc_thumb_w"
-                            android:layout_height="@dimen/kyc_thumb_h"
-                            android:visibility="gone">
-
-                            <com.google.android.material.imageview.ShapeableImageView
-                                android:id="@+id/ivParentBackPreview"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:scaleType="centerCrop"
-                                app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Image12" />
-
-                            <TextView
-                                style="@style/TextAppearance.App.Caption"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="bottom|start"
-                                android:layout_margin="@dimen/space_xs"
-                                android:background="@drawable/bg_pill_scrim"
-                                android:paddingHorizontal="@dimen/space_xs"
-                                android:paddingVertical="@dimen/space_xxs"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/text_caption"
-                                android:textStyle="bold"
-                                android:text="@string/kyc_photo_back" />
-
-                            <ImageView
-                                android:id="@+id/btnRemoveParentBack"
-                                android:layout_width="@dimen/icon_lg"
-                                android:layout_height="@dimen/icon_lg"
-                                android:layout_gravity="top|end"
-                                android:layout_margin="3dp"
-                                android:background="@drawable/bg_dark_circle_button"
-                                android:contentDescription="@string/cd_remove_photo"
-                                android:padding="@dimen/space_xs"
-                                android:src="@drawable/ic_close" />
-                        </FrameLayout>
-                    </LinearLayout>
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -272,25 +168,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/space_xl">
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="14dp">
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:baselineAligned="false"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
-
                         <FrameLayout
                             android:layout_width="@dimen/avatar_size_lg"
                             android:layout_height="@dimen/avatar_size_lg"
                             android:background="@drawable/bg_gray_square_icon">
-
                             <ImageView
                                 android:layout_width="@dimen/icon_md"
                                 android:layout_height="@dimen/icon_md"
@@ -299,47 +191,37 @@
                                 android:src="@drawable/ic_school_cap"
                                 app:tint="@color/primary" />
                         </FrameLayout>
-
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/space_md"
                             android:layout_weight="1"
                             android:orientation="vertical">
-
                             <TextView
                                 style="@style/TextAppearance.App.SectionTitle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/kyc_student_id_title" />
-
                             <TextView
                                 style="@style/TextAppearance.App.Caption"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/space_xxs"
                                 android:text="@string/kyc_student_id_desc" />
-
                             <TextView
                                 android:id="@+id/tvStudentIdStatus"
                                 style="@style/TextAppearance.App.Caption"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/space_xs"
                                 android:textStyle="bold"
                                 android:text="@string/kyc_status_not_uploaded" />
                         </LinearLayout>
-
                         <FrameLayout
                             android:id="@+id/btnAddStudentId"
                             android:layout_width="@dimen/icon_btn_size"
                             android:layout_height="@dimen/icon_btn_size"
-                            android:layout_marginStart="@dimen/space_sm"
                             android:background="@drawable/bg_dark_circle_button"
                             android:clickable="true"
-                            android:focusable="true"
-                            android:foreground="?attr/selectableItemBackgroundBorderless">
-
+                            android:focusable="true">
                             <ImageView
                                 android:layout_width="@dimen/icon_sm"
                                 android:layout_height="@dimen/icon_sm"
@@ -349,94 +231,13 @@
                                 app:tint="@color/white" />
                         </FrameLayout>
                     </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/layoutStudentIdPreviews"
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvStudentPhotos"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/space_md"
                         android:orientation="horizontal"
-                        android:visibility="gone">
-
-                        <FrameLayout
-                            android:id="@+id/layoutStudentFrontPreview"
-                            android:layout_width="@dimen/kyc_thumb_w"
-                            android:layout_height="@dimen/kyc_thumb_h"
-                            android:layout_marginEnd="@dimen/space_md"
-                            android:visibility="gone">
-
-                            <com.google.android.material.imageview.ShapeableImageView
-                                android:id="@+id/ivStudentFrontPreview"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:scaleType="centerCrop"
-                                app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Image12" />
-
-                            <TextView
-                                style="@style/TextAppearance.App.Caption"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="bottom|start"
-                                android:layout_margin="@dimen/space_xs"
-                                android:background="@drawable/bg_pill_scrim"
-                                android:paddingHorizontal="@dimen/space_xs"
-                                android:paddingVertical="@dimen/space_xxs"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/text_caption"
-                                android:textStyle="bold"
-                                android:text="@string/kyc_photo_front" />
-
-                            <ImageView
-                                android:id="@+id/btnRemoveStudentFront"
-                                android:layout_width="@dimen/icon_lg"
-                                android:layout_height="@dimen/icon_lg"
-                                android:layout_gravity="top|end"
-                                android:layout_margin="3dp"
-                                android:background="@drawable/bg_dark_circle_button"
-                                android:contentDescription="@string/cd_remove_photo"
-                                android:padding="@dimen/space_xs"
-                                android:src="@drawable/ic_close" />
-                        </FrameLayout>
-
-                        <FrameLayout
-                            android:id="@+id/layoutStudentBackPreview"
-                            android:layout_width="@dimen/kyc_thumb_w"
-                            android:layout_height="@dimen/kyc_thumb_h"
-                            android:visibility="gone">
-
-                            <com.google.android.material.imageview.ShapeableImageView
-                                android:id="@+id/ivStudentBackPreview"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:scaleType="centerCrop"
-                                app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Image12" />
-
-                            <TextView
-                                style="@style/TextAppearance.App.Caption"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="bottom|start"
-                                android:layout_margin="@dimen/space_xs"
-                                android:background="@drawable/bg_pill_scrim"
-                                android:paddingHorizontal="@dimen/space_xs"
-                                android:paddingVertical="@dimen/space_xxs"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/text_caption"
-                                android:textStyle="bold"
-                                android:text="@string/kyc_photo_back" />
-
-                            <ImageView
-                                android:id="@+id/btnRemoveStudentBack"
-                                android:layout_width="@dimen/icon_lg"
-                                android:layout_height="@dimen/icon_lg"
-                                android:layout_gravity="top|end"
-                                android:layout_margin="3dp"
-                                android:background="@drawable/bg_dark_circle_button"
-                                android:contentDescription="@string/cd_remove_photo"
-                                android:padding="@dimen/space_xs"
-                                android:src="@drawable/ic_close" />
-                        </FrameLayout>
-                    </LinearLayout>
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -448,8 +249,7 @@
                 android:layout_marginBottom="@dimen/space_md"
                 android:checked="true"
                 android:text="@string/kyc_consent_text"
-                android:textColor="@color/text_sub"
-                android:textSize="@dimen/text_body" />
+                android:textColor="@color/text_sub" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
@@ -458,7 +258,6 @@
         android:layout_height="wrap_content"
         android:background="@color/surface_card"
         android:padding="@dimen/space_lg">
-
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSubmitKyc"
             style="@style/Widget.App.Button.Primary"

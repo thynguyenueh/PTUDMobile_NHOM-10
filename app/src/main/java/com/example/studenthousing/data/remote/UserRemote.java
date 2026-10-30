@@ -37,7 +37,7 @@ public class UserRemote {
     private void executeSaveUser(User user, AppCallback<Void> cb) {
         String uid = user.getUserId();
 
-        // 1. Tách thông tin công khai ghi vào users/{uid}
+        // 1. Thông tin công khai
         Map<String, Object> publicData = new HashMap<>();
         publicData.put("familyName", user.getFamilyName());
         publicData.put("avatarUrl", user.getAvatarUrl());
@@ -54,7 +54,7 @@ public class UserRemote {
         publicData.put("phoneVerified", user.isPhoneVerified());
         publicData.put("isVerified", user.isVerified());
 
-        // 2. Tách thông tin riêng tư nhạy cảm ghi vào subcollection users/{uid}/private/sensitive_data
+        // 2. Thông tin nhạy cảm (bao gồm 3 trường ảnh KYC)
         Map<String, Object> sensitiveData = new HashMap<>();
         if (user.getPhone() != null) sensitiveData.put("phone", user.getPhone());
         if (user.getCitizenIdHash() != null) sensitiveData.put("citizenIdHash", user.getCitizenIdHash());
@@ -67,6 +67,7 @@ public class UserRemote {
         if (user.getPermanentCityName() != null) sensitiveData.put("permanentCityName", user.getPermanentCityName());
         if (user.getPermanentWardName() != null) sensitiveData.put("permanentWardName", user.getPermanentWardName());
 
+        // Ghi đè lên Firestore (không merge cho sensitiveData để tránh lẫn dữ liệu cũ)
         db.collection(COLLECTION).document(uid)
                 .set(publicData, SetOptions.merge())
                 .addOnSuccessListener(a -> {
@@ -98,7 +99,7 @@ public class UserRemote {
                         User user = doc.toObject(User.class);
                         if (user != null) user.setUserId(doc.getId());
 
-                        // Cố gắng đọc subcollection sensitive_data nếu có quyền
+                        // ✅ Đọc sensitive_data để lấy lại 3 trường ảnh KYC
                         db.collection(COLLECTION).document(userId)
                                 .collection(PRIVATE_SUBCOLLECTION).document(SENSITIVE_DOC)
                                 .get()
@@ -107,11 +108,15 @@ public class UserRemote {
                                         if (privDoc.contains("phone")) user.setPhone(privDoc.getString("phone"));
                                         if (privDoc.contains("citizenIdHash")) user.setCitizenIdHash(privDoc.getString("citizenIdHash"));
                                         if (privDoc.contains("permanentAddress")) user.setPermanentAddress(privDoc.getString("permanentAddress"));
+
+                                        // ✅ FIX: Đọc 3 trường ảnh KYC
+                                        if (privDoc.contains("citizenIdFrontUrl")) user.setCitizenIdFrontUrl(privDoc.getString("citizenIdFrontUrl"));
+                                        if (privDoc.contains("citizenIdBackUrl")) user.setCitizenIdBackUrl(privDoc.getString("citizenIdBackUrl"));
+                                        if (privDoc.contains("studentCardUrl")) user.setStudentCardUrl(privDoc.getString("studentCardUrl"));
                                     }
                                     if (cb != null) cb.onSuccess(user);
                                 })
                                 .addOnFailureListener(e -> {
-                                    // Không có quyền đọc private data -> trả về public profile
                                     if (cb != null) cb.onSuccess(user);
                                 });
                     } else {
@@ -122,5 +127,4 @@ public class UserRemote {
                     if (cb != null) cb.onError(e);
                 });
     }
-
 }

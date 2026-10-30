@@ -59,31 +59,50 @@ public class UserRepository {
         markIdentityVerified(userId, identityType, null, null, null, cb);
     }
 
+    /**
+     * ✅ FIX: Đảm bảo user luôn được lưu dù có trong cache hay không.
+     * Không bao giờ trả về lỗi "User not found in cache".
+     */
     public void markIdentityVerified(String userId, String identityType, String frontUrl, String backUrl, String studentCardUrl, AppCallback<Void> cb) {
+        // 1. Lấy user từ cache
         User u = getCachedUser(userId);
-        if (u != null) {
-            u.setIdentityVerified(true);
-            u.setIdentityType(identityType != null ? identityType : Constants.IDENTITY_STUDENT);
-            u.setIdentityVerifiedAt(System.currentTimeMillis());
-            u.setVerified(true);
-            if (frontUrl != null) u.setCitizenIdFrontUrl(frontUrl);
-            if (backUrl != null) u.setCitizenIdBackUrl(backUrl);
-            if (studentCardUrl != null) u.setStudentCardUrl(studentCardUrl);
-            saveUserProfile(u, cb);
-        } else if (cb != null) {
-            cb.onError(new Exception("User not found in cache"));
+
+        // 2. Nếu chưa có (hoặc do lỗi DB), tạo mới với dữ liệu từ Session
+        if (u == null) {
+            u = new User();
+            u.setUserId(userId);
+            u.setFamilyName(session.getUserFamilyName() != null ? session.getUserFamilyName() : "Người dùng");
+            u.setPhone(session.getUserPhone() != null ? session.getUserPhone() : "");
+            u.setCreatedAt(System.currentTimeMillis());
         }
+
+        // 3. Cập nhật thông tin KYC
+        u.setIdentityVerified(true);
+        u.setIdentityType(identityType != null ? identityType : Constants.IDENTITY_STUDENT);
+        u.setIdentityVerifiedAt(System.currentTimeMillis());
+        u.setVerified(true);
+
+        // 4. Cập nhật 3 trường ảnh (nếu có)
+        if (frontUrl != null) u.setCitizenIdFrontUrl(frontUrl);
+        if (backUrl != null) u.setCitizenIdBackUrl(backUrl);
+        if (studentCardUrl != null) u.setStudentCardUrl(studentCardUrl);
+
+        // 5. Lưu vào DB
+        saveUserProfile(u, cb);
     }
 
     public void markResidenceVerified(String userId, AppCallback<Void> cb) {
         User u = getCachedUser(userId);
-        if (u != null) {
-            u.setResidenceVerified(true);
-            u.setResidenceVerifiedAt(System.currentTimeMillis());
-            saveUserProfile(u, cb);
-        } else if (cb != null) {
-            cb.onError(new Exception("User not found in cache"));
+        if (u == null) {
+            u = new User();
+            u.setUserId(userId);
+            u.setFamilyName(session.getUserFamilyName() != null ? session.getUserFamilyName() : "Người dùng");
+            u.setPhone(session.getUserPhone() != null ? session.getUserPhone() : "");
+            u.setCreatedAt(System.currentTimeMillis());
         }
+        u.setResidenceVerified(true);
+        u.setResidenceVerifiedAt(System.currentTimeMillis());
+        saveUserProfile(u, cb);
     }
 
     public void recomputeFullyVerified(User u) {
@@ -124,6 +143,9 @@ public class UserRepository {
         });
     }
 
+    /**
+     * ✅ FIX: Hàm merge KHÔNG được ghi đè làm mất dữ liệu ảnh KYC
+     */
     private void merge(User target, User src) {
         if (src.getAvatarUrl() != null && !src.getAvatarUrl().isEmpty()) target.setAvatarUrl(src.getAvatarUrl());
         if ((target.getFamilyName() == null || target.getFamilyName().isEmpty()) && src.getFamilyName() != null)
@@ -150,6 +172,12 @@ public class UserRepository {
                 @Override
                 public void onSuccess(User user) {
                     if (user != null) {
+                        // ✅ FIX: Không ghi đè làm mất 3 trường ảnh nếu Firestore không có
+                        if (cached != null) {
+                            if (user.getCitizenIdFrontUrl() == null) user.setCitizenIdFrontUrl(cached.getCitizenIdFrontUrl());
+                            if (user.getCitizenIdBackUrl() == null) user.setCitizenIdBackUrl(cached.getCitizenIdBackUrl());
+                            if (user.getStudentCardUrl() == null) user.setStudentCardUrl(cached.getStudentCardUrl());
+                        }
                         local.upsert(user);
                         if (cb != null) cb.onSuccess(user);
                     } else if (cached != null && cb != null) {

@@ -2,6 +2,8 @@ package com.example.studenthousing.ui.viewmodel;
 
 import android.app.Application;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -12,15 +14,18 @@ import com.example.studenthousing.data.model.VerificationTicket;
 import com.example.studenthousing.data.repository.UserRepository;
 import com.example.studenthousing.data.repository.VerificationRepository;
 import com.example.studenthousing.util.AppCallback;
-import com.example.studenthousing.util.CloudinaryUploader;
 import com.example.studenthousing.util.Constants;
-import com.example.studenthousing.util.FileUtils;
 import com.example.studenthousing.util.SessionManager;
 import com.example.studenthousing.util.UiState;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class KycViewModel extends AndroidViewModel {
 
@@ -28,6 +33,9 @@ public class KycViewModel extends AndroidViewModel {
     private final UserRepository userRepo;
     private final VerificationRepository verificationRepo;
     private final MutableLiveData<UiState<Boolean>> submitState = new MutableLiveData<>(UiState.content(false, UiState.SyncState.SYNCED));
+
+    private final ExecutorService ioExecutor = Executors.newSingleThreadExecutor();
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     public KycViewModel(@NonNull Application application) {
         super(application);
@@ -38,10 +46,6 @@ public class KycViewModel extends AndroidViewModel {
 
     public LiveData<UiState<Boolean>> getSubmitState() {
         return submitState;
-    }
-
-    public void submitKyc(Uri parentFront, Uri parentBack, Uri studentId) {
-        submitKyc(parentFront, parentBack, studentId, null, true);
     }
 
     public void submitKyc(Uri parentFront, Uri parentBack, Uri studentFront, Uri studentBack, boolean consent) {
@@ -76,94 +80,101 @@ public class KycViewModel extends AndroidViewModel {
 
         submitState.setValue(UiState.loading());
 
-        List<Uri> uris = new ArrayList<>();
-        if (hasParentComplete) {
-            uris.add(parentFront);
-            uris.add(parentBack);
-        }
-        if (hasStudentComplete) {
-            uris.add(studentFront);
-            uris.add(studentBack);
-        }
+        ioExecutor.execute(() -> {
+            try {
+                // ✅ Copy ảnh sang thư mục riêng để URI không hết hạn
+                String frontUrl = hasParentComplete ? copyToInternalStorage(parentFront, userId, "cccd_front") : null;
+                String backUrl = hasParentComplete ? copyToInternalStorage(parentBack, userId, "cccd_back") : null;
+                String studentFrontUrl = hasStudentComplete ? copyToInternalStorage(studentFront, userId, "student_front") : null;
+                String studentBackUrl = hasStudentComplete ? copyToInternalStorage(studentBack, userId, "student_back") : null;
 
-        uploadKycDocuments(uris, 0, new ArrayList<>(), userId, hasParentComplete, hasStudentComplete);
-    }
+                String studentCardUrl = null;
+                if (studentFrontUrl != null && studentBackUrl != null) {
+                    studentCardUrl = studentFrontUrl + "|" + studentBackUrl;
+                } else if (studentFrontUrl != null) {
+                    studentCardUrl = studentFrontUrl;
+                }
 
-    private void uploadKycDocuments(List<Uri> uris, int index, List<String> urls, String userId, boolean hasParent, boolean hasStudent) {
-        if (index >= uris.size()) {
-            saveTicketAndUser(userId, urls, hasParent, hasStudent);
-            return;
-        }
-        File file = FileUtils.getFileFromUri(getApplication(), uris.get(index));
-        if (file == null) {
-            String fallbackUrl = uris.get(index).toString();
-            urls.add(fallbackUrl);
-            uploadKycDocuments(uris, index + 1, urls, userId, hasParent, hasStudent);
-            return;
-        }
-        CloudinaryUploader.uploadImage(file, new CloudinaryUploader.UploadCallback() {
-            @Override public void onSuccess(String url) {
-                urls.add(url);
-                uploadKycDocuments(uris, index + 1, urls, userId, hasParent, hasStudent);
-            }
-            @Override public void onError(Exception e) {
-                String fallbackUrl = Uri.fromFile(file).toString();
-                urls.add(fallbackUrl);
-                uploadKycDocuments(uris, index + 1, urls, userId, hasParent, hasStudent);
+                List<String> allUrls = new ArrayList<>();
+                if (frontUrl != null) allUrls.add(frontUrl);
+                if (backUrl != null) allUrls.add(backUrl);
+                if (studentFrontUrl != null) allUrls.add(studentFrontUrl);
+                if (studentBackUrl != null) allUrls.add(studentBackUrl);
+                String fileUrls = String.join("|", allUrls);
+
+                final String finalFrontUrl = frontUrl;
+                final String finalBackUrl = backUrl;
+                final String finalStudentCardUrl = studentCardUrl;
+
+                verificationRepo.submitTicket(userId, Constants.TICKET_CITIZEN, fileUrls, null, new AppCallback<VerificationTicket>() {
+                    @Override
+                    public void onSuccess(VerificationTicket ticket) {
+                        userRepo.markIdentityVerified(userId, Constants.IDENTITY_CITIZEN, finalFrontUrl, finalBackUrl, finalStudentCardUrl, new AppCallback<Void>() {
+                            @Override
+                            public void onSuccess(Void d) {
+                                mainHandler.post(() -> submitState.setValue(UiState.content(true, UiState.SyncState.SYNCED)));
+                            }
+                            @Override
+                            public void onError(Exception e) {
+                                mainHandler.post(() -> submitState.setValue(UiState.content(true, UiState.SyncState.SYNCED)));
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        userRepo.markIdentityVerified(userId, Constants.IDENTITY_CITIZEN, finalFrontUrl, finalBackUrl, finalStudentCardUrl, new AppCallback<Void>() {
+                            @Override
+                            public void onSuccess(Void d) {
+                                mainHandler.post(() -> submitState.setValue(UiState.content(true, UiState.SyncState.SYNCED)));
+                            }
+                            @Override
+                            public void onError(Exception ex) {
+                                mainHandler.post(() -> submitState.setValue(UiState.content(true, UiState.SyncState.SYNCED)));
+                            }
+                        });
+                    }
+                });
+            } catch (Exception e) {
+                mainHandler.post(() -> submitState.setValue(UiState.error("Lỗi lưu ảnh: " + e.getMessage())));
             }
         });
     }
 
-    private void saveTicketAndUser(String userId, List<String> urls, boolean hasParent, boolean hasStudent) {
-        final String finalFrontUrl;
-        final String finalBackUrl;
-        final String finalStudentCardUrl;
-
-        int urlIndex = 0;
-        if (hasParent && urls.size() >= 2) {
-            finalFrontUrl = urls.get(urlIndex++);
-            finalBackUrl = urls.get(urlIndex++);
-        } else {
-            finalFrontUrl = null;
-            finalBackUrl = null;
-        }
-
-        if (hasStudent && urls.size() >= urlIndex + 2) {
-            String studentFront = urls.get(urlIndex++);
-            String studentBack = urls.get(urlIndex);
-            finalStudentCardUrl = studentFront + "|" + studentBack;
-        } else if (hasStudent && urls.size() >= urlIndex + 1) {
-            finalStudentCardUrl = urls.get(urlIndex);
-        } else {
-            finalStudentCardUrl = null;
-        }
-
-        String fileUrls = String.join("|", urls);
-
-        verificationRepo.submitTicket(userId, Constants.TICKET_CITIZEN, fileUrls, null, new AppCallback<VerificationTicket>() {
-            @Override
-            public void onSuccess(VerificationTicket ticket) {
-                userRepo.markIdentityVerified(userId, Constants.IDENTITY_CITIZEN, finalFrontUrl, finalBackUrl, finalStudentCardUrl, new AppCallback<Void>() {
-                    @Override public void onSuccess(Void d) {
-                        submitState.postValue(UiState.content(true, UiState.SyncState.SYNCED));
-                    }
-                    @Override public void onError(Exception e) {
-                        submitState.postValue(UiState.content(true, UiState.SyncState.SYNCED));
-                    }
-                });
+    private String copyToInternalStorage(Uri uri, String userId, String prefix) {
+        if (uri == null) return null;
+        try {
+            // Nếu đã là file:/// thì giữ nguyên
+            if ("file".equalsIgnoreCase(uri.getScheme())) {
+                File f = new File(uri.getPath());
+                if (f.exists()) return uri.toString();
             }
 
-            @Override
-            public void onError(Exception e) {
-                userRepo.markIdentityVerified(userId, Constants.IDENTITY_CITIZEN, finalFrontUrl, finalBackUrl, finalStudentCardUrl, new AppCallback<Void>() {
-                    @Override public void onSuccess(Void d) {
-                        submitState.postValue(UiState.content(true, UiState.SyncState.SYNCED));
-                    }
-                    @Override public void onError(Exception ex) {
-                        submitState.postValue(UiState.content(true, UiState.SyncState.SYNCED));
-                    }
-                });
+            File dir = new File(getApplication().getFilesDir(), "kyc_docs");
+            if (!dir.exists() && !dir.mkdirs()) {
+                throw new Exception("Không thể tạo thư mục KYC");
             }
-        });
+            File outFile = new File(dir, userId + "_" + prefix + "_" + System.currentTimeMillis() + ".jpg");
+
+            try (InputStream in = getApplication().getContentResolver().openInputStream(uri);
+                 OutputStream out = new FileOutputStream(outFile)) {
+                if (in == null) throw new Exception("Không đọc được file");
+                byte[] buffer = new byte[8192];
+                int len;
+                while ((len = in.read(buffer)) > 0) {
+                    out.write(buffer, 0, len);
+                }
+            }
+            return Uri.fromFile(outFile).toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return uri.toString();
+        }
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        ioExecutor.shutdown();
     }
 }
