@@ -56,25 +56,6 @@
                     android:contentDescription="@string/cd_favorite"
                     android:src="@drawable/ic_favorite_border" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|start"
-                    android:layout_margin="@dimen/space_lg"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tvStatusBadge"
-                        style="@style/Widget.App.Badge"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/space_sm"
-                        android:background="@drawable/bg_pill_red"
-                        android:textColor="@color/status_danger"
-                        android:visibility="gone"
-                        tools:text="@string/status_exchanged" />
-                </LinearLayout>
-
                 <TextView
                     android:id="@+id/tvPhotoCounter"
                     style="@style/Widget.App.Badge"

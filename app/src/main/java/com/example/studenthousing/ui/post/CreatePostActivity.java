@@ -199,8 +199,19 @@ public class CreatePostActivity extends AppCompatActivity {
         if (etDescription != null && desc != null) etDescription.setText(desc);
         selectedCityCode = getIntent().getIntExtra("POST_CITY_CODE", selectedCityCode);
         selectedWardCode = getIntent().getIntExtra("POST_WARD_CODE", selectedWardCode);
+
+        // ✅ FIX: đọc wardName; nếu rỗng thì resolve từ wardCode
         String wardName = getIntent().getStringExtra("POST_WARD_NAME");
-        if (wardName != null) selectedWardName = wardName;
+        if (wardName != null && !wardName.trim().isEmpty()) {
+            selectedWardName = wardName.trim();
+        } else if (selectedWardCode > 0) {
+            com.example.studenthousing.data.model.Ward ward =
+                    com.example.studenthousing.data.loader.WardsDataLoader
+                            .getByCode(this, selectedWardCode);
+            if (ward != null && ward.getName() != null) {
+                selectedWardName = ward.getName().trim();
+            }
+        }
 
         if (chipGroupUtilities != null && utilities != null) {
             for (String util : utilities) {
@@ -279,7 +290,12 @@ public class CreatePostActivity extends AppCompatActivity {
             fullAddress = houseNum + " " + streetAddr + ", " + adminAddr;
         }
         String fingerprint = AddressFingerprintUtil.build(selectedCityCode, selectedWardCode, streetAddr, houseNum);
-        viewModel.updatePost(editPostId, selectedImageUris, title, fullAddress, desc, utilities, selectedCityCode, selectedWardCode, selectedWardName, 2, fingerprint, houseNum, streetAddr);
+
+        // ✅ FIX: nếu selectedWardName rỗng, resolve lại trước khi gọi ViewModel
+        ensureWardNameResolved();
+
+        viewModel.updatePost(editPostId, selectedImageUris, title, fullAddress, desc, utilities,
+                selectedCityCode, selectedWardCode, selectedWardName, 2, fingerprint, houseNum, streetAddr);
     }
 
     private void updatePhotoPreview() {
@@ -309,6 +325,18 @@ public class CreatePostActivity extends AppCompatActivity {
                     .show();
         } else {
             finish();
+        }
+    }
+
+    /** ✅ FIX: đảm bảo selectedWardName không rỗng khi có wardCode hợp lệ */
+    private void ensureWardNameResolved() {
+        if ((selectedWardName == null || selectedWardName.trim().isEmpty()) && selectedWardCode > 0) {
+            com.example.studenthousing.data.model.Ward ward =
+                    com.example.studenthousing.data.loader.WardsDataLoader
+                            .getByCode(this, selectedWardCode);
+            if (ward != null && ward.getName() != null) {
+                selectedWardName = ward.getName().trim();
+            }
         }
     }
 
@@ -358,6 +386,9 @@ public class CreatePostActivity extends AppCompatActivity {
             }
         }
 
+        // ✅ FIX: resolve wardName trước khi submit
+        ensureWardNameResolved();
+
         String fingerprint = AddressFingerprintUtil.build(selectedCityCode, selectedWardCode, streetAddr, houseNum);
         final int fCityCode = selectedCityCode;
         final int fWardCode = selectedWardCode;
@@ -368,8 +399,11 @@ public class CreatePostActivity extends AppCompatActivity {
         final String finalFingerprint = fingerprint;
         final String finalHouseNum = houseNum;
         final String finalStreetName = streetAddr;
+        final String finalWardName = selectedWardName;
 
-        Runnable submitAction = () -> viewModel.submitPost(selectedImageUris, finalTitle, finalFullAddress, finalDesc, finalUtilities, fCityCode, fWardCode, selectedWardName, 2, finalFingerprint, finalHouseNum, finalStreetName);
+        Runnable submitAction = () -> viewModel.submitPost(selectedImageUris, finalTitle, finalFullAddress,
+                finalDesc, finalUtilities, fCityCode, fWardCode, finalWardName, 2, finalFingerprint,
+                finalHouseNum, finalStreetName);
 
         viewModel.checkFirestoreDuplicate(finalFingerprint, new AppCallback<Boolean>() {
             @Override
@@ -431,7 +465,18 @@ public class CreatePostActivity extends AppCompatActivity {
                     com.example.studenthousing.data.model.VerifiedAddress selected = validAddresses.get(which);
                     selectedCityCode = selected.getCityCode();
                     selectedWardCode = selected.getWardCode();
+
+                    // ✅ FIX: resolve wardName từ wardCode thay vì reset về ""
                     selectedWardName = "";
+                    if (selectedWardCode > 0) {
+                        com.example.studenthousing.data.model.Ward ward =
+                                com.example.studenthousing.data.loader.WardsDataLoader
+                                        .getByCode(this, selectedWardCode);
+                        if (ward != null && ward.getName() != null) {
+                            selectedWardName = ward.getName().trim();
+                        }
+                    }
+
                     if (etAdminAddress != null) {
                         etAdminAddress.setText(selected.getFullAddress());
                     }
@@ -468,7 +513,7 @@ public class CreatePostActivity extends AppCompatActivity {
         }
 
         if (state.getContent() != null) {
-            Toast.makeText(this, "Đăng bài thành công!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, isEditMode ? "Cập nhật thành công!" : "Đăng bài thành công!", Toast.LENGTH_SHORT).show();
             finish();
         } else {
             resetButton();
@@ -478,7 +523,7 @@ public class CreatePostActivity extends AppCompatActivity {
     private void resetButton() {
         if (btnSubmitPost != null) {
             btnSubmitPost.setEnabled(true);
-            btnSubmitPost.setText("Đăng bài ngay");
+            btnSubmitPost.setText(isEditMode ? "Cập nhật bài đăng" : "Đăng bài ngay");
         }
         if (progressBar != null) {
             progressBar.setVisibility(View.GONE);

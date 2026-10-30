@@ -8,7 +8,9 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.studenthousing.data.loader.WardsDataLoader;
 import com.example.studenthousing.data.model.Post;
+import com.example.studenthousing.data.model.Ward;
 import com.example.studenthousing.data.repository.PostRepository;
 import com.example.studenthousing.util.AppCallback;
 import com.example.studenthousing.util.CloudinaryUploader;
@@ -28,7 +30,8 @@ public class CreatePostViewModel extends AndroidViewModel {
 
     private final PostRepository postRepository;
     private final SessionManager session;
-    private final MutableLiveData<UiState<String>> submitState = new MutableLiveData<>(UiState.content(null, UiState.SyncState.SYNCED));
+    private final MutableLiveData<UiState<String>> submitState =
+            new MutableLiveData<>(UiState.content(null, UiState.SyncState.SYNCED));
 
     public CreatePostViewModel(@NonNull Application application) {
         super(application);
@@ -57,14 +60,16 @@ public class CreatePostViewModel extends AndroidViewModel {
 
     public void updatePost(String postId, List<Uri> selectedImageUris, String title, String address, String desc,
                            List<String> utilities, int cityCode, int wardCode) {
-        updatePost(postId, selectedImageUris, title, address, desc, utilities, cityCode, wardCode, "", 2, "", "", "");
+        updatePost(postId, selectedImageUris, title, address, desc, utilities, cityCode, wardCode,
+                "", 2, "", "", "");
     }
 
     public void updatePost(String postId, List<Uri> selectedImageUris, String title, String address,
                            String desc,
                            List<String> utilities, int cityCode, int wardCode,
                            String wardName, int addressVersion, String fingerprint) {
-        updatePost(postId, selectedImageUris, title, address, desc, utilities, cityCode, wardCode, wardName, addressVersion, fingerprint, "", "");
+        updatePost(postId, selectedImageUris, title, address, desc, utilities, cityCode, wardCode,
+                wardName, addressVersion, fingerprint, "", "");
     }
 
     public void updatePost(String postId, List<Uri> selectedImageUris, String title, String address,
@@ -93,9 +98,17 @@ public class CreatePostViewModel extends AndroidViewModel {
                 post.setCityCode(cityCode > 0 ? cityCode : 79);
                 post.setWardCode(wardCode > 0 ? wardCode : 27256);
                 post.setCityName("TP. Hồ Chí Minh");
-                if (wardName != null && !wardName.trim().isEmpty()) {
-                    post.setWardName(wardName.trim());
+
+                // ✅ FIX: luôn set wardName (fallback resolve từ wardCode)
+                String resolvedWardName = wardName;
+                if ((resolvedWardName == null || resolvedWardName.trim().isEmpty()) && wardCode > 0) {
+                    Ward ward = WardsDataLoader.getByCode(getApplication(), wardCode);
+                    if (ward != null && ward.getName() != null) {
+                        resolvedWardName = ward.getName();
+                    }
                 }
+                post.setWardName(resolvedWardName != null ? resolvedWardName.trim() : "");
+
                 if (fingerprint != null && !fingerprint.isEmpty()) post.setAddressFingerprint(fingerprint);
                 post.setUpdatedAt(System.currentTimeMillis());
 
@@ -159,7 +172,9 @@ public class CreatePostViewModel extends AndroidViewModel {
 
             @Override
             public void onError(Exception e) {
-                String fallbackUrl = imageFile != null ? Uri.fromFile(imageFile).toString() : "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7";
+                String fallbackUrl = imageFile != null
+                        ? Uri.fromFile(imageFile).toString()
+                        : "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7";
                 uploadedUrls.add(fallbackUrl);
                 uploadImagesEdit(post, uris, index + 1, uploadedUrls);
             }
@@ -173,10 +188,12 @@ public class CreatePostViewModel extends AndroidViewModel {
     public void createPost(List<Uri> selectedImageUris, String title, String address, String desc,
                            List<String> utilities, int cityCode, int wardCode, String wardName,
                            String houseNumber, String streetName) {
-        submitPost(selectedImageUris, title, address, desc, utilities, cityCode, wardCode, wardName, 2, "", houseNumber, streetName);
+        submitPost(selectedImageUris, title, address, desc, utilities, cityCode, wardCode, wardName,
+                2, "", houseNumber, streetName);
     }
 
-    public void submitPost(List<Uri> selectedImageUris, String title, String address, String desc, List<String> utilities) {
+    public void submitPost(List<Uri> selectedImageUris, String title, String address, String desc,
+                           List<String> utilities) {
         submitPost(selectedImageUris, title, address, desc, utilities, 79, 27256, "", 2, "", "", "");
     }
 
@@ -188,7 +205,8 @@ public class CreatePostViewModel extends AndroidViewModel {
     public void submitPost(List<Uri> selectedImageUris, String title, String address, String desc,
                            List<String> utilities, int cityCode, int wardCode, String wardName,
                            int addressVersion, String fingerprint) {
-        submitPost(selectedImageUris, title, address, desc, utilities, cityCode, wardCode, wardName, addressVersion, fingerprint, "", "");
+        submitPost(selectedImageUris, title, address, desc, utilities, cityCode, wardCode, wardName,
+                addressVersion, fingerprint, "", "");
     }
 
     public void submitPost(List<Uri> selectedImageUris, String title, String address, String desc,
@@ -201,7 +219,8 @@ public class CreatePostViewModel extends AndroidViewModel {
 
         submitState.setValue(UiState.loading());
         if (NetworkUtils.isOnline(getApplication())) {
-            uploadImages(selectedImageUris, 0, new ArrayList<>(), title, address, desc, utilities, cityCode, wardCode, wardName, addressVersion, fingerprint, houseNumber, streetName);
+            uploadImages(selectedImageUris, 0, new ArrayList<>(), title, address, desc, utilities,
+                    cityCode, wardCode, wardName, addressVersion, fingerprint, houseNumber, streetName);
         } else {
             List<String> localUris = new ArrayList<>();
             for (Uri uri : selectedImageUris) {
@@ -210,7 +229,8 @@ public class CreatePostViewModel extends AndroidViewModel {
                     if (localFilePath != null) localUris.add(localFilePath);
                 }
             }
-            calculateDistanceAndSave(localUris, title, address, desc, utilities, cityCode, wardCode, wardName, addressVersion, fingerprint, houseNumber, streetName);
+            calculateDistanceAndSave(localUris, title, address, desc, utilities, cityCode, wardCode,
+                    wardName, addressVersion, fingerprint, houseNumber, streetName);
         }
     }
 
@@ -219,7 +239,8 @@ public class CreatePostViewModel extends AndroidViewModel {
                               int cityCode, int wardCode, String wardName,
                               int addressVersion, String fingerprint, String houseNumber, String streetName) {
         if (index >= uris.size()) {
-            calculateDistanceAndSave(uploadedUrls, title, address, desc, utilities, cityCode, wardCode, wardName, addressVersion, fingerprint, houseNumber, streetName);
+            calculateDistanceAndSave(uploadedUrls, title, address, desc, utilities, cityCode, wardCode,
+                    wardName, addressVersion, fingerprint, houseNumber, streetName);
             return;
         }
 
@@ -232,22 +253,24 @@ public class CreatePostViewModel extends AndroidViewModel {
             @Override
             public void onSuccess(String imageUrl) {
                 uploadedUrls.add(imageUrl);
-                uploadImages(uris, index + 1, uploadedUrls, title, address, desc, utilities, cityCode, wardCode, wardName, addressVersion, fingerprint, houseNumber, streetName);
+                uploadImages(uris, index + 1, uploadedUrls, title, address, desc, utilities,
+                        cityCode, wardCode, wardName, addressVersion, fingerprint, houseNumber, streetName);
             }
 
             @Override
             public void onError(Exception e) {
                 String fallbackUrl = Uri.fromFile(imageFile).toString();
                 uploadedUrls.add(fallbackUrl);
-                uploadImages(uris, index + 1, uploadedUrls, title, address, desc, utilities, cityCode, wardCode, wardName, addressVersion, fingerprint, houseNumber, streetName);
+                uploadImages(uris, index + 1, uploadedUrls, title, address, desc, utilities,
+                        cityCode, wardCode, wardName, addressVersion, fingerprint, houseNumber, streetName);
             }
         });
     }
-
     private void calculateDistanceAndSave(List<String> uploadedImageUrls, String title, String address,
-                                         String desc, List<String> utilities,
-                                         int cityCode, int wardCode, String wardName,
-                                         int addressVersion, String fingerprint, String houseNumber, String streetName) {
+                                          String desc, List<String> utilities,
+                                          int cityCode, int wardCode, String wardName,
+                                          int addressVersion, String fingerprint,
+                                          String houseNumber, String streetName) {
         String addrLower = address != null ? address.toLowerCase() : "";
         double houseLat;
         double houseLon;
@@ -281,7 +304,8 @@ public class CreatePostViewModel extends AndroidViewModel {
                                       int addressVersion, String fingerprint,
                                       String currentUserId, double finalHouseLat, double finalHouseLon,
                                       String houseNumber, String streetName) {
-        String familyName = session.getUserFamilyName() != null ? session.getUserFamilyName() : "Hộ gia đình sinh viên";
+        String familyName = session.getUserFamilyName() != null
+                ? session.getUserFamilyName() : "Hộ gia đình sinh viên";
 
         long now = System.currentTimeMillis();
         Post post = new Post();
@@ -298,10 +322,17 @@ public class CreatePostViewModel extends AndroidViewModel {
         post.setCityCode(cityCode > 0 ? cityCode : 79);
         post.setWardCode(wardCode > 0 ? wardCode : 27256);
         post.setCityName("TP. Hồ Chí Minh");
-        if (wardName != null && !wardName.trim().isEmpty()) {
-            post.setWardName(wardName.trim());
+
+        // ✅ FIX: luôn set wardName (fallback resolve từ wardCode) — không để null/rỗng
+        String resolvedWardName = wardName;
+        if ((resolvedWardName == null || resolvedWardName.trim().isEmpty()) && wardCode > 0) {
+            Ward ward = WardsDataLoader.getByCode(getApplication(), wardCode);
+            if (ward != null && ward.getName() != null) {
+                resolvedWardName = ward.getName();
+            }
         }
-        // addressVersion is intentionally ignored in the v2 ward-only schema.
+        post.setWardName(resolvedWardName != null ? resolvedWardName.trim() : "");
+
         post.setAddressFingerprint(fingerprint);
         post.setImages(new ArrayList<>(uploadedImageUrls));
         post.setCreatedAt(now);
@@ -318,7 +349,8 @@ public class CreatePostViewModel extends AndroidViewModel {
 
             @Override
             public void onError(Exception e) {
-                submitState.postValue(UiState.error("Lỗi lưu bài đăng: " + (e != null ? e.getMessage() : "")));
+                submitState.postValue(UiState.error("Lỗi lưu bài đăng: "
+                        + (e != null ? e.getMessage() : "")));
             }
         });
     }

@@ -8,32 +8,27 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.studenthousing.R;
-
 import com.example.studenthousing.data.loader.CampusDataLoader;
 import com.example.studenthousing.data.model.Campus;
-import com.example.studenthousing.data.model.Post;
-
 import com.example.studenthousing.data.model.NearbyCampus;
-
+import com.example.studenthousing.data.model.Post;
 import com.example.studenthousing.data.model.User;
 import com.example.studenthousing.data.repository.PostRepository;
 import com.example.studenthousing.databinding.ActivityDetailBinding;
 import com.example.studenthousing.ui.adapter.PhotoPagerAdapter;
-
 import com.example.studenthousing.ui.profile.PublicHostProfileActivity;
 import com.example.studenthousing.ui.viewmodel.DetailViewModel;
 import com.example.studenthousing.util.AppCallback;
 import com.example.studenthousing.util.Constants;
 import com.example.studenthousing.util.SessionManager;
 import com.example.studenthousing.util.UiState;
-
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +43,7 @@ public class DetailActivity extends AppCompatActivity {
 
     private TextView tvTitle, tvLocation, tvHostName, tvDescription,
             tvPhotoCounter, tvDescriptionLabel,
-            tvStatusBadge, tvAreaMeta;
+            tvAreaMeta;
     private View tvHostVerified;
     private View cardHost, cardDistance, cardDescription, detailBottomBar;
     private View btnChat;
@@ -72,7 +67,7 @@ public class DetailActivity extends AppCompatActivity {
         Post postExtra = getIntent().getParcelableExtra("post");
         if ((postId == null || postId.trim().isEmpty()) && postExtra != null) postId = postExtra.getPostId();
         if (postId == null || postId.trim().isEmpty()) {
-            android.widget.Toast.makeText(this, "Không tìm thấy mã bài đăng", android.widget.Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Không tìm thấy mã bài đăng", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -83,7 +78,6 @@ public class DetailActivity extends AppCompatActivity {
         tvDescription = findViewById(R.id.tvDescription);
         tvDescriptionLabel = null;
         tvPhotoCounter = findViewById(R.id.tvPhotoCounter);
-        tvStatusBadge = findViewById(R.id.tvStatusBadge);
         tvAreaMeta = findViewById(R.id.tvAreaMeta);
         tvHostVerified = findViewById(R.id.tvHostVerified);
         cardHost = findViewById(R.id.cardHost);
@@ -93,10 +87,6 @@ public class DetailActivity extends AppCompatActivity {
         gridAmenities = findViewById(R.id.gridAmenities);
         tvAmenitiesEmpty = findViewById(R.id.tvAmenitiesEmpty);
 
-
-
-
-
         ImageButton btnBack = findViewById(R.id.btnBack);
         ImageButton btnFavorite = findViewById(R.id.btnFavorite);
 
@@ -105,7 +95,8 @@ public class DetailActivity extends AppCompatActivity {
 
         if (cardHost != null) {
             cardHost.setOnClickListener(v -> {
-                if (currentPost == null || currentPost.getUserId() == null || currentPost.getUserId().trim().isEmpty()) return;
+                if (currentPost == null || currentPost.getUserId() == null
+                        || currentPost.getUserId().trim().isEmpty()) return;
                 Intent intent = new Intent(DetailActivity.this, PublicHostProfileActivity.class);
                 intent.putExtra(PublicHostProfileActivity.EXTRA_TARGET_USER_ID, currentPost.getUserId());
                 startActivity(intent);
@@ -137,16 +128,19 @@ public class DetailActivity extends AppCompatActivity {
         View btnCall = findViewById(R.id.btnCall);
         if (btnCall != null) btnCall.setOnClickListener(v -> {
             if (currentPost != null && currentPost.getUserId() != null) {
-                com.example.studenthousing.data.local.UserDao userDao = new com.example.studenthousing.data.local.UserDao(DetailActivity.this);
+                com.example.studenthousing.data.local.UserDao userDao =
+                        new com.example.studenthousing.data.local.UserDao(DetailActivity.this);
                 User host = userDao.getById(currentPost.getUserId());
                 String phone = host != null && host.getPhone() != null && !host.getPhone().isEmpty()
                         ? host.getPhone() : "0988 123 456";
-                String hostName = currentPost.getFamilyName() != null ? currentPost.getFamilyName() : "Chủ bài đăng";
+                String hostName = currentPost.getFamilyName() != null
+                        ? currentPost.getFamilyName() : "Chủ bài đăng";
                 new androidx.appcompat.app.AlertDialog.Builder(DetailActivity.this)
                         .setTitle("Gọi điện cho người đăng bài")
                         .setMessage("Chủ nhà: " + hostName + "\nSố điện thoại: " + phone)
                         .setPositiveButton("Gọi ngay", (dialog, which) -> {
-                            Intent callIntent = new Intent(Intent.ACTION_DIAL, android.net.Uri.fromParts("tel", phone.trim(), null));
+                            Intent callIntent = new Intent(Intent.ACTION_DIAL,
+                                    android.net.Uri.fromParts("tel", phone.trim(), null));
                             startActivity(callIntent);
                         })
                         .setNegativeButton("Đóng", null)
@@ -166,30 +160,47 @@ public class DetailActivity extends AppCompatActivity {
         if (post == null) return;
         currentPost = post;
         if (tvTitle != null && post.getTitle() != null) tvTitle.setText(post.getTitle());
-        if (tvLocation != null) tvLocation.setText(formatPublicAddress(post, false));
+
+        // ✅ FIX: owner xem được địa chỉ đầy đủ của chính mình
+        String currentUid = SessionManager.getUid(this);
+        boolean isOwner = currentUid != null && currentUid.equals(post.getUserId());
+        if (tvLocation != null) tvLocation.setText(formatPublicAddress(post, isOwner));
+
         if (tvHostName != null && post.getFamilyName() != null) tvHostName.setText(post.getFamilyName());
         bindPostMetadata(post);
         bindDescription(post.getDescription());
         setupAmenities(post.getUtilities());
         loadComments();
-        String currentUid = SessionManager.getUid(this);
-        boolean isOwner = currentUid != null && currentUid.equals(post.getUserId());
+
         updateActionAvailability(isOwner, post);
         List<String> images = post.getImages();
         setupPhotoPager(images != null && !images.isEmpty() ? images : null);
         setupNearbyCampuses(post.getNearbyCampuses());
     }
 
+    // ============================================================
+    // ✅ FIX QUAN TRỌNG NHẤT: không bao giờ mất địa chỉ
+    // ============================================================
     private String formatPublicAddress(Post post, boolean showFull) {
         if (post == null) return "";
-        if (showFull && post.getAddress() != null && !post.getAddress().trim().isEmpty()) {
-            return post.getAddress();
+
+        String fullAddress = post.getAddress() != null ? post.getAddress().trim() : "";
+        String ward = post.getWardName() != null ? post.getWardName().trim() : "";
+        String city = post.getCityName() != null ? post.getCityName().trim() : "";
+
+        // Nếu là owner hoặc cần showFull -> ưu tiên địa chỉ đầy đủ đã lưu
+        if (showFull && !fullAddress.isEmpty()) {
+            return fullAddress;
         }
-        String ward = post.getWardName() == null ? "" : post.getWardName().trim();
-        String city = post.getCityName() == null ? "" : post.getCityName().trim();
+
+        // Ưu tiên hiển thị ward + city (dạng public)
         if (!ward.isEmpty() && !city.isEmpty()) return ward + ", " + city;
         if (!ward.isEmpty()) return ward;
         if (!city.isEmpty()) return city;
+
+        // 🔑 FALLBACK: dùng address đã lưu thay vì "Đang ẩn địa chỉ chi tiết"
+        if (!fullAddress.isEmpty()) return fullAddress;
+
         return "Đang ẩn địa chỉ chi tiết";
     }
 
@@ -198,17 +209,6 @@ public class DetailActivity extends AppCompatActivity {
             boolean addressVerified = PostDisplayFormatter.isAddressVerified(post);
             if (addressVerified) tvAreaMeta.setText("Đã xác thực địa chỉ");
             tvAreaMeta.setVisibility(addressVerified ? View.VISIBLE : View.GONE);
-        }
-        if (tvStatusBadge != null) {
-            boolean available = Constants.POST_AVAILABLE.equalsIgnoreCase(post.getStatus());
-            tvStatusBadge.setText(available ? "Sẵn sàng đổi" : "Đã đổi");
-            tvStatusBadge.setBackgroundResource(available
-                    ? R.drawable.bg_badge_verified
-                    : R.drawable.bg_badge_distance);
-            tvStatusBadge.setTextColor(getColor(available
-                    ? R.color.olive_primary_dark
-                    : R.color.text_sub));
-            tvStatusBadge.setVisibility(View.VISIBLE);
         }
     }
 
@@ -243,7 +243,10 @@ public class DetailActivity extends AppCompatActivity {
                     intent.putExtra("POST_CITY_CODE", post.getCityCode());
                     intent.putExtra("POST_WARD_CODE", post.getWardCode());
                     intent.putExtra("POST_WARD_NAME", post.getWardName());
-                    intent.putStringArrayListExtra("POST_UTILITIES", post.getUtilities() != null ? new ArrayList<>(post.getUtilities()) : new ArrayList<>());
+                    intent.putStringArrayListExtra("POST_UTILITIES",
+                            post.getUtilities() != null
+                                    ? new ArrayList<>(post.getUtilities())
+                                    : new ArrayList<>());
                     startActivity(intent);
                 });
             }
@@ -256,15 +259,20 @@ public class DetailActivity extends AppCompatActivity {
                             .setMessage("Bạn có chắc chắn muốn xóa bài đăng này không?")
                             .setPositiveButton("Xóa", (dialog, which) -> {
                                 new PostRepository(this).deletePost(post.getPostId(), new AppCallback<Void>() {
-                                    @Override public void onSuccess(Void d) {
+                                    @Override
+                                    public void onSuccess(Void d) {
                                         runOnUiThread(() -> {
-                                            android.widget.Toast.makeText(DetailActivity.this, "Đã xóa bài đăng", android.widget.Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(DetailActivity.this,
+                                                    "Đã xóa bài đăng", Toast.LENGTH_SHORT).show();
                                             finish();
                                         });
                                     }
-                                    @Override public void onError(Exception e) {
+
+                                    @Override
+                                    public void onError(Exception e) {
                                         runOnUiThread(() -> {
-                                            android.widget.Toast.makeText(DetailActivity.this, "Đã xóa bài đăng", android.widget.Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(DetailActivity.this,
+                                                    "Đã xóa bài đăng", Toast.LENGTH_SHORT).show();
                                             finish();
                                         });
                                     }
@@ -281,16 +289,19 @@ public class DetailActivity extends AppCompatActivity {
                 btnCall.setVisibility(available ? View.VISIBLE : View.GONE);
                 btnCall.setOnClickListener(v -> {
                     if (currentPost != null && currentPost.getUserId() != null) {
-                        com.example.studenthousing.data.local.UserDao userDao = new com.example.studenthousing.data.local.UserDao(DetailActivity.this);
+                        com.example.studenthousing.data.local.UserDao userDao =
+                                new com.example.studenthousing.data.local.UserDao(DetailActivity.this);
                         User host = userDao.getById(currentPost.getUserId());
                         String phone = host != null && host.getPhone() != null && !host.getPhone().isEmpty()
                                 ? host.getPhone() : "0988 123 456";
-                        String hostName = currentPost.getFamilyName() != null ? currentPost.getFamilyName() : "Chủ bài đăng";
+                        String hostName = currentPost.getFamilyName() != null
+                                ? currentPost.getFamilyName() : "Chủ bài đăng";
                         new androidx.appcompat.app.AlertDialog.Builder(DetailActivity.this)
                                 .setTitle("Gọi điện cho người đăng bài")
                                 .setMessage("Chủ nhà: " + hostName + "\nSố điện thoại: " + phone)
                                 .setPositiveButton("Gọi ngay", (dialog, which) -> {
-                                    Intent callIntent = new Intent(Intent.ACTION_DIAL, android.net.Uri.fromParts("tel", phone.trim(), null));
+                                    Intent callIntent = new Intent(Intent.ACTION_DIAL,
+                                            android.net.Uri.fromParts("tel", phone.trim(), null));
                                     startActivity(callIntent);
                                 })
                                 .setNegativeButton("Đóng", null)
@@ -303,7 +314,8 @@ public class DetailActivity extends AppCompatActivity {
                 btnChat.setVisibility(available ? View.VISIBLE : View.GONE);
                 btnChat.setOnClickListener(v -> {
                     if (currentPost != null) {
-                        openSmsApp(currentPost.getUserId(), "Xin chào, tôi quan tâm đến bài đăng của bạn.");
+                        openSmsApp(currentPost.getUserId(),
+                                "Xin chào, tôi quan tâm đến bài đăng của bạn.");
                     }
                 });
             }
@@ -313,8 +325,7 @@ public class DetailActivity extends AppCompatActivity {
     private void renderDetailState(UiState<DetailViewModel.PostDetailData> state) {
         if (state == null) return;
         if (state.getScreenState() == UiState.ScreenState.ERROR && state.getContent() == null) {
-            android.widget.Toast.makeText(this, "Lỗi tải bài đăng",
-                    android.widget.Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Lỗi tải bài đăng", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
@@ -327,12 +338,15 @@ public class DetailActivity extends AppCompatActivity {
         if (tvTitle != null && post.getTitle() != null) tvTitle.setText(post.getTitle());
 
         String currentUid = SessionManager.getUid(this);
-        boolean isOwner = currentUid != null && post.getUserId() != null && currentUid.equals(post.getUserId());
+        boolean isOwner = currentUid != null && post.getUserId() != null
+                && currentUid.equals(post.getUserId());
         boolean hasActiveExchange = false;
 
+        // ✅ FIX: owner luôn thấy địa chỉ đầy đủ
         if (tvLocation != null) {
-            tvLocation.setText(formatPublicAddress(post, hasActiveExchange));
+            tvLocation.setText(formatPublicAddress(post, isOwner || hasActiveExchange));
         }
+
         bindPostMetadata(post);
         updateActionAvailability(isOwner, post);
         if (tvHostName != null && post.getFamilyName() != null && !post.getFamilyName().isEmpty()) {
@@ -340,9 +354,7 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         bindDescription(post.getDescription());
-
         setupNearbyCampuses(post.getNearbyCampuses());
-
         setupAmenities(post.getUtilities());
 
         List<String> images = post.getImages();
@@ -364,8 +376,6 @@ public class DetailActivity extends AppCompatActivity {
 
         loadComments();
     }
-
-
 
     private void setupNearbyCampuses(List<NearbyCampus> nearby) {
         LinearLayout container = null;
@@ -404,7 +414,6 @@ public class DetailActivity extends AppCompatActivity {
             ImageView icon = item.findViewById(R.id.ivAmenityIcon);
             TextView label = item.findViewById(R.id.tvAmenityLabel);
 
-            // Resolve code → label (hỗ trợ cả dữ liệu cũ lưu theo code lẫn mới lưu theo label)
             com.example.studenthousing.data.model.Utility utilObj =
                     com.example.studenthousing.data.loader.UtilitiesDataLoader.getByCode(this, util);
             String displayLabel = (utilObj != null && utilObj.getLabel() != null)
@@ -428,7 +437,6 @@ public class DetailActivity extends AppCompatActivity {
     private int getIconForUtility(String u) {
         if (u == null) return R.drawable.ic_star;
         String key = u.toLowerCase();
-        // Match theo label tiếng Việt từ utilities.json
         if (key.contains("wi-fi") || key.contains("wifi")) return R.drawable.ic_wifi;
         if (key.contains("chỗ để xe") || key.contains("parking") || key.contains("đỗ xe") || key.contains("gửi xe")) return R.drawable.ic_parking_car;
         if (key.contains("máy lạnh") || key.contains("điều hòa") || key.contains("air")) return R.drawable.ic_air_conditioner;
@@ -451,7 +459,6 @@ public class DetailActivity extends AppCompatActivity {
             showFullScreenPhoto(safeUrls, position);
         }));
 
-        // ✅ Không dùng TabLayoutMediator nữa — tạo dot thủ công
         setupDotIndicator(safeUrls.size());
 
         if (pageCallback != null) {
@@ -476,7 +483,6 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    /** Tạo N chấm tròn 8dp, cách nhau 4dp, chấm đầu được chọn */
     private void setupDotIndicator(int totalImages) {
         LinearLayout dots = findViewById(R.id.photoIndicator);
         if (dots == null) return;
@@ -484,7 +490,7 @@ public class DetailActivity extends AppCompatActivity {
         if (totalImages <= 0) return;
 
         int size = dp(8);
-        int gap  = dp(4);
+        int gap = dp(4);
 
         for (int i = 0; i < totalImages; i++) {
             View dot = new View(this);
@@ -497,7 +503,6 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    /** Đổi trạng thái selected cho đúng chấm đang xem */
     private void updateDotIndicator(int position) {
         LinearLayout dots = findViewById(R.id.photoIndicator);
         if (dots == null) return;
@@ -512,7 +517,8 @@ public class DetailActivity extends AppCompatActivity {
 
     private void showFullScreenPhoto(List<String> urls, int startPos) {
         if (urls == null || urls.isEmpty()) return;
-        android.app.Dialog dialog = new android.app.Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        android.app.Dialog dialog = new android.app.Dialog(this,
+                android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         dialog.setContentView(R.layout.dialog_fullscreen_photo);
 
         ViewPager2 pager = dialog.findViewById(R.id.fullScreenPager);
@@ -547,17 +553,20 @@ public class DetailActivity extends AppCompatActivity {
     private void submitComment() {}
 
     private void openSmsApp(String targetUserId, String defaultMessage) {
-        com.example.studenthousing.data.local.UserDao userDao = new com.example.studenthousing.data.local.UserDao(this);
+        com.example.studenthousing.data.local.UserDao userDao =
+                new com.example.studenthousing.data.local.UserDao(this);
         User host = targetUserId != null ? userDao.getById(targetUserId) : null;
         String phone = host != null && host.getPhone() != null && !host.getPhone().isEmpty()
                 ? host.getPhone() : "0988123456";
-        Intent smsIntent = new Intent(Intent.ACTION_SENDTO, android.net.Uri.parse("smsto:" + phone.trim()));
+        Intent smsIntent = new Intent(Intent.ACTION_SENDTO,
+                android.net.Uri.parse("smsto:" + phone.trim()));
         smsIntent.putExtra("sms_body", defaultMessage);
         try {
             startActivity(smsIntent);
         } catch (Exception e) {
             try {
-                Intent viewIntent = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse("sms:" + phone.trim()));
+                Intent viewIntent = new Intent(Intent.ACTION_VIEW,
+                        android.net.Uri.parse("sms:" + phone.trim()));
                 viewIntent.putExtra("sms_body", defaultMessage);
                 startActivity(viewIntent);
             } catch (Exception ex) {
