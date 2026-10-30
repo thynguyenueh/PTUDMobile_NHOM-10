@@ -51,7 +51,7 @@ public class DetailActivity extends AppCompatActivity {
             tvStatusBadge, tvHostRating, tvAreaMeta;
     private View tvHostVerified;
     private View cardHost, cardDistance, cardDescription, detailBottomBar;
-    private View btnChat, btnProposeSwap;
+    private View btnChat;
     private ImageView ivStar;
     private GridLayout gridAmenities;
     private TextView tvAmenitiesEmpty;
@@ -105,9 +105,8 @@ public class DetailActivity extends AppCompatActivity {
         if (cardHost != null) {
             cardHost.setOnClickListener(v -> {
                 if (currentPost == null || currentPost.getUserId() == null || currentPost.getUserId().trim().isEmpty()) return;
-                Intent intent = new Intent(DetailActivity.this, UserReviewsActivity.class);
-                intent.putExtra(UserReviewsActivity.EXTRA_TARGET_USER_ID, currentPost.getUserId());
-                intent.putExtra(UserReviewsActivity.EXTRA_TARGET_USER_NAME, currentPost.getFamilyName());
+                Intent intent = new Intent(DetailActivity.this, com.example.studenthousing.ui.partner.PublicHostProfileActivity.class);
+                intent.putExtra(com.example.studenthousing.ui.partner.PublicHostProfileActivity.EXTRA_TARGET_USER_ID, currentPost.getUserId());
                 startActivity(intent);
             });
         }
@@ -134,6 +133,26 @@ public class DetailActivity extends AppCompatActivity {
             if (houseAddress != null && tvLocation != null) tvLocation.setText(houseAddress);
         }
 
+        View btnCall = findViewById(R.id.btnCall);
+        if (btnCall != null) btnCall.setOnClickListener(v -> {
+            if (currentPost != null && currentPost.getUserId() != null) {
+                com.example.studenthousing.data.local.UserDao userDao = new com.example.studenthousing.data.local.UserDao(DetailActivity.this);
+                User host = userDao.getById(currentPost.getUserId());
+                String phone = host != null && host.getPhone() != null && !host.getPhone().isEmpty()
+                        ? host.getPhone() : "0988 123 456";
+                String hostName = currentPost.getFamilyName() != null ? currentPost.getFamilyName() : "Chủ bài đăng";
+                new androidx.appcompat.app.AlertDialog.Builder(DetailActivity.this)
+                        .setTitle("Gọi điện cho người đăng bài")
+                        .setMessage("Chủ nhà: " + hostName + "\nSố điện thoại: " + phone)
+                        .setPositiveButton("Gọi ngay", (dialog, which) -> {
+                            Intent callIntent = new Intent(Intent.ACTION_DIAL, android.net.Uri.fromParts("tel", phone.trim(), null));
+                            startActivity(callIntent);
+                        })
+                        .setNegativeButton("Đóng", null)
+                        .show();
+            }
+        });
+
         btnChat = findViewById(R.id.btnChat);
         if (btnChat != null) btnChat.setOnClickListener(v -> {
             Intent intent = new Intent(DetailActivity.this, ChatActivity.class);
@@ -141,19 +160,6 @@ public class DetailActivity extends AppCompatActivity {
                 intent.putExtra("target_user_id", currentPost.getUserId());
                 intent.putExtra("ROOM_NAME", currentPost.getFamilyName());
                 intent.putExtra("POST_ID", currentPost.getPostId());
-            }
-            startActivity(intent);
-        });
-
-        btnProposeSwap = findViewById(R.id.btnProposeSwap);
-        if (btnProposeSwap != null) btnProposeSwap.setOnClickListener(v -> {
-            Intent intent = new Intent(DetailActivity.this, ProposalActivity.class);
-            if (currentPost != null) {
-                intent.putExtra("receiver_post_id", currentPost.getPostId());
-                intent.putExtra("receiver_user_id", currentPost.getUserId());
-                intent.putExtra("HOST_NAME", currentPost.getFamilyName());
-            } else {
-                intent.putExtra("HOST_NAME", getString(R.string.detail_host_name));
             }
             startActivity(intent);
         });
@@ -220,11 +226,14 @@ public class DetailActivity extends AppCompatActivity {
     private void updateActionAvailability(boolean isOwner, AccommodationPost post) {
         if (detailBottomBar != null) detailBottomBar.setVisibility(View.VISIBLE);
 
+        View btnCall = findViewById(R.id.btnCall);
+        View btnChat = findViewById(R.id.btnChat);
+
         if (isOwner) {
-            if (btnChat != null && btnChat instanceof com.google.android.material.button.MaterialButton) {
-                ((com.google.android.material.button.MaterialButton) btnChat).setText("Chỉnh sửa");
-                btnChat.setVisibility(View.VISIBLE);
-                btnChat.setOnClickListener(v -> {
+            if (btnCall instanceof com.google.android.material.button.MaterialButton) {
+                ((com.google.android.material.button.MaterialButton) btnCall).setText("Chỉnh sửa");
+                btnCall.setVisibility(View.VISIBLE);
+                btnCall.setOnClickListener(v -> {
                     Intent intent = new Intent(this, CreatePostActivity.class);
                     intent.putExtra("IS_EDIT_MODE", true);
                     intent.putExtra("POST_ID", post.getPostId());
@@ -240,10 +249,10 @@ public class DetailActivity extends AppCompatActivity {
                     startActivity(intent);
                 });
             }
-            if (btnProposeSwap != null && btnProposeSwap instanceof com.google.android.material.button.MaterialButton) {
-                ((com.google.android.material.button.MaterialButton) btnProposeSwap).setText("Xóa bài");
-                btnProposeSwap.setVisibility(View.VISIBLE);
-                btnProposeSwap.setOnClickListener(v -> {
+            if (btnChat instanceof com.google.android.material.button.MaterialButton) {
+                ((com.google.android.material.button.MaterialButton) btnChat).setText("Xóa bài");
+                btnChat.setVisibility(View.VISIBLE);
+                btnChat.setOnClickListener(v -> {
                     new androidx.appcompat.app.AlertDialog.Builder(this)
                             .setTitle("Xóa bài đăng?")
                             .setMessage("Bạn có chắc chắn muốn xóa bài đăng này không?")
@@ -269,7 +278,29 @@ public class DetailActivity extends AppCompatActivity {
             }
         } else {
             boolean available = Constants.POST_AVAILABLE.equalsIgnoreCase(post.getStatus());
-            if (btnChat != null && btnChat instanceof com.google.android.material.button.MaterialButton) {
+            if (btnCall instanceof com.google.android.material.button.MaterialButton) {
+                ((com.google.android.material.button.MaterialButton) btnCall).setText(R.string.action_call);
+                btnCall.setVisibility(available ? View.VISIBLE : View.GONE);
+                btnCall.setOnClickListener(v -> {
+                    if (currentPost != null && currentPost.getUserId() != null) {
+                        com.example.studenthousing.data.local.UserDao userDao = new com.example.studenthousing.data.local.UserDao(DetailActivity.this);
+                        User host = userDao.getById(currentPost.getUserId());
+                        String phone = host != null && host.getPhone() != null && !host.getPhone().isEmpty()
+                                ? host.getPhone() : "0988 123 456";
+                        String hostName = currentPost.getFamilyName() != null ? currentPost.getFamilyName() : "Chủ bài đăng";
+                        new androidx.appcompat.app.AlertDialog.Builder(DetailActivity.this)
+                                .setTitle("Gọi điện cho người đăng bài")
+                                .setMessage("Chủ nhà: " + hostName + "\nSố điện thoại: " + phone)
+                                .setPositiveButton("Gọi ngay", (dialog, which) -> {
+                                    Intent callIntent = new Intent(Intent.ACTION_DIAL, android.net.Uri.fromParts("tel", phone.trim(), null));
+                                    startActivity(callIntent);
+                                })
+                                .setNegativeButton("Đóng", null)
+                                .show();
+                    }
+                });
+            }
+            if (btnChat instanceof com.google.android.material.button.MaterialButton) {
                 ((com.google.android.material.button.MaterialButton) btnChat).setText(R.string.action_message);
                 btnChat.setVisibility(available ? View.VISIBLE : View.GONE);
                 btnChat.setOnClickListener(v -> {
@@ -278,21 +309,6 @@ public class DetailActivity extends AppCompatActivity {
                         intent.putExtra("target_user_id", currentPost.getUserId());
                         intent.putExtra("ROOM_NAME", currentPost.getFamilyName());
                         intent.putExtra("POST_ID", currentPost.getPostId());
-                    }
-                    startActivity(intent);
-                });
-            }
-            if (btnProposeSwap != null && btnProposeSwap instanceof com.google.android.material.button.MaterialButton) {
-                ((com.google.android.material.button.MaterialButton) btnProposeSwap).setText(R.string.action_propose_swap);
-                btnProposeSwap.setVisibility(available ? View.VISIBLE : View.GONE);
-                btnProposeSwap.setOnClickListener(v -> {
-                    Intent intent = new Intent(DetailActivity.this, ProposalActivity.class);
-                    if (currentPost != null) {
-                        intent.putExtra("receiver_post_id", currentPost.getPostId());
-                        intent.putExtra("receiver_user_id", currentPost.getUserId());
-                        intent.putExtra("HOST_NAME", currentPost.getFamilyName());
-                    } else {
-                        intent.putExtra("HOST_NAME", getString(R.string.detail_host_name));
                     }
                     startActivity(intent);
                 });

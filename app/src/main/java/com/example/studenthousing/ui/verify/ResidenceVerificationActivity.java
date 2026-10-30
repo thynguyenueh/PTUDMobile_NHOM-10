@@ -228,7 +228,9 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
         }
 
         if (state.getContent() != null) {
+            prefs.edit().putString(KEY_STATUS + userId, "PENDING").apply();
             Toast.makeText(this, state.getContent(), Toast.LENGTH_SHORT).show();
+            applyStatus(false, true);
         }
     }
 
@@ -238,6 +240,11 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
         String fileUrl = prefs.getString(KEY_FILE_URL + userId, null);
         String regNum = prefs.getString(KEY_REG_NUMBER + userId, null);
         String wardName = prefs.getString(KEY_WARD + userId, null);
+
+        if (selectedFilePath != null) {
+            binding.ivResidencePreview.setVisibility(View.VISIBLE);
+            Glide.with(this).load(new File(selectedFilePath)).into(binding.ivResidencePreview);
+        }
 
         if (verified) {
             binding.btnSubmitVerification.setEnabled(false);

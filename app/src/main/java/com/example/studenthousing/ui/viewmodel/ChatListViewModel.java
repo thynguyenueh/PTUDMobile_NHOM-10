@@ -51,11 +51,7 @@ public class ChatListViewModel extends AndroidViewModel {
                 }
                 @Override public void onError(Exception e) {
                     List<ChatRoom> fallback = repository.getUserRoomsCached(userId);
-                    if (fallback != null && !fallback.isEmpty()) {
-                        rooms.postValue(UiState.content(fallback, UiState.SyncState.SYNC_ERROR));
-                    } else {
-                        rooms.postValue(UiState.error(e == null ? "Lỗi tải hội thoại" : e.getMessage()));
-                    }
+                    rooms.postValue(UiState.content(fallback != null ? fallback : new ArrayList<>(), UiState.SyncState.SYNC_ERROR));
                 }
             });
         });

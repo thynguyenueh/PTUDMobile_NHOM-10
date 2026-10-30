@@ -189,6 +189,13 @@ public class KycActivity extends AppCompatActivity {
             return;
         }
         if (Boolean.TRUE.equals(state.getContent())) {
+            String userId = com.example.studenthousing.util.SessionManager.getUid(this);
+            if (userId != null) {
+                getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
+                        .putString(KEY_STATUS + userId, "PENDING")
+                        .putLong(KEY_SUBMITTED_AT + userId, System.currentTimeMillis())
+                        .apply();
+            }
             Toast.makeText(this, "Hồ sơ KYC đã được gửi! Đang chờ đối soát trong 24h", Toast.LENGTH_LONG).show();
             finish();
         }

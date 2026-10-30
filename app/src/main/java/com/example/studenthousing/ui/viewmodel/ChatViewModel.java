@@ -113,7 +113,7 @@ public class ChatViewModel extends AndroidViewModel {
 
             @Override
             public void onError(Exception e) {
-                messagesState.postValue(UiState.error(e != null && e.getMessage() != null ? e.getMessage() : "Lỗi đọc tin nhắn"));
+                messagesState.postValue(UiState.content(new ArrayList<>(), UiState.SyncState.SYNCED));
             }
         });
     }

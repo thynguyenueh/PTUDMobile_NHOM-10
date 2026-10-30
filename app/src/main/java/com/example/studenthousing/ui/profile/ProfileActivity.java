@@ -99,22 +99,64 @@ public class ProfileActivity extends AppCompatActivity {
                     user != null && user.isResidenceVerified(), data.postCount, data.reviewCount, data.exchangeCount);
         }
 
-        boolean residenceVerified = user != null && user.isResidenceVerified();
+        String userId = user != null ? user.getUserId() : session.getUserId();
+        String savedResidenceStatus = getSharedPreferences(ResidenceVerificationActivity.PREFS_NAME, MODE_PRIVATE)
+                .getString(ResidenceVerificationActivity.KEY_STATUS + userId, null);
+        String savedKycStatus = getSharedPreferences(KycActivity.PREFS_NAME, MODE_PRIVATE)
+                .getString(KycActivity.KEY_STATUS + userId, null);
+
+        boolean residenceVerified = (user != null && user.isResidenceVerified()) || "APPROVED".equalsIgnoreCase(savedResidenceStatus);
         View verifiedTag = binding.tvVerifiedStatusTag;
         if (verifiedTag != null) verifiedTag.setVisibility(residenceVerified ? View.VISIBLE : View.GONE);
         TextView residenceSub = binding.tvResidenceAuthSub;
         if (residenceSub != null) {
             if (residenceVerified) setStatus(residenceSub, "✓ Đã xác thực cư trú", "#719B28");
-            else if ("PENDING".equalsIgnoreCase(data.residenceStatus)) setStatus(residenceSub, "⏳ Đang chờ Công an Phường đối soát", "#EAB308");
-            else setStatus(residenceSub, "Chưa gửi hồ sơ đối soát (CT07/VNeID)", "#6B7280");
+            else if ("PENDING".equalsIgnoreCase(data.residenceStatus) || "PENDING".equalsIgnoreCase(savedResidenceStatus)) setStatus(residenceSub, "⏳ Đang chờ xác minh", "#EAB308");
+            else setStatus(residenceSub, "Chưa xác minh", "#6B7280");
         }
 
         TextView kycSub = binding.tvKycStatusSub;
         if (kycSub != null) {
-            if ((user != null && user.isVerified()) || "APPROVED".equalsIgnoreCase(data.kycStatus)) setStatus(kycSub, "✓ Đã xác minh Tích xanh", "#719B28");
-            else if ("PENDING".equalsIgnoreCase(data.kycStatus)) setStatus(kycSub, "⏳ Đang chờ đối soát trong 24h", "#EAB308");
+            boolean kycVerified = (user != null && user.isVerified()) || "APPROVED".equalsIgnoreCase(savedKycStatus);
+            if (kycVerified) setStatus(kycSub, "✓ Đã xác minh", "#719B28");
+            else if ("PENDING".equalsIgnoreCase(data.kycStatus) || "PENDING".equalsIgnoreCase(savedKycStatus)) setStatus(kycSub, "⏳ Đang chờ xác minh", "#EAB308");
             else setStatus(kycSub, "Chưa xác minh", "#6B7280");
         }
+
+        // Setup Admin long click approval
+        binding.btnKyc.setOnLongClickListener(v -> {
+            showAdminApprovalDialog(userId, "KYC / Căn cước công dân", true);
+            return true;
+        });
+        binding.btnResidenceAuth.setOnLongClickListener(v -> {
+            showAdminApprovalDialog(userId, "Xác thực cư trú", false);
+            return true;
+        });
+    }
+
+    private void showAdminApprovalDialog(String userId, String title, boolean isKyc) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Admin duyệt hồ sơ")
+                .setMessage("Phê duyệt hồ sơ [" + title + "] thành 'Đã xác minh'?")
+                .setPositiveButton("Duyệt hồ sơ", (dialog, which) -> {
+                    com.example.studenthousing.data.repository.UserRepository userRepo =
+                            new com.example.studenthousing.data.repository.UserRepository(this);
+                    if (isKyc) {
+                        getSharedPreferences(KycActivity.PREFS_NAME, MODE_PRIVATE).edit()
+                                .putString(KycActivity.KEY_STATUS + userId, "APPROVED")
+                                .apply();
+                        userRepo.markIdentityVerified(userId, com.example.studenthousing.util.Constants.IDENTITY_CITIZEN, null);
+                    } else {
+                        getSharedPreferences(ResidenceVerificationActivity.PREFS_NAME, MODE_PRIVATE).edit()
+                                .putString(ResidenceVerificationActivity.KEY_STATUS + userId, "APPROVED")
+                                .apply();
+                        userRepo.markResidenceVerified(userId, null);
+                    }
+                    android.widget.Toast.makeText(this, "Đã duyệt thành công! Trạng thái: Đã xác minh", android.widget.Toast.LENGTH_SHORT).show();
+                    if (viewModel != null) viewModel.loadProfile(userId);
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 
     private void setStatus(TextView view, String text, String color) {

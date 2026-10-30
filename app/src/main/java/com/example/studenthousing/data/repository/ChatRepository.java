@@ -92,11 +92,8 @@ public class ChatRepository {
 
                 @Override
                 public void onError(Exception e) {
-                    if (!cached.isEmpty()) {
-                        cb.onSuccess(cached);
-                    } else {
-                        cb.onError(e);
-                    }
+                    List<Message> currentLocal = localMessages.getByRoomId(roomId);
+                    cb.onSuccess(currentLocal);
                 }
             });
         }
@@ -195,11 +192,8 @@ public class ChatRepository {
 
                 @Override
                 public void onError(Exception e) {
-                    if (!cached.isEmpty()) {
-                        cb.onSuccess(cached);
-                    } else {
-                        cb.onError(e);
-                    }
+                    List<ChatRoom> currentLocal = localRooms.getByUserId(userId);
+                    cb.onSuccess(currentLocal != null ? currentLocal : new java.util.ArrayList<>());
                 }
             });
         }

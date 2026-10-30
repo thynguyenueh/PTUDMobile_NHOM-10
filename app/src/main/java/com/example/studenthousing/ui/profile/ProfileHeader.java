@@ -69,7 +69,8 @@ public final class ProfileHeader {
     }
 
     private static void setStat(View root, int id, Integer value) {
-        ((TextView) root.findViewById(id)).setText(value == null ? "–" : String.valueOf(value));
+        TextView tv = root.findViewById(id);
+        if (tv != null) tv.setText(value == null ? "–" : String.valueOf(value));
     }
 
     private static String initialOf(String name) {

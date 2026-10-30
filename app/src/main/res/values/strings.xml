@@ -15,6 +15,7 @@
     <string name="cd_photo">Ảnh căn hộ</string>
     <string name="cd_swap">Đổi nhà</string>
     <string name="cd_call">Gọi điện</string>
+    <string name="action_call">Gọi</string>
     <string name="cd_send">Gửi tin nhắn</string>
     <string name="cd_attach">Đính kèm tệp</string>
     <string name="cd_add">Thêm mới</string>
