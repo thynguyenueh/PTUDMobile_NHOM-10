@@ -1,14 +1,12 @@
 package com.example.studenthousing.data.remote;
 
-import com.example.studenthousing.data.model.AccommodationPost;
+import com.example.studenthousing.data.model.Post;
 import com.example.studenthousing.util.AppCallback;
-import com.example.studenthousing.util.Constants;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
 
@@ -23,7 +21,7 @@ public class PostRemote {
     private static final String PRIVATE_SUBCOLLECTION = "private";
     private static final String LOCATION_DOC = "location";
 
-    public static Map<String, Object> toPublicPostData(AccommodationPost post) {
+    public static Map<String, Object> toPublicPostData(Post post) {
         Map<String, Object> data = new HashMap<>();
         data.put("userId", post.getUserId());
         data.put("familyName", post.getFamilyName());
@@ -51,7 +49,7 @@ public class PostRemote {
         return data;
     }
 
-    private static String publicAddress(AccommodationPost post) {
+    private static String publicAddress(Post post) {
         String street = post.getStreetName() == null ? "" : post.getStreetName().trim();
         String ward = post.getWardName() == null ? "" : post.getWardName().trim();
         String city = post.getCityName() == null ? "" : post.getCityName().trim();
@@ -68,13 +66,13 @@ public class PostRemote {
         return sb.toString();
     }
 
-    public void getLatest(int limit, AppCallback<List<AccommodationPost>> cb) {
+    public void getLatest(int limit, AppCallback<List<Post>> cb) {
         db.collection(COLLECTION)
                 .get()
                 .addOnSuccessListener(snap -> {
-                    List<AccommodationPost> list = new ArrayList<>();
+                    List<Post> list = new ArrayList<>();
                     for (QueryDocumentSnapshot doc : snap) {
-                        AccommodationPost p = doc.toObject(AccommodationPost.class);
+                        Post p = doc.toObject(Post.class);
                         p.setPostId(doc.getId());
                         String status = p.getStatus();
                         if (status == null || status.trim().isEmpty() || "AVAILABLE".equalsIgnoreCase(status)) {
@@ -90,11 +88,11 @@ public class PostRemote {
                 .addOnFailureListener(cb::onError);
     }
 
-    public void getById(String postId, AppCallback<AccommodationPost> cb) {
+    public void getById(String postId, AppCallback<Post> cb) {
         db.collection(COLLECTION).document(postId).get()
                 .addOnSuccessListener(doc -> {
                     if (doc.exists()) {
-                        AccommodationPost p = doc.toObject(AccommodationPost.class);
+                        Post p = doc.toObject(Post.class);
                         if (p != null) {
                             p.setPostId(doc.getId());
                             // Thử đọc subcollection location nếu có quyền (đang trong giao dịch EXCHANGING)
@@ -138,7 +136,7 @@ public class PostRemote {
                 .addOnFailureListener(cb::onError);
     }
 
-    public void create(AccommodationPost p, AppCallback<String> cb) {
+    public void create(Post p, AppCallback<String> cb) {
         com.google.firebase.auth.FirebaseAuth mAuth = com.google.firebase.auth.FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() == null) {
             mAuth.signInAnonymously().addOnCompleteListener(task -> {
@@ -153,7 +151,7 @@ public class PostRemote {
         }
     }
 
-    private void executeCreatePost(AccommodationPost p, AppCallback<String> cb) {
+    private void executeCreatePost(Post p, AppCallback<String> cb) {
         com.google.firebase.auth.FirebaseUser fbUser = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
         if (fbUser != null) {
             p.setUserId(fbUser.getUid());
@@ -169,7 +167,7 @@ public class PostRemote {
         savePostPublicAndPrivate(postId, p, cb, false);
     }
 
-    public void update(AccommodationPost p, AppCallback<Void> cb) {
+    public void update(Post p, AppCallback<Void> cb) {
         if (p == null || p.getPostId() == null) {
             if (cb != null) cb.onError(new IllegalArgumentException("Post or PostId is null"));
             return;
@@ -180,7 +178,7 @@ public class PostRemote {
         }, true);
     }
 
-    private void savePostPublicAndPrivate(String postId, AccommodationPost p, AppCallback<String> cb, boolean merge) {
+    private void savePostPublicAndPrivate(String postId, Post p, AppCallback<String> cb, boolean merge) {
         DocumentReference postRef = db.collection(COLLECTION).document(postId);
         Map<String, Object> publicPostData = toPublicPostData(p);
         Task<Void> saveTask = merge

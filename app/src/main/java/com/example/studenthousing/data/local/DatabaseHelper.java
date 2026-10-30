@@ -33,6 +33,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_CACHED_AT = "cached_at";
     public static final String COL_UPDATED_AT = "updated_at";
     public static final String COL_SYNC_STATUS = "sync_status";
+    public static final String COL_CREATED_AT = "created_at";
     public static final String COL_NEARBY_JSON = "nearby_json";
 
     // Table: verified_addresses
@@ -66,38 +67,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_SENT_AT = "sent_at";
     public static final String COL_IS_READ = "is_read";
 
-    // Table: exchange_requests_cache
-    public static final String TBL_EXCHANGE = "exchange_requests_cache";
-    public static final String COL_REQ_ID = "request_id";
-    public static final String COL_SENDER_ID2 = "sender_id";
-    public static final String COL_RECEIVER_ID = "receiver_id";
-    public static final String COL_SENDER_POST_ID = "sender_post_id";
-    public static final String COL_RECEIVER_POST_ID = "receiver_post_id";
-    public static final String COL_CHAT_ROOM_ID = "chat_room_id";
-    public static final String COL_EXCHANGE_PERIOD = "exchange_period";
-    public static final String COL_START_DATE = "start_date";
-    public static final String COL_END_DATE = "end_date";
-    public static final String COL_MESSAGE = "message";
-    public static final String COL_AGREEMENT_TEXT = "agreement_text";
-    public static final String COL_REQ_STATUS = "status";
-    public static final String COL_CANCEL_REQUESTED_BY = "cancel_requested_by";
-    public static final String COL_CANCEL_REQUESTED_AT = "cancel_requested_at";
-    public static final String COL_REJECT_REASON = "reject_reason";
-    public static final String COL_CREATED_AT = "created_at";
-    public static final String COL_RESPONDED_AT = "responded_at";
-    public static final String COL_COMPLETED_AT = "completed_at";
 
-    // Table: reviews_cache
-    public static final String TBL_REVIEWS = "reviews_cache";
-    public static final String COL_REVIEW_ID = "review_id";
-    public static final String COL_REQUEST_ID = "request_id";
-    public static final String COL_REVIEWER_ID = "reviewer_id";
-    public static final String COL_REVIEWER_NAME = "reviewer_name";
-    public static final String COL_REVIEWEE_ID = "reviewee_id";
-    public static final String COL_REVIEWEE_NAME = "reviewee_name";
-    public static final String COL_RATING = "rating";
-    public static final String COL_COMMENT = "comment";
-    public static final String COL_IMAGE_URLS = "image_urls";
 
     // Table: users_cache
     public static final String TBL_USERS = "users_cache";
@@ -253,45 +223,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COL_CACHED_AT + " INTEGER" +
                 ")");
 
-        db.execSQL("CREATE TABLE " + TBL_EXCHANGE + " (" +
-                COL_REQ_ID + " TEXT PRIMARY KEY, " +
-                COL_SENDER_ID2 + " TEXT, " +
-                COL_RECEIVER_ID + " TEXT, " +
-                COL_SENDER_POST_ID + " TEXT, " +
-                COL_RECEIVER_POST_ID + " TEXT, " +
-                COL_CHAT_ROOM_ID + " TEXT, " +
-                COL_EXCHANGE_PERIOD + " TEXT, " +
-                COL_START_DATE + " INTEGER DEFAULT 0, " +
-                COL_END_DATE + " INTEGER DEFAULT 0, " +
-                COL_MESSAGE + " TEXT, " +
-                COL_AGREEMENT_TEXT + " TEXT, " +
-                COL_REQ_STATUS + " TEXT DEFAULT 'PENDING', " +
-                COL_CANCEL_REQUESTED_BY + " TEXT, " +
-                COL_CANCEL_REQUESTED_AT + " INTEGER DEFAULT 0, " +
-                COL_REJECT_REASON + " TEXT, " +
-                COL_CREATED_AT + " INTEGER, " +
-                COL_RESPONDED_AT + " INTEGER, " +
-                COL_COMPLETED_AT + " INTEGER, " +
-                COL_UPDATED_AT + " INTEGER, " +
-                COL_SYNC_STATUS + " TEXT DEFAULT 'SYNCED', " +
-                COL_CACHED_AT + " INTEGER" +
-                ")");
 
-        db.execSQL("CREATE TABLE " + TBL_REVIEWS + " (" +
-                COL_REVIEW_ID + " TEXT PRIMARY KEY, " +
-                COL_REQUEST_ID + " TEXT, " +
-                COL_REVIEWER_ID + " TEXT, " +
-                COL_REVIEWER_NAME + " TEXT, " +
-                COL_REVIEWEE_ID + " TEXT, " +
-                COL_REVIEWEE_NAME + " TEXT, " +
-                COL_RATING + " REAL, " +
-                COL_COMMENT + " TEXT, " +
-                COL_IMAGE_URLS + " TEXT, " +
-                COL_CREATED_AT + " INTEGER, " +
-                COL_SYNC_STATUS + " TEXT DEFAULT 'SYNCED', " +
-                COL_CACHED_AT + " INTEGER, " +
-                "UNIQUE (" + COL_REQUEST_ID + ", " + COL_REVIEWER_ID + ")" +
-                ")");
 
         db.execSQL("CREATE TABLE " + TBL_SAVED_HOUSES + " (" +
                 COL_USER_ID + " TEXT, " +
@@ -317,8 +249,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private void dropAllLocalTables(SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + TBL_SAVED_HOUSES);
-        db.execSQL("DROP TABLE IF EXISTS " + TBL_REVIEWS);
-        db.execSQL("DROP TABLE IF EXISTS " + TBL_EXCHANGE);
         db.execSQL("DROP TABLE IF EXISTS " + TBL_MESSAGES);
         db.execSQL("DROP TABLE IF EXISTS " + TBL_CHAT_ROOM_PARTICIPANTS);
         db.execSQL("DROP TABLE IF EXISTS " + TBL_CHAT_ROOMS);

@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.example.studenthousing.data.local.PostDao;
 import com.example.studenthousing.data.local.VerifiedAddressDao;
-import com.example.studenthousing.data.model.AccommodationPost;
+import com.example.studenthousing.data.model.Post;
 import com.example.studenthousing.data.model.VerifiedAddress;
 import com.example.studenthousing.data.remote.PostRemote;
 import com.example.studenthousing.util.AddressFingerprintUtil;
@@ -31,21 +31,21 @@ public class PostRepository {
         this.remote = new PostRemote();
     }
 
-    public void getLatestPosts(int limit, AppCallback<List<AccommodationPost>> cb) {
+    public void getLatestPosts(int limit, AppCallback<List<Post>> cb) {
         if (NetworkUtils.isOnline(ctx)) {
-            remote.getLatest(limit, new AppCallback<List<AccommodationPost>>() {
+            remote.getLatest(limit, new AppCallback<List<Post>>() {
                 @Override
-                public void onSuccess(List<AccommodationPost> posts) {
+                public void onSuccess(List<Post> posts) {
                     if (posts != null && !posts.isEmpty()) {
                         local.replaceServerSnapshot(posts);
                     }
-                    List<AccommodationPost> combined = local.getAll();
+                    List<Post> combined = local.getAll();
                     cb.onSuccess(combined != null ? combined : new java.util.ArrayList<>());
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    List<AccommodationPost> cached = local.getAll();
+                    List<Post> cached = local.getAll();
                     if (cached != null && !cached.isEmpty()) {
                         cb.onSuccess(cached);
                     } else {
@@ -54,7 +54,7 @@ public class PostRepository {
                 }
             });
         } else {
-            List<AccommodationPost> cached = local.getAll();
+            List<Post> cached = local.getAll();
             if (cached != null && !cached.isEmpty()) {
                 cb.onSuccess(cached);
             } else {
@@ -63,19 +63,19 @@ public class PostRepository {
         }
     }
 
-    public void getPostsByUserId(String userId, AppCallback<List<AccommodationPost>> cb) {
-        List<AccommodationPost> cached = local.getByUserId(userId);
+    public void getPostsByUserId(String userId, AppCallback<List<Post>> cb) {
+        List<Post> cached = local.getByUserId(userId);
         if (cb != null) cb.onSuccess(cached);
     }
 
-    public void getSavedPosts(AppCallback<List<AccommodationPost>> cb) {
+    public void getSavedPosts(AppCallback<List<Post>> cb) {
         String userId = SessionManager.getUid(ctx);
-        List<AccommodationPost> saved = local.getSavedPosts(userId);
+        List<Post> saved = local.getSavedPosts(userId);
         if (cb != null) cb.onSuccess(saved);
     }
 
     public void cacheRemotePostStatus(String postId, String status) {
-        AccommodationPost cached = local.getById(postId);
+        Post cached = local.getById(postId);
         if (cached == null) return;
         cached.setStatus(status);
         cached.setUpdatedAt(System.currentTimeMillis());
@@ -83,7 +83,7 @@ public class PostRepository {
         local.upsert(cached);
     }
 
-    public void createPost(AccommodationPost p, AppCallback<String> cb) {
+    public void createPost(Post p, AppCallback<String> cb) {
         String oldTempId = p.getPostId();
         if (oldTempId == null || oldTempId.isEmpty() || !oldTempId.startsWith("temp_")) {
             oldTempId = "temp_" + System.currentTimeMillis();
@@ -141,7 +141,7 @@ public class PostRepository {
         }
     }
 
-    public void updatePost(AccommodationPost p, AppCallback<Void> cb) {
+    public void updatePost(Post p, AppCallback<Void> cb) {
         if (p.getPostId() == null) {
             if (cb != null) cb.onError(new Exception("PostId null"));
             return;
@@ -177,7 +177,7 @@ public class PostRepository {
             if (cb != null) cb.onError(new Exception("PostId null"));
             return;
         }
-        AccommodationPost post = local.getById(postId);
+        Post post = local.getById(postId);
         if (post != null) {
             post.setStatus(status);
             post.setUpdatedAt(System.currentTimeMillis());
@@ -219,7 +219,7 @@ public class PostRepository {
             return;
         }
 
-        AccommodationPost post = local.getById(postId);
+        Post post = local.getById(postId);
         if (post != null) {
             post.setSyncStatus(Constants.SYNC_PENDING_DELETE);
             local.upsert(post);
@@ -245,13 +245,13 @@ public class PostRepository {
         }
     }
 
-    public void getPostById(String postId, AppCallback<AccommodationPost> cb) {
+    public void getPostById(String postId, AppCallback<Post> cb) {
         if (postId == null || postId.isEmpty()) {
             if (cb != null) cb.onError(new Exception("ID không hợp lệ"));
             return;
         }
 
-        AccommodationPost cached = local.getById(postId);
+        Post cached = local.getById(postId);
 
         if (NetworkUtils.isOnline(ctx)) {
             FirebaseFirestore.getInstance()
@@ -260,7 +260,7 @@ public class PostRepository {
                     .get()
                     .addOnSuccessListener(doc -> {
                         if (doc.exists()) {
-                            AccommodationPost post = doc.toObject(AccommodationPost.class);
+                            Post post = doc.toObject(Post.class);
                             if (post != null) {
                                 post.setPostId(doc.getId());
                                 post.setSyncStatus(Constants.SYNC_SYNCED);
@@ -287,7 +287,7 @@ public class PostRepository {
         }
     }
 
-    public List<AccommodationPost> getCachedPosts() {
+    public List<Post> getCachedPosts() {
         return local.getAll();
     }
 

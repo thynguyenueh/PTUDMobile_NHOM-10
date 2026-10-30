@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.studenthousing.R;
-import com.example.studenthousing.data.model.AccommodationPost;
+import com.example.studenthousing.data.model.Post;
 import com.example.studenthousing.util.Constants;
 import com.google.android.material.button.MaterialButton;
 
@@ -21,20 +21,20 @@ import java.util.List;
 public class MyPostAdapter extends RecyclerView.Adapter<MyPostAdapter.MyPostViewHolder> {
 
     public interface OnPostActionListener {
-        void onViewPost(@NonNull AccommodationPost post);
-        void onEditPost(@NonNull AccommodationPost post);
-        void onDeletePost(@NonNull AccommodationPost post);
-        void onToggleStatus(@NonNull AccommodationPost post);
+        void onViewPost(@NonNull Post post);
+        void onEditPost(@NonNull Post post);
+        void onDeletePost(@NonNull Post post);
+        void onToggleStatus(@NonNull Post post);
     }
 
-    private final List<AccommodationPost> posts = new ArrayList<>();
+    private final List<Post> posts = new ArrayList<>();
     private final OnPostActionListener listener;
 
     public MyPostAdapter(@NonNull OnPostActionListener listener) {
         this.listener = listener;
     }
 
-    public void submitList(@NonNull List<AccommodationPost> newPosts) {
+    public void submitList(@NonNull List<Post> newPosts) {
         posts.clear();
         posts.addAll(newPosts);
         notifyDataSetChanged();
@@ -83,7 +83,7 @@ public class MyPostAdapter extends RecyclerView.Adapter<MyPostAdapter.MyPostView
             btnToggleStatus = itemView.findViewById(R.id.btnTogglePostStatus);
         }
 
-        void bind(@NonNull AccommodationPost post) {
+        void bind(@NonNull Post post) {
             Context context = itemView.getContext();
 
             String title = post.getTitle() != null ? post.getTitle() : context.getString(R.string.my_post_default_title);

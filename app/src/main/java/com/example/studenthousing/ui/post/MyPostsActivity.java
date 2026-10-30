@@ -10,10 +10,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.studenthousing.R;
-import com.example.studenthousing.data.model.AccommodationPost;
+import com.example.studenthousing.data.model.Post;
 import com.example.studenthousing.databinding.ActivityMyPostsBinding;
 import com.example.studenthousing.ui.adapter.MyPostAdapter;
 import com.example.studenthousing.ui.viewmodel.MyPostsViewModel;
@@ -108,11 +107,11 @@ public class MyPostsActivity extends AppCompatActivity implements MyPostAdapter.
         viewModel.load(currentUserId);
     }
 
-    private void renderPosts(UiState<List<AccommodationPost>> state) {
+    private void renderPosts(UiState<List<Post>> state) {
         if (state != null && state.getContent() != null) displayPosts(state.getContent());
     }
 
-    private void displayPosts(List<AccommodationPost> posts) {
+    private void displayPosts(List<Post> posts) {
         if (postAdapter == null) return;
         if (posts != null && !posts.isEmpty()) {
             binding.tvTotalPosts.setText(posts.size() + " bài đăng");
@@ -128,7 +127,7 @@ public class MyPostsActivity extends AppCompatActivity implements MyPostAdapter.
     }
 
     @Override
-    public void onViewPost(@NonNull AccommodationPost post) {
+    public void onViewPost(@NonNull Post post) {
         Intent intent = new Intent(MyPostsActivity.this, DetailActivity.class);
         intent.putExtra("post_id", post.getPostId());
         intent.putExtra("POST_ID", post.getPostId());
@@ -138,7 +137,7 @@ public class MyPostsActivity extends AppCompatActivity implements MyPostAdapter.
     }
 
     @Override
-    public void onEditPost(@NonNull AccommodationPost post) {
+    public void onEditPost(@NonNull Post post) {
         Intent intent = new Intent(MyPostsActivity.this, CreatePostActivity.class);
         intent.putExtra("IS_EDIT_MODE", true);
         intent.putExtra("POST_ID", post.getPostId());
@@ -162,7 +161,7 @@ public class MyPostsActivity extends AppCompatActivity implements MyPostAdapter.
         startActivity(intent);
     }
 
-    private String getStreetAddress(AccommodationPost post) {
+    private String getStreetAddress(Post post) {
         String address = post.getAddress() == null ? "" : post.getAddress().trim();
         String ward = post.getWardName() == null ? "" : post.getWardName().trim();
         String city = post.getCityName() == null ? "" : post.getCityName().trim();
@@ -177,7 +176,7 @@ public class MyPostsActivity extends AppCompatActivity implements MyPostAdapter.
     }
 
     @Override
-    public void onDeletePost(@NonNull AccommodationPost post) {
+    public void onDeletePost(@NonNull Post post) {
         String title = post.getTitle() != null ? post.getTitle() : "bài đăng";
         new AlertDialog.Builder(MyPostsActivity.this)
                 .setTitle("Xác nhận xóa")
@@ -206,7 +205,7 @@ public class MyPostsActivity extends AppCompatActivity implements MyPostAdapter.
     }
 
     @Override
-    public void onToggleStatus(@NonNull AccommodationPost post) {
+    public void onToggleStatus(@NonNull Post post) {
         boolean markExchanged = !"EXCHANGED".equalsIgnoreCase(post.getStatus());
         String message = markExchanged
                 ? "Chuyển bài đăng sang trạng thái Đã đổi nhà?"
@@ -222,7 +221,7 @@ public class MyPostsActivity extends AppCompatActivity implements MyPostAdapter.
                 .show();
     }
 
-    private void updatePostStatus(AccommodationPost post, boolean markExchanged) {
+    private void updatePostStatus(Post post, boolean markExchanged) {
         String newStatus = markExchanged ? "EXCHANGED" : "AVAILABLE";
         viewModel.updateStatus(post.getPostId(), newStatus, new AppCallback<Void>() {
             @Override

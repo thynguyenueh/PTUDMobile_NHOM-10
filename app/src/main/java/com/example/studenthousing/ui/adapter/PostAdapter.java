@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.studenthousing.R;
-import com.example.studenthousing.data.model.AccommodationPost;
+import com.example.studenthousing.data.model.Post;
 import com.example.studenthousing.ui.post.PostDisplayFormatter;
 import com.example.studenthousing.util.Constants;
 
@@ -19,19 +19,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
-    private List<AccommodationPost> postList;
+    private List<Post> postList;
     private final OnPostClickListener listener;
 
     public interface OnPostClickListener {
-        void onPostClick(AccommodationPost post);
+        void onPostClick(Post post);
     }
 
-    public PostAdapter(List<AccommodationPost> postList, OnPostClickListener listener) {
+    public PostAdapter(List<Post> postList, OnPostClickListener listener) {
         this.postList = postList != null ? postList : new ArrayList<>();
         this.listener = listener;
     }
 
-    public void updateData(List<AccommodationPost> newList) {
+    public void updateData(List<Post> newList) {
         this.postList = newList != null ? newList : new ArrayList<>();
         notifyDataSetChanged();
     }
@@ -45,7 +45,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        AccommodationPost post = postList.get(position);
+        Post post = postList.get(position);
         Context context = holder.itemView.getContext();
 
         holder.tvTitle.setText(post.getTitle() != null ? post.getTitle() : context.getString(R.string.my_post_default_title));

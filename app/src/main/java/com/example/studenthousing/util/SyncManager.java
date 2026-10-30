@@ -13,21 +13,11 @@ import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
-
-import com.example.studenthousing.data.local.ExchangeDao;
-import com.example.studenthousing.data.local.MessageDao;
 import com.example.studenthousing.data.local.PostDao;
-import com.example.studenthousing.data.local.ReviewDao;
 import com.example.studenthousing.data.local.VerificationTicketDao;
-import com.example.studenthousing.data.model.AccommodationPost;
-import com.example.studenthousing.data.model.ExchangeRequest;
-import com.example.studenthousing.data.model.Message;
-import com.example.studenthousing.data.model.Review;
+import com.example.studenthousing.data.model.Post;
 import com.example.studenthousing.data.model.VerificationTicket;
-import com.example.studenthousing.data.remote.ExchangeRemote;
-import com.example.studenthousing.data.remote.MessageRemote;
 import com.example.studenthousing.data.remote.PostRemote;
-import com.example.studenthousing.data.remote.ReviewRemote;
 import com.example.studenthousing.data.remote.VerificationTicketRemote;
 
 import java.util.List;
@@ -37,16 +27,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SyncManager {
     private static final String TAG = "SyncManager";
     private final Context ctx;
-    private final ExchangeDao exchangeDao;
-    private final ReviewDao reviewDao;
     private final PostDao postDao;
-    private final MessageDao messageDao;
     private final VerificationTicketDao ticketDao;
 
-    private final ExchangeRemote exchangeRemote;
-    private final ReviewRemote reviewRemote;
     private final PostRemote postRemote;
-    private final MessageRemote messageRemote;
     private final VerificationTicketRemote ticketRemote;
     private final AtomicBoolean isSyncing = new AtomicBoolean(false);
     private ConnectivityManager.NetworkCallback networkCallback;
@@ -60,16 +44,10 @@ public class SyncManager {
 
     public SyncManager(Context ctx) {
         this.ctx = ctx.getApplicationContext();
-        this.exchangeDao = new ExchangeDao(this.ctx);
-        this.reviewDao = new ReviewDao(this.ctx);
         this.postDao = new PostDao(this.ctx);
-        this.messageDao = new MessageDao(this.ctx);
         this.ticketDao = new VerificationTicketDao(this.ctx);
 
-        this.exchangeRemote = new ExchangeRemote();
-        this.reviewRemote = new ReviewRemote();
         this.postRemote = new PostRemote();
-        this.messageRemote = new MessageRemote();
         this.ticketRemote = new VerificationTicketRemote();
     }
 
@@ -147,9 +125,6 @@ public class SyncManager {
             allSuccess &= syncPosts();
             allSuccess &= syncPendingUpdates();
             allSuccess &= syncPendingDeletes();
-            allSuccess &= syncExchanges();
-            allSuccess &= syncReviews();
-            allSuccess &= syncMessages();
         } catch (Exception e) {
             Log.e(TAG, "Error during syncAll: " + e.getMessage());
             allSuccess = false;
@@ -187,9 +162,9 @@ public class SyncManager {
     }
 
     private boolean syncPosts() {
-        List<AccommodationPost> pendingCreates = postDao.getAll();
+        List<Post> pendingCreates = postDao.getAll();
         if (pendingCreates != null) {
-            for (AccommodationPost p : pendingCreates) {
+            for (Post p : pendingCreates) {
                 if (Constants.SYNC_PENDING_CREATE.equals(p.getSyncStatus()) || Constants.SYNC_PENDING_UPDATE.equals(p.getSyncStatus())) {
                     p.setSyncStatus(Constants.SYNC_SYNCING);
                     postDao.upsert(p);
@@ -200,7 +175,7 @@ public class SyncManager {
         return true;
     }
 
-    private void uploadLocalImagesAndRemoteCreate(AccommodationPost p) {
+    private void uploadLocalImagesAndRemoteCreate(Post p) {
         List<String> images = p.getImages() != null ? new java.util.ArrayList<>(p.getImages()) : new java.util.ArrayList<>();
         uploadPendingImages(p, images, 0, new AppCallback<>() {
             @Override
@@ -237,7 +212,7 @@ public class SyncManager {
         });
     }
 
-    private void uploadPendingImages(AccommodationPost post, List<String> images, int index, AppCallback<List<String>> cb) {
+    private void uploadPendingImages(Post post, List<String> images, int index, AppCallback<List<String>> cb) {
         if (index >= images.size()) {
             cb.onSuccess(images);
             return;
@@ -285,9 +260,9 @@ public class SyncManager {
         String activeUid = SessionManager.getUid(ctx);
         if (activeUid == null) return true;
 
-        List<AccommodationPost> pending = postDao.getAll();
+        List<Post> pending = postDao.getAll();
         if (pending != null) {
-            for (AccommodationPost p : pending) {
+            for (Post p : pending) {
                 if (Constants.SYNC_PENDING_UPDATE.equals(p.getSyncStatus()) && activeUid.equals(p.getUserId())) {
                     p.setSyncStatus(Constants.SYNC_SYNCING);
                     postDao.upsert(p);
@@ -313,9 +288,9 @@ public class SyncManager {
         String activeUid = SessionManager.getUid(ctx);
         if (activeUid == null) return true;
 
-        List<AccommodationPost> pendingDeletes = postDao.getAll();
+        List<Post> pendingDeletes = postDao.getAll();
         if (pendingDeletes != null) {
-            for (AccommodationPost p : pendingDeletes) {
+            for (Post p : pendingDeletes) {
                 if (Constants.SYNC_PENDING_DELETE.equals(p.getSyncStatus()) && activeUid.equals(p.getUserId())) {
                     p.setSyncStatus(Constants.SYNC_SYNCING);
                     postDao.upsert(p);
@@ -337,118 +312,5 @@ public class SyncManager {
             }
         }
         return true;
-    }
-
-    private boolean syncExchanges() {
-        String activeUid = SessionManager.getUid(ctx);
-        if (activeUid == null) return true;
-
-        List<ExchangeRequest> pending = exchangeDao.getPendingRequests();
-        if (pending != null) {
-            for (ExchangeRequest req : pending) {
-                if (activeUid.equals(req.getSenderId())) {
-                    exchangeRemote.create(req, new AppCallback<String>() {
-                        @Override
-                        public void onSuccess(String id) {
-                            req.setSyncStatus(Constants.SYNC_SYNCED);
-                            exchangeDao.upsert(req);
-                            Log.d(TAG, "Đã sync exchange request: " + id);
-                        }
-
-                        @Override
-                        public void onError(Exception e) {
-                            Log.e(TAG, "Lỗi sync exchange request: " + e.getMessage());
-                        }
-                    });
-                }
-            }
-        }
-        return true;
-    }
-
-    private boolean syncReviews() {
-        String activeUid = SessionManager.getUid(ctx);
-        if (activeUid == null) return true;
-
-        List<Review> pendingReviews = reviewDao.getPendingReviews();
-        if (pendingReviews != null) {
-            for (Review r : pendingReviews) {
-                if (activeUid.equals(r.getReviewerId())) {
-                    reviewRemote.create(r, new AppCallback<String>() {
-                        @Override
-                        public void onSuccess(String id) {
-                            r.setSyncStatus(Constants.SYNC_SYNCED);
-                            reviewDao.upsert(r);
-                            Log.d(TAG, "Đã sync review: " + id);
-                        }
-
-                        @Override
-                        public void onError(Exception e) {
-                            Log.e(TAG, "Lỗi sync review: " + e.getMessage());
-                        }
-                    });
-                }
-            }
-        }
-        return true;
-    }
-
-    private boolean syncMessages() {
-        String activeUid = SessionManager.getUid(ctx);
-        if (activeUid == null) return true;
-
-        List<Message> pendingMsgs = messageDao.getPendingMessages();
-        if (pendingMsgs != null) {
-            for (Message msg : pendingMsgs) {
-                if (msg.getRoomId() != null && msg.getMessageId() != null) {
-                    if (!activeUid.equals(msg.getSenderId())) continue;
-                    if ("IMAGE".equals(msg.getType()) && msg.getImageUrl() != null &&
-                            (msg.getImageUrl().startsWith("content://") || msg.getImageUrl().startsWith("file://"))) {
-                        try {
-                            String localImgPath = msg.getImageUrl();
-                            android.net.Uri uri = android.net.Uri.parse(localImgPath);
-                            java.io.File file = FileUtils.getFileFromUri(ctx, uri);
-                            if (file != null) {
-                                CloudinaryUploader.uploadImage(file, new CloudinaryUploader.UploadCallback() {
-                                    @Override
-                                    public void onSuccess(String imageUrl) {
-                                        FileUtils.deleteLocalFile(ctx, localImgPath);
-                                        msg.setImageUrl(imageUrl);
-                                        messageDao.upsert(msg);
-                                        sendPendingRemoteMessage(msg);
-                                    }
-
-                                    @Override
-                                    public void onError(Exception e) {
-                                        Log.e(TAG, "Lỗi upload ảnh tin nhắn offline: " + e.getMessage());
-                                    }
-                                });
-                                continue;
-                            }
-                        } catch (Exception e) {
-                            Log.e(TAG, "Lỗi parse URI ảnh tin nhắn: " + e.getMessage());
-                        }
-                    }
-                    sendPendingRemoteMessage(msg);
-                }
-            }
-        }
-        return true;
-    }
-
-    private void sendPendingRemoteMessage(Message msg) {
-        messageRemote.sendMessage(msg.getRoomId(), msg, new AppCallback<String>() {
-            @Override
-            public void onSuccess(String id) {
-                msg.setSyncStatus(Constants.SYNC_SYNCED);
-                messageDao.upsert(msg);
-                Log.d(TAG, "Đã sync message: " + id);
-            }
-
-            @Override
-            public void onError(Exception e) {
-                Log.e(TAG, "Lỗi sync message: " + e.getMessage());
-            }
-        });
     }
 }

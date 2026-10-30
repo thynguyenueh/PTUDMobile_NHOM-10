@@ -70,37 +70,7 @@
                 android:layout_marginTop="12dp" />
 
 
-            <!-- ================= PHONE & VERIFIED STATUS ================= -->
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_card"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="16dp">
-
-                <TextView
-                    android:id="@+id/tvProfilePhone"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textColor="@color/text_main"
-                    android:textSize="13sp"
-                    tools:text="09xx ••• •xx · TP. Hồ Chí Minh" />
-
-                <ImageView
-                    android:id="@+id/tvVerifiedStatusTag"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@string/cd_verified"
-                    android:src="@drawable/ic_verified_check"
-                    app:tint="@color/olive_accent"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
-
-            </LinearLayout>
 
 
             <!-- ================= MENU ================= -->
@@ -109,7 +79,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:background="@drawable/bg_review_card"
+                android:background="@drawable/bg_card"
                 android:orientation="vertical">
 
                 <!-- KYC -->

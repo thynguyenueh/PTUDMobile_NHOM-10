@@ -14,30 +14,26 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.studenthousing.R;
-import com.example.studenthousing.data.local.ExchangeDao;
-import com.example.studenthousing.data.local.UniversityData;
-import com.example.studenthousing.data.model.AccommodationPost;
-import com.example.studenthousing.data.model.ExchangeRequest;
+
+import com.example.studenthousing.data.loader.CampusDataLoader;
+import com.example.studenthousing.data.model.Campus;
+import com.example.studenthousing.data.model.Post;
+
 import com.example.studenthousing.data.model.NearbyCampus;
-import com.example.studenthousing.data.model.Review;
-import com.example.studenthousing.data.model.University;
+
 import com.example.studenthousing.data.model.User;
 import com.example.studenthousing.data.repository.PostRepository;
 import com.example.studenthousing.databinding.ActivityDetailBinding;
 import com.example.studenthousing.ui.adapter.PhotoPagerAdapter;
-import com.example.studenthousing.ui.chat.ChatActivity;
-import com.example.studenthousing.ui.exchange.ProposalActivity;
-import com.example.studenthousing.ui.review.UserReviewsActivity;
+
+import com.example.studenthousing.ui.profile.PublicHostProfileActivity;
 import com.example.studenthousing.ui.viewmodel.DetailViewModel;
 import com.example.studenthousing.util.AppCallback;
 import com.example.studenthousing.util.Constants;
 import com.example.studenthousing.util.SessionManager;
 import com.example.studenthousing.util.UiState;
-import android.widget.EditText;
-import android.widget.RatingBar;
+
 import android.widget.Toast;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +43,7 @@ public class DetailActivity extends AppCompatActivity {
     private ActivityDetailBinding binding;
     private DetailViewModel viewModel;
     private String postId;
-    private AccommodationPost currentPost;
+    private Post currentPost;
     private boolean isFavorite = false;
 
     private TextView tvTitle, tvLocation, tvHostName, tvDescription,
@@ -58,13 +54,6 @@ public class DetailActivity extends AppCompatActivity {
     private View btnChat;
     private GridLayout gridAmenities;
     private TextView tvAmenitiesEmpty;
-
-    private EditText etCommentInput;
-    private View btnSubmitComment;
-    private RecyclerView rvComments;
-    private TextView tvCommentsEmpty;
-    private com.example.studenthousing.ui.adapter.UserReviewAdapter commentAdapter;
-    private com.example.studenthousing.data.repository.ReviewRepository reviewRepository;
 
     private ViewPager2.OnPageChangeCallback pageCallback;
 
@@ -80,7 +69,7 @@ public class DetailActivity extends AppCompatActivity {
         if (postId == null || postId.trim().isEmpty()) {
             postId = getIntent().getStringExtra("POST_ID");
         }
-        AccommodationPost postExtra = getIntent().getParcelableExtra("post");
+        Post postExtra = getIntent().getParcelableExtra("post");
         if ((postId == null || postId.trim().isEmpty()) && postExtra != null) postId = postExtra.getPostId();
         if (postId == null || postId.trim().isEmpty()) {
             android.widget.Toast.makeText(this, "Không tìm thấy mã bài đăng", android.widget.Toast.LENGTH_SHORT).show();
@@ -104,22 +93,9 @@ public class DetailActivity extends AppCompatActivity {
         gridAmenities = findViewById(R.id.gridAmenities);
         tvAmenitiesEmpty = findViewById(R.id.tvAmenitiesEmpty);
 
-        etCommentInput = findViewById(R.id.etCommentInput);
-        btnSubmitComment = findViewById(R.id.btnSubmitComment);
-        rvComments = findViewById(R.id.rvComments);
-        tvCommentsEmpty = findViewById(R.id.tvCommentsEmpty);
 
-        reviewRepository = new com.example.studenthousing.data.repository.ReviewRepository(this);
 
-        if (rvComments != null) {
-            rvComments.setLayoutManager(new LinearLayoutManager(this));
-            commentAdapter = new com.example.studenthousing.ui.adapter.UserReviewAdapter();
-            rvComments.setAdapter(commentAdapter);
-        }
 
-        if (btnSubmitComment != null) {
-            btnSubmitComment.setOnClickListener(v -> submitComment());
-        }
 
         ImageButton btnBack = findViewById(R.id.btnBack);
         ImageButton btnFavorite = findViewById(R.id.btnFavorite);
@@ -130,8 +106,8 @@ public class DetailActivity extends AppCompatActivity {
         if (cardHost != null) {
             cardHost.setOnClickListener(v -> {
                 if (currentPost == null || currentPost.getUserId() == null || currentPost.getUserId().trim().isEmpty()) return;
-                Intent intent = new Intent(DetailActivity.this, com.example.studenthousing.ui.partner.PublicHostProfileActivity.class);
-                intent.putExtra(com.example.studenthousing.ui.partner.PublicHostProfileActivity.EXTRA_TARGET_USER_ID, currentPost.getUserId());
+                Intent intent = new Intent(DetailActivity.this, PublicHostProfileActivity.class);
+                intent.putExtra(PublicHostProfileActivity.EXTRA_TARGET_USER_ID, currentPost.getUserId());
                 startActivity(intent);
             });
         }
@@ -186,7 +162,7 @@ public class DetailActivity extends AppCompatActivity {
         });
     }
 
-    private void renderPostImmediately(AccommodationPost post) {
+    private void renderPostImmediately(Post post) {
         if (post == null) return;
         currentPost = post;
         if (tvTitle != null && post.getTitle() != null) tvTitle.setText(post.getTitle());
@@ -204,7 +180,7 @@ public class DetailActivity extends AppCompatActivity {
         setupNearbyCampuses(post.getNearbyCampuses());
     }
 
-    private String formatPublicAddress(AccommodationPost post, boolean showFull) {
+    private String formatPublicAddress(Post post, boolean showFull) {
         if (post == null) return "";
         if (showFull && post.getAddress() != null && !post.getAddress().trim().isEmpty()) {
             return post.getAddress();
@@ -217,7 +193,7 @@ public class DetailActivity extends AppCompatActivity {
         return "Đang ẩn địa chỉ chi tiết";
     }
 
-    private void bindPostMetadata(AccommodationPost post) {
+    private void bindPostMetadata(Post post) {
         if (tvAreaMeta != null) {
             boolean addressVerified = PostDisplayFormatter.isAddressVerified(post);
             if (addressVerified) tvAreaMeta.setText("Đã xác thực địa chỉ");
@@ -245,7 +221,7 @@ public class DetailActivity extends AppCompatActivity {
         if (cardDescription != null) cardDescription.setVisibility(hasDescription ? View.VISIBLE : View.GONE);
     }
 
-    private void updateActionAvailability(boolean isOwner, AccommodationPost post) {
+    private void updateActionAvailability(boolean isOwner, Post post) {
         if (detailBottomBar != null) detailBottomBar.setVisibility(View.VISIBLE);
 
         View btnCall = findViewById(R.id.btnCall);
@@ -345,19 +321,14 @@ public class DetailActivity extends AppCompatActivity {
         if (state.getContent() == null) return;
 
         DetailViewModel.PostDetailData data = state.getContent();
-        AccommodationPost post = data.post;
+        Post post = data.post;
         currentPost = post;
 
         if (tvTitle != null && post.getTitle() != null) tvTitle.setText(post.getTitle());
 
         String currentUid = SessionManager.getUid(this);
         boolean isOwner = currentUid != null && post.getUserId() != null && currentUid.equals(post.getUserId());
-        boolean hasActiveExchange = isOwner;
-        if (!isOwner && currentUid != null && post.getPostId() != null) {
-            ExchangeDao exchangeDao = new ExchangeDao(this);
-            hasActiveExchange = hasActiveExchangeForPost(exchangeDao.getBySender(currentUid), post.getPostId())
-                    || hasActiveExchangeForPost(exchangeDao.getByReceiver(currentUid), post.getPostId());
-        }
+        boolean hasActiveExchange = false;
 
         if (tvLocation != null) {
             tvLocation.setText(formatPublicAddress(post, hasActiveExchange));
@@ -394,14 +365,7 @@ public class DetailActivity extends AppCompatActivity {
         loadComments();
     }
 
-    private boolean hasActiveExchangeForPost(List<ExchangeRequest> requests, String postId) {
-        if (requests == null) return false;
-        for (ExchangeRequest request : requests) {
-            if (request == null || !(Constants.REQ_EXCHANGING.equalsIgnoreCase(request.getStatus()))) continue;
-            if (postId.equals(request.getSenderPostId()) || postId.equals(request.getReceiverPostId())) return true;
-        }
-        return false;
-    }
+
 
     private void setupNearbyCampuses(List<NearbyCampus> nearby) {
         LinearLayout container = null;
@@ -410,8 +374,8 @@ public class DetailActivity extends AppCompatActivity {
         if (nearby != null) {
             for (NearbyCampus campus : nearby) {
                 if (campus == null || campus.getCampusId() == null || campus.getKm() <= 0) continue;
-                University university = UniversityData.findByCode(campus.getCampusId());
-                String name = university == null ? campus.getCampusId() : university.getDisplayName();
+                Campus campusObj = CampusDataLoader.getByCode(this, campus.getCampusId());
+                String name = campusObj == null ? campus.getCampusId() : campusObj.getDisplayName();
                 String distance = String.format(java.util.Locale.getDefault(), "%.1f km", campus.getKm());
                 TextView item = new TextView(this);
                 item.setText("Cách " + name + ": " + (campus.isEstimate() ? "~" + distance : distance));
@@ -570,88 +534,8 @@ public class DetailActivity extends AppCompatActivity {
         viewModel.toggleFavorite(postId);
     }
 
-    private void loadComments() {
-        if (currentPost == null) return;
-        String key = currentPost.getPostId() != null ? currentPost.getPostId() : currentPost.getUserId();
-        if (key == null) return;
-
-        com.example.studenthousing.data.local.ReviewDao dao = new com.example.studenthousing.data.local.ReviewDao(DetailActivity.this);
-        List<Review> local = dao.getByReviewee(key);
-        if (local == null || local.isEmpty()) {
-            local = dao.getByRequest(key);
-        }
-        if ((local == null || local.isEmpty()) && currentPost.getUserId() != null) {
-            local = dao.getByReviewee(currentPost.getUserId());
-        }
-
-        final List<Review> displayList = local != null ? local : new ArrayList<>();
-        if (commentAdapter != null) commentAdapter.submitList(displayList);
-        if (rvComments != null) rvComments.setVisibility(displayList.isEmpty() ? View.GONE : View.VISIBLE);
-        if (tvCommentsEmpty != null) tvCommentsEmpty.setVisibility(displayList.isEmpty() ? View.VISIBLE : View.GONE);
-
-        reviewRepository.getByReviewee(key, new AppCallback<List<Review>>() {
-            @Override
-            public void onSuccess(List<Review> reviews) {
-                runOnUiThread(() -> {
-                    List<Review> freshLocal = dao.getByReviewee(key);
-                    if (freshLocal != null && !freshLocal.isEmpty()) {
-                        if (commentAdapter != null) commentAdapter.submitList(freshLocal);
-                        if (rvComments != null) rvComments.setVisibility(View.VISIBLE);
-                        if (tvCommentsEmpty != null) tvCommentsEmpty.setVisibility(View.GONE);
-                    }
-                });
-            }
-
-            @Override
-            public void onError(Exception e) {}
-        });
-    }
-
-    private void submitComment() {
-        if (currentPost == null || currentPost.getPostId() == null) {
-            Toast.makeText(this, "Chưa tải xong thông tin bài đăng", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        String currentUserId = SessionManager.getUid(this);
-        if (currentUserId == null || currentUserId.trim().isEmpty()) {
-            Toast.makeText(this, "Vui lòng đăng nhập để bình luận", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        String content = etCommentInput != null ? etCommentInput.getText().toString().trim() : "";
-        if (content.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập nội dung bình luận", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        com.example.studenthousing.data.local.UserDao userDao = new com.example.studenthousing.data.local.UserDao(this);
-        User reviewer = userDao.getById(currentUserId);
-        String reviewerName = reviewer != null && reviewer.getFamilyName() != null ? reviewer.getFamilyName() : "Người dùng";
-
-        String targetKey = currentPost.getPostId();
-
-        Review r = new Review();
-        r.setRequestId(targetKey);
-        r.setReviewerId(currentUserId);
-        r.setReviewerName(reviewerName);
-        r.setRevieweeId(targetKey);
-        r.setRevieweeName(currentPost.getFamilyName() != null ? currentPost.getFamilyName() : "Chủ nhà");
-        r.setRating(5.0);
-        r.setComment(content);
-        r.setCreatedAt(System.currentTimeMillis());
-
-        // Save locally first so UI updates immediately
-        com.example.studenthousing.data.local.ReviewDao dao = new com.example.studenthousing.data.local.ReviewDao(this);
-        dao.upsert(r);
-
-        if (etCommentInput != null) etCommentInput.setText("");
-        Toast.makeText(DetailActivity.this, "Đã gửi bình luận!", Toast.LENGTH_SHORT).show();
-        loadComments();
-
-        reviewRepository.create(r, new AppCallback<String>() {
-            @Override public void onSuccess(String id) {}
-            @Override public void onError(Exception e) {}
-        });
-    }
+    private void loadComments() {}
+    private void submitComment() {}
 
     private void openSmsApp(String targetUserId, String defaultMessage) {
         com.example.studenthousing.data.local.UserDao userDao = new com.example.studenthousing.data.local.UserDao(this);

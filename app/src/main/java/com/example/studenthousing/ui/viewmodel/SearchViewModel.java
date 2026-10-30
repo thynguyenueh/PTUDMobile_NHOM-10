@@ -9,9 +9,9 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.studenthousing.data.model.AccommodationPost;
+import com.example.studenthousing.data.model.Post;
 import com.example.studenthousing.data.repository.PostRepository;
-import com.example.studenthousing.domain.FilterCriteria;
+import com.example.studenthousing.data.model.FilterCriteria;
 import com.example.studenthousing.util.AppCallback;
 import com.example.studenthousing.util.UiState;
 
@@ -30,10 +30,10 @@ public class SearchViewModel extends AndroidViewModel {
 
     public static class SearchResultData {
         public final SearchMode mode;
-        public final List<AccommodationPost> results;
+        public final List<Post> results;
         public final String emptyMessage;
 
-        public SearchResultData(SearchMode mode, List<AccommodationPost> results, String emptyMessage) {
+        public SearchResultData(SearchMode mode, List<Post> results, String emptyMessage) {
             this.mode = mode;
             this.results = results;
             this.emptyMessage = emptyMessage;
@@ -46,7 +46,7 @@ public class SearchViewModel extends AndroidViewModel {
     private final MutableLiveData<UiState<SearchResultData>> searchState = new MutableLiveData<>(UiState.loading());
     private final MutableLiveData<List<String>> historyState = new MutableLiveData<>();
 
-    private List<AccommodationPost> allPosts = new ArrayList<>();
+    private List<Post> allPosts = new ArrayList<>();
     private boolean loaded = false;
 
     public SearchViewModel(@NonNull Application application) {
@@ -66,9 +66,9 @@ public class SearchViewModel extends AndroidViewModel {
 
     public void loadPosts() {
         searchState.setValue(UiState.loading());
-        postRepository.getLatestPosts(200, new AppCallback<List<AccommodationPost>>() {
+        postRepository.getLatestPosts(200, new AppCallback<List<Post>>() {
             @Override
-            public void onSuccess(List<AccommodationPost> posts) {
+            public void onSuccess(List<Post> posts) {
                 allPosts = posts != null ? posts : new ArrayList<>();
                 loaded = true;
                 searchState.postValue(UiState.content(new SearchResultData(SearchMode.IDLE, new ArrayList<>(), null), UiState.SyncState.SYNCED));
@@ -94,9 +94,9 @@ public class SearchViewModel extends AndroidViewModel {
 
         String q = query != null ? query : "";
         String[] tokens = normalize(q).split(" ");
-        List<AccommodationPost> results = new ArrayList<>();
+        List<Post> results = new ArrayList<>();
 
-        for (AccommodationPost p : allPosts) {
+        for (Post p : allPosts) {
             if (matchesQuery(p, tokens, hasQuery) && (filter == null || filter.matches(p))) {
                 results.add(p);
             }
@@ -143,7 +143,7 @@ public class SearchViewModel extends AndroidViewModel {
         return list;
     }
 
-    private static boolean matchesQuery(AccommodationPost p, String[] tokens, boolean hasQuery) {
+    private static boolean matchesQuery(Post p, String[] tokens, boolean hasQuery) {
         if (!hasQuery) return true;
         String hay = normalize(p.getTitle() + " " + p.getAddress() + " " + p.getDescription());
         for (String t : tokens) {

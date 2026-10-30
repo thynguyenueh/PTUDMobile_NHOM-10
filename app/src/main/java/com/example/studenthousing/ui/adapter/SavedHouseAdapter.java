@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.studenthousing.R;
-import com.example.studenthousing.data.model.AccommodationPost;
+import com.example.studenthousing.data.model.Post;
 import com.example.studenthousing.ui.post.PostDisplayFormatter;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class SavedHouseAdapter extends RecyclerView.Adapter<SavedHouseAdapter.Sa
             this.addressVerified = addressVerified;
         }
 
-        public static SavedHouseItem fromPost(Context context, AccommodationPost post) {
+        public static SavedHouseItem fromPost(Context context, Post post) {
             String title = post.getTitle() != null ? post.getTitle() : context.getString(R.string.my_post_default_title);
             String address = PostDisplayFormatter.getPublicArea(context, post);
             return new SavedHouseItem(post.getPostId(), title, address, firstImage(post),
@@ -49,7 +49,7 @@ public class SavedHouseAdapter extends RecyclerView.Adapter<SavedHouseAdapter.Sa
                     PostDisplayFormatter.isAddressVerified(post));
         }
 
-        private static String firstImage(AccommodationPost post) {
+        private static String firstImage(Post post) {
             return post.getImages() != null && !post.getImages().isEmpty() ? post.getImages().get(0) : null;
         }
     }

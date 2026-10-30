@@ -8,7 +8,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.studenthousing.data.model.AccommodationPost;
+import com.example.studenthousing.data.model.Post;
 import com.example.studenthousing.data.repository.PostRepository;
 import com.example.studenthousing.util.AppCallback;
 import com.example.studenthousing.util.CloudinaryUploader;
@@ -78,10 +78,10 @@ public class CreatePostViewModel extends AndroidViewModel {
         }
         submitState.setValue(UiState.loading());
 
-        postRepository.getPostById(postId, new AppCallback<AccommodationPost>() {
+        postRepository.getPostById(postId, new AppCallback<Post>() {
             @Override
-            public void onSuccess(AccommodationPost existing) {
-                AccommodationPost post = existing != null ? existing : new AccommodationPost();
+            public void onSuccess(Post existing) {
+                Post post = existing != null ? existing : new Post();
                 post.setPostId(postId);
                 post.setTitle(title);
                 post.setAddress(address);
@@ -127,7 +127,7 @@ public class CreatePostViewModel extends AndroidViewModel {
         });
     }
 
-    private void uploadImagesEdit(AccommodationPost post, List<Uri> uris, int index, List<String> uploadedUrls) {
+    private void uploadImagesEdit(Post post, List<Uri> uris, int index, List<String> uploadedUrls) {
         if (index >= uris.size()) {
             post.setImages(new ArrayList<>(uploadedUrls));
             postRepository.updatePost(post, new AppCallback<Void>() {
@@ -284,7 +284,7 @@ public class CreatePostViewModel extends AndroidViewModel {
         String familyName = session.getUserFamilyName() != null ? session.getUserFamilyName() : "Hộ gia đình sinh viên";
 
         long now = System.currentTimeMillis();
-        AccommodationPost post = new AccommodationPost();
+        Post post = new Post();
         post.setPostId("temp_" + UUID.randomUUID().toString());
         post.setTitle(title);
         post.setAddress(address);

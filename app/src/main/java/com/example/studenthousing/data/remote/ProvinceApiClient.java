@@ -5,8 +5,8 @@ import android.os.Looper;
 
 import androidx.annotation.NonNull;
 
-import com.example.studenthousing.data.model.province.Province;
-import com.example.studenthousing.data.model.province.Ward;
+import com.example.studenthousing.data.model.Province;
+import com.example.studenthousing.data.model.Ward;
 import com.example.studenthousing.util.Constants;
 
 import org.json.JSONArray;

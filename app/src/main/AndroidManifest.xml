@@ -36,24 +36,6 @@
             android:name=".ui.auth.RegisterActivity"
             android:exported="false" />
 
-
-
-        <!-- ⚠️ TẠM đổi true để test bằng adb -->
-        <activity
-            android:name=".ui.review.ReviewActivity"
-            android:exported="true" />
-
-        <!-- Chat Rooms List -->
-        <activity
-            android:name=".ui.chat.ChatListActivity"
-            android:exported="false" />
-
-        <!-- Chat -->
-        <activity
-            android:name=".ui.chat.ChatActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
-
         <!-- KYC -->
         <activity
             android:name=".ui.verify.KycActivity"
@@ -68,9 +50,7 @@
             android:name=".ui.post.DetailActivity"
             android:exported="false" />
 
-        <activity
-            android:name=".ui.exchange.ProposalActivity"
-            android:exported="false" />
+
 
         <!-- ⚠️ TẠM đổi true để test bằng adb -->
         <activity
@@ -85,13 +65,9 @@
             android:name=".ui.home.SearchResultsActivity"
             android:exported="false" />
 
-        <activity
-            android:name=".ui.review.UserReviewsActivity"
-            android:exported="false" />
 
-        <activity
-            android:name=".ui.exchange.ExchangeHistoryActivity"
-            android:exported="false" />
+
+
 
         <activity
             android:name=".ui.post.MyPostsActivity"
@@ -109,9 +85,7 @@
             android:name=".ui.profile.NotificationsActivity"
             android:exported="false" />
 
-        <activity
-            android:name=".ui.exchange.ProposalDetailActivity"
-            android:exported="false" />
+
 
         <activity
             android:name=".ui.post.CreatePostActivity"
@@ -122,15 +96,7 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.partner.PublicHostProfileActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".ui.home.SuggestionsActivity"
-            android:exported="false" />
-
-        <receiver
-            android:name=".util.AutoTransitionReceiver"
+            android:name=".ui.profile.PublicHostProfileActivity"
             android:exported="false" />
 
     </application>

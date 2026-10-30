@@ -11,12 +11,11 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.studenthousing.R;
 import com.example.studenthousing.databinding.ActivityProfileBinding;
 import com.example.studenthousing.ui.auth.LoginActivity;
-import com.example.studenthousing.ui.chat.ChatListActivity;
-import com.example.studenthousing.ui.exchange.ExchangeHistoryActivity;
+
 import com.example.studenthousing.ui.home.HomeActivity;
 import com.example.studenthousing.ui.post.MyPostsActivity;
 import com.example.studenthousing.ui.post.SavedHousesActivity;
-import com.example.studenthousing.ui.review.UserReviewsActivity;
+
 import com.example.studenthousing.ui.verify.KycActivity;
 import com.example.studenthousing.ui.verify.ResidenceVerificationActivity;
 import com.example.studenthousing.ui.viewmodel.ProfileViewModel;
@@ -49,17 +48,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         bind(R.id.btnSettings, SettingsActivity.class);
 
-        View reviewsButton = binding.includeProfileHeader.getRoot().findViewById(R.id.btnStatReviews);
-        if (reviewsButton != null) {
-            reviewsButton.setOnClickListener(v -> {
-                Intent intent = new Intent(ProfileActivity.this, UserReviewsActivity.class);
-                intent.putExtra(UserReviewsActivity.EXTRA_TARGET_USER_ID, session.getUserId());
-                TextView name = binding.includeProfileHeader.getRoot().findViewById(R.id.tvProfileName);
-                intent.putExtra(UserReviewsActivity.EXTRA_TARGET_USER_NAME, name != null ? name.getText().toString() : "");
-                startActivity(intent);
-            });
-        }
-        bindInHeader(R.id.btnStatExchanges, ExchangeHistoryActivity.class);
         bindInHeader(R.id.btnStatPosts, MyPostsActivity.class);
 
         bind(R.id.btnKyc, KycActivity.class);
@@ -86,21 +74,15 @@ public class ProfileActivity extends AppCompatActivity {
                 ? user.getFamilyName()
                 : (sessionName != null && !sessionName.isEmpty() ? sessionName : "Người dùng");
         String avatarUrl = user == null ? null : user.getAvatarUrl();
-        String phone = user == null ? null : user.getPhone();
 
-        TextView tvProfilePhone = binding.tvProfilePhone;
-        if (tvProfilePhone != null && phone != null && !phone.isEmpty()) {
-            String maskedPhone = phone.length() >= 6
-                    ? phone.substring(0, 3) + " ••• ••" + phone.substring(phone.length() - 2) : phone;
-            tvProfilePhone.setText(maskedPhone + " · TP. Hồ Chí Minh");
-        }
+
 
         String uni = user != null && user.getUniversityName() != null && !user.getUniversityName().trim().isEmpty()
                 ? user.getUniversityName()
                 : "Chưa cập nhật";
         View headerRoot = binding.includeProfileHeader.getRoot();
         if (headerRoot != null) {
-            ProfileHeader.bind(headerRoot, familyName, uni, avatarUrl,
+            bindProfileHeader(headerRoot, familyName, uni, avatarUrl,
                     user != null && user.isResidenceVerified(), data.postCount, data.reviewCount, data.exchangeCount);
         }
 
@@ -111,8 +93,6 @@ public class ProfileActivity extends AppCompatActivity {
                 .getString(KycActivity.KEY_STATUS + userId, null);
 
         boolean residenceVerified = (user != null && user.isResidenceVerified()) || "APPROVED".equalsIgnoreCase(savedResidenceStatus);
-        View verifiedTag = binding.tvVerifiedStatusTag;
-        if (verifiedTag != null) verifiedTag.setVisibility(residenceVerified ? View.VISIBLE : View.GONE);
         TextView residenceSub = binding.tvResidenceAuthSub;
         if (residenceSub != null) {
             if (residenceVerified) setStatus(residenceSub, "✓ Đã xác thực cư trú", "#719B28");
@@ -230,5 +210,56 @@ public class ProfileActivity extends AppCompatActivity {
                 return false;
             });
         }
+    }
+
+    private void bindProfileHeader(View root, String name, String subtitle, String avatarUrl, boolean isVerified,
+                                   Integer posts, Integer reviews, Integer exchanges) {
+        android.widget.ImageView ivAvatarImg = root.findViewById(R.id.ivProfileAvatarImg);
+        TextView tvAvatar = root.findViewById(R.id.tvProfileAvatar);
+
+        if (avatarUrl != null && !avatarUrl.isEmpty()) {
+            if (ivAvatarImg != null) {
+                ivAvatarImg.setVisibility(View.VISIBLE);
+                com.bumptech.glide.Glide.with(root.getContext())
+                        .load(avatarUrl)
+                        .circleCrop()
+                        .into(ivAvatarImg);
+            }
+            if (tvAvatar != null) tvAvatar.setVisibility(View.GONE);
+        } else {
+            if (ivAvatarImg != null) ivAvatarImg.setVisibility(View.GONE);
+            if (tvAvatar != null) {
+                tvAvatar.setVisibility(View.VISIBLE);
+                tvAvatar.setText(initialOf(name));
+            }
+        }
+
+        View badge = root.findViewById(R.id.tvProfileVerifiedBadge);
+        if (badge != null) {
+            badge.setVisibility(isVerified ? View.VISIBLE : View.GONE);
+        }
+
+        ((TextView) root.findViewById(R.id.tvProfileName))
+                .setText(name != null && !name.trim().isEmpty() ? name : "Người dùng");
+
+        TextView sub = root.findViewById(R.id.tvProfileSub);
+        sub.setText(subtitle != null ? subtitle : "");
+        sub.setVisibility(subtitle == null || subtitle.trim().isEmpty() ? View.GONE : View.VISIBLE);
+
+        setStat(root, R.id.tvStatPosts, posts);
+        setStat(root, R.id.tvStatReviews, reviews);
+        setStat(root, R.id.tvStatExchanges, exchanges);
+    }
+
+    private void setStat(View root, int id, Integer value) {
+        TextView tv = root.findViewById(id);
+        if (tv != null) tv.setText(value == null ? "–" : String.valueOf(value));
+    }
+
+    private String initialOf(String name) {
+        if (name == null || name.trim().isEmpty()) return "?";
+        String[] words = name.trim().split("\\s+");
+        String last = words[words.length - 1];
+        return last.substring(0, 1).toUpperCase(new java.util.Locale("vi"));
     }
 }

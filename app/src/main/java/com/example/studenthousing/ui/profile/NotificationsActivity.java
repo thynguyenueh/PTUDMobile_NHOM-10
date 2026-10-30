@@ -105,34 +105,8 @@ public class NotificationsActivity extends AppCompatActivity {
             int iconRes = R.drawable.ic_notifications;
             int tintColor = ContextCompat.getColor(holder.itemView.getContext(), R.color.primary);
 
-            if (item.type == NotificationsViewModel.NotifType.EXCHANGE) {
-                iconRes = R.drawable.ic_swap;
-                tintColor = ContextCompat.getColor(holder.itemView.getContext(), R.color.primary);
-            } else if (item.type == NotificationsViewModel.NotifType.MESSAGE) {
-                iconRes = R.drawable.ic_chat;
-                tintColor = ContextCompat.getColor(holder.itemView.getContext(), android.R.color.holo_blue_dark);
-            }
-
             holder.ivIcon.setImageResource(iconRes);
             holder.ivIcon.setColorFilter(tintColor);
-
-            holder.itemView.setOnClickListener(v -> {
-                android.content.Intent intent;
-                if (item.exchangeRequestId != null && !item.exchangeRequestId.trim().isEmpty()) {
-                    intent = new android.content.Intent(v.getContext(), com.example.studenthousing.ui.exchange.ProposalDetailActivity.class);
-                    intent.putExtra("request_id", item.exchangeRequestId);
-                    v.getContext().startActivity(intent);
-                } else if (item.chatRoomId != null && !item.chatRoomId.trim().isEmpty()) {
-                    if (item.chatTargetUserId == null || item.chatTargetUserId.trim().isEmpty()) {
-                        android.widget.Toast.makeText(v.getContext(), "Không thể xác định người tham gia cuộc trò chuyện.", android.widget.Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    intent = new android.content.Intent(v.getContext(), com.example.studenthousing.ui.chat.ChatActivity.class);
-                    intent.putExtra("ROOM_ID", item.chatRoomId);
-                    intent.putExtra("target_user_id", item.chatTargetUserId);
-                    v.getContext().startActivity(intent);
-                }
-            });
         }
 
         @Override

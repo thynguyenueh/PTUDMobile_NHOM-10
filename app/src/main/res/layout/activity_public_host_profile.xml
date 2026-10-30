@@ -330,7 +330,6 @@
             style="@style/Widget.App.Button.Primary"
             android:layout_width="match_parent"
             android:text="@string/public_host_btn_chat"
-            app:icon="@drawable/ic_chat"
             app:iconGravity="textStart"
             app:iconPadding="@dimen/space_sm" />
     </LinearLayout>

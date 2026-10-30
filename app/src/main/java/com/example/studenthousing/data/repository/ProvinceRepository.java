@@ -1,10 +1,11 @@
 package com.example.studenthousing.data.repository;
 
-import com.example.studenthousing.data.model.province.Province;
-import com.example.studenthousing.data.model.province.Ward;
+import com.example.studenthousing.StudentHousingApp;
+import com.example.studenthousing.data.loader.WardsDataLoader;
+import com.example.studenthousing.data.model.Province;
+import com.example.studenthousing.data.model.Ward;
 import com.example.studenthousing.data.remote.ProvinceApiClient;
 import com.example.studenthousing.util.Constants;
-import com.example.studenthousing.util.LocationData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,43 +66,15 @@ public class ProvinceRepository {
     }
 
     public void getWards(Callback<List<Ward>> callback) {
-        if (cachedWards != null && !cachedWards.isEmpty()) {
-            callback.onSuccess(cachedWards);
-            return;
-        }
-
-        apiClient.fetchWards(new ProvinceApiClient.ApiCallback<List<Ward>>() {
-            @Override
-            public void onSuccess(List<Ward> result) {
-                if (result != null && !result.isEmpty()) {
-                    cachedWards = result;
-                    callback.onSuccess(result);
-                } else {
-                    useFallbackWards(callback);
-                }
-            }
-
-            @Override
-            public void onError(Exception e) {
-                useFallbackWards(callback);
-            }
-        });
+        List<Ward> list = WardsDataLoader.loadWards(StudentHousingApp.getInstance());
+        cachedWards = list != null ? list : new ArrayList<>();
+        callback.onSuccess(cachedWards);
     }
 
     private void useFallbackProvinces(Callback<List<Province>> callback) {
         List<Province> list = new ArrayList<>();
         list.add(new Province(Constants.TPHCM_CITY_CODE, Constants.TPHCM_CITY_NAME));
         cachedProvinces = list;
-        callback.onSuccess(list);
-    }
-
-    private void useFallbackWards(Callback<List<Ward>> callback) {
-        List<Ward> list = new ArrayList<>();
-        int code = 27256;
-        for (String wName : LocationData.WARDS) {
-            list.add(new Ward(code++, wName, "phuong", null));
-        }
-        cachedWards = list;
         callback.onSuccess(list);
     }
 }

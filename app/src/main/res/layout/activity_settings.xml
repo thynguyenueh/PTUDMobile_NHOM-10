@@ -103,7 +103,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_review_card"
+                android:background="@drawable/bg_card"
                 android:orientation="vertical"
                 android:padding="@dimen/space_lg">
 
@@ -136,7 +136,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_review_card"
+                android:background="@drawable/bg_card"
                 android:orientation="vertical">
 
                 <!-- KYC Status -->
@@ -177,7 +177,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_review_card"
+                android:background="@drawable/bg_card"
                 android:orientation="vertical">
 
                 <View style="@style/Widget.App.Divider" />
@@ -197,7 +197,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_review_card"
+                android:background="@drawable/bg_card"
                 android:orientation="vertical">
 
                 <LinearLayout

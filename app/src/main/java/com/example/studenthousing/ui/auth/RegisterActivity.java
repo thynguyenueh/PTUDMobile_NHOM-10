@@ -8,6 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -21,47 +23,14 @@ import com.example.studenthousing.util.LocationData;
 import com.example.studenthousing.util.OtpHelper;
 import com.example.studenthousing.ui.dialog.SearchListDialog;
 import com.example.studenthousing.util.SessionManager;
+import com.example.studenthousing.data.loader.CampusDataLoader;
+import com.example.studenthousing.data.model.Campus;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class RegisterActivity extends AppCompatActivity {
-
-    private static final String[] UNIVERSITIES = {
-            "Đại học Bách Khoa Hà Nội (HUST)",
-            "Đại học Quốc gia Hà Nội (VNU-HN)",
-            "Đại học Kinh tế Quốc dân (NEU)",
-            "Đại học Ngoại thương (FTU)",
-            "Đại học Y Hà Nội (HMU)",
-            "Học viện Công nghệ Bưu chính Viễn thông (PTIT)",
-            "Đại học Quốc gia Thành phố Hồ Chí Minh (VNU-HCM)",
-            "Trường Đại học Bách Khoa - ĐHQG TP.HCM (HCMUT)",
-            "Trường Đại học Kinh tế TP. Hồ Chí Minh (UEH)",
-            "Trường Đại học Khoa học Tự nhiên - ĐHQG TP.HCM (HCMUS)",
-            "Trường Đại học Khoa học Xã hội và Nhân văn - ĐHQG TP.HCM (USSH)",
-            "Trường Đại học Công nghệ Thông tin - ĐHQG TP.HCM (UIT)",
-            "Trường Đại học Quốc tế - ĐHQG TP.HCM (IU)",
-            "Trường Đại học Ngoại thương Cơ sở II (FTU CS2)",
-            "Trường Đại học Sư phạm TP.HCM (HCMUE)",
-            "Trường Đại học Y Dược TP.HCM (UMP)",
-            "Trường Đại học Sư phạm Kỹ thuật TP.HCM (HCMUTE)",
-            "Trường Đại học Tôn Đức Thắng (TDTU)",
-            "Trường Đại học Công nghiệp TP.HCM (IUH)",
-            "Trường Đại học Ngân hàng TP.HCM (HUB)",
-            "Trường Đại học Luật TP.HCM (ULH)",
-            "Trường Đại học Cần Thơ (CTU)",
-            "Đại học Đà Nẵng (UD)",
-            "Đại học Huế (HueU)",
-            "Trường Đại học Nha Trang (NTU)",
-            "Trường Đại học Mở TP.HCM (HCMOU)",
-            "Trường Đại học Kinh tế - Luật ĐHQG TP.HCM (UEL)",
-            "Trường Đại học FPT",
-            "Trường Đại học RMIT Việt Nam",
-            "Trường Đại học Văn Lang",
-            "Trường Đại học Hoa Sen",
-            "Trường Đại học Kiến trúc TP.HCM"
-    };
 
     private ImageView btnBack;
     private TextInputLayout tilParentName, tilPhone, tilPassword, tilUniversity;
@@ -150,14 +119,20 @@ public class RegisterActivity extends AppCompatActivity {
         if (tvLoginLink != null) tvLoginLink.setOnClickListener(v -> finish());
         if (btnContinue != null) btnContinue.setOnClickListener(v -> handleContinueOrSave());
 
-        View.OnClickListener selectUniListener = v ->
-                SearchListDialog.show(this, "Chọn trường đại học", UNIVERSITIES, value -> {
-                    if (tvUniversity != null) {
-                        tvUniversity.setText(value);
-                        tvUniversity.setTextColor(ContextCompat.getColor(this, R.color.text_main));
-                    }
-                    if (tilUniversity != null) tilUniversity.setError(null);
-                });
+        View.OnClickListener selectUniListener = v -> {
+            List<Campus> campuses = CampusDataLoader.loadCampuses(this);
+            String[] items = new String[campuses.size()];
+            for (int i = 0; i < campuses.size(); i++) {
+                items[i] = campuses.get(i).getDisplayName();
+            }
+            SearchListDialog.show(this, "Chọn trường đại học / cao đẳng", items, value -> {
+                if (tvUniversity != null) {
+                    tvUniversity.setText(value);
+                    tvUniversity.setTextColor(ContextCompat.getColor(this, R.color.text_main));
+                }
+                if (tilUniversity != null) tilUniversity.setError(null);
+            });
+        };
 
         if (tilUniversity != null) tilUniversity.setOnClickListener(selectUniListener);
         if (tvUniversity != null) tvUniversity.setOnClickListener(selectUniListener);

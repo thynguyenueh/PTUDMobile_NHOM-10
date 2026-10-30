@@ -1,8 +1,9 @@
 package com.example.studenthousing.util;
 
-import com.example.studenthousing.data.local.UniversityData;
+import com.example.studenthousing.StudentHousingApp;
+import com.example.studenthousing.data.loader.CampusDataLoader;
+import com.example.studenthousing.data.model.Campus;
 import com.example.studenthousing.data.model.NearbyCampus;
-import com.example.studenthousing.data.model.University;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,11 +19,11 @@ public class NearbyCampusService {
     public static List<NearbyCampus> calculateNearby(double lat, double lon) {
         List<NearbyCampus> result = new ArrayList<>();
         if (lat == 0.0 && lon == 0.0) return result;
-        List<University> unis = UniversityData.getUniversities();
-        for (University u : unis) {
-            double km = DistanceCalculator.calculateHaversineKm(lat, lon, u.getLatitude(), u.getLongitude()) * 1.35;
+        List<Campus> campuses = CampusDataLoader.loadCampuses(StudentHousingApp.getInstance());
+        for (Campus c : campuses) {
+            double km = DistanceCalculator.calculateHaversineKm(lat, lon, c.getLat(), c.getLon()) * 1.35;
             double rounded = Math.round(km * 10.0) / 10.0;
-            result.add(new NearbyCampus(u.getCode(), rounded, true));
+            result.add(new NearbyCampus(c.getCampusCode(), rounded, true));
         }
         result.sort((a, b) -> Double.compare(a.getKm(), b.getKm()));
         return result;
@@ -39,14 +40,14 @@ public class NearbyCampusService {
             return;
         }
 
-        List<University> unis = UniversityData.getUniversities();
+        List<Campus> campuses = CampusDataLoader.loadCampuses(StudentHousingApp.getInstance());
         List<NearbyCampus> results = Collections.synchronizedList(new ArrayList<>());
-        CountDownLatch latch = new CountDownLatch(unis.size());
+        CountDownLatch latch = new CountDownLatch(campuses.size());
 
         DistanceCalculator calc = new DistanceCalculator();
-        for (University u : unis) {
-            double uniLat = u.getLatitude();
-            double uniLon = u.getLongitude();
+        for (Campus c : campuses) {
+            double uniLat = c.getLat();
+            double uniLon = c.getLon();
             
             // Quick haversine pre-filter to skip obviously far ones
             double estKm = DistanceCalculator.calculateHaversineKm(lat, lon, uniLat, uniLon) * 1.35;
@@ -59,7 +60,7 @@ public class NearbyCampusService {
                 @Override
                 public void onSuccess(double distanceKm, String source, boolean isEstimate) {
                     if (distanceKm <= 5.0) {
-                        results.add(new NearbyCampus(u.getCode(), distanceKm, isEstimate));
+                        results.add(new NearbyCampus(c.getCampusCode(), distanceKm, isEstimate));
                     }
                     latch.countDown();
                 }
@@ -69,7 +70,7 @@ public class NearbyCampusService {
                     // Fallback to haversine estimate
                     double fallbackKm = Math.round(estKm * 10.0) / 10.0;
                     if (fallbackKm <= 5.0) {
-                        results.add(new NearbyCampus(u.getCode(), fallbackKm, true));
+                        results.add(new NearbyCampus(c.getCampusCode(), fallbackKm, true));
                     }
                     latch.countDown();
                 }

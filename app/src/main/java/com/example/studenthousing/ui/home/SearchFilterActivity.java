@@ -11,12 +11,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.IntentCompat;
 
 import com.example.studenthousing.R;
+import com.example.studenthousing.data.loader.CampusDataLoader;
 import com.example.studenthousing.data.local.PostDao;
-import com.example.studenthousing.data.local.UniversityData;
-import com.example.studenthousing.data.model.AccommodationPost;
-import com.example.studenthousing.data.model.University;
+import com.example.studenthousing.data.model.Campus;
+import com.example.studenthousing.data.model.Post;
 import com.example.studenthousing.databinding.ActivityFilterBinding;
-import com.example.studenthousing.domain.FilterCriteria;
+import com.example.studenthousing.data.model.FilterCriteria;
 import com.example.studenthousing.ui.dialog.SearchListDialog;
 import com.example.studenthousing.util.UtilityLoader;
 import com.google.android.material.chip.Chip;
@@ -137,9 +137,9 @@ public class SearchFilterActivity extends AppCompatActivity {
         }
 
         if (criteria.campusId != null && !criteria.campusId.isEmpty()) {
-            University u = UniversityData.findByCode(criteria.campusId);
+            Campus u = CampusDataLoader.getByCode(this, criteria.campusId);
             if (u != null) {
-                selectedCampusId = u.getCode();
+                selectedCampusId = u.getCampusCode();
                 binding.tvCampus.setText(u.getDisplayName());
                 binding.tvCampus.setTextColor(getColor(R.color.text_main));
             }
@@ -170,10 +170,10 @@ public class SearchFilterActivity extends AppCompatActivity {
         FilterCriteria criteria = buildFilterCriteria();
         new Thread(() -> {
             PostDao postDao = new PostDao(this);
-            List<AccommodationPost> all = postDao.getAll();
+            List<Post> all = postDao.getAll();
 
             int count = 0;
-            for (AccommodationPost p : all) {
+            for (Post p : all) {
                 if (criteria.matches(p)) count++;
             }
             int finalCount = count;
@@ -236,16 +236,16 @@ public class SearchFilterActivity extends AppCompatActivity {
     }
 
     private void showCampusDialog() {
-        List<University> unis = UniversityData.getUniversities();
-        String[] items = new String[unis.size()];
-        for (int i = 0; i < unis.size(); i++) {
-            University u = unis.get(i);
-            items[i] = u.getDisplayName();
+        List<Campus> campuses = CampusDataLoader.loadCampuses(this);
+        String[] items = new String[campuses.size()];
+        for (int i = 0; i < campuses.size(); i++) {
+            Campus c = campuses.get(i);
+            items[i] = c.getDisplayName();
         }
         SearchListDialog.show(this, "Chọn trường đại học", items, value -> {
-            for (University u : unis) {
-                if (u.getDisplayName().equals(value)) {
-                    selectedCampusId = u.getCode();
+            for (Campus c : campuses) {
+                if (c.getDisplayName().equals(value)) {
+                    selectedCampusId = c.getCampusCode();
                     binding.tvCampus.setText(value);
                     binding.tvCampus.setTextColor(getColor(R.color.text_main));
                     break;

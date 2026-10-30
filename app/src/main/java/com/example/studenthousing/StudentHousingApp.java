@@ -8,9 +8,16 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.MemoryCacheSettings;
 
 public class StudentHousingApp extends Application {
+    private static StudentHousingApp instance;
+
+    public static StudentHousingApp getInstance() {
+        return instance;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+        instance = this;
         try {
             if (FirebaseApp.getApps(this).isEmpty()) {
                 FirebaseApp.initializeApp(this);
@@ -28,7 +35,6 @@ public class StudentHousingApp extends Application {
             com.example.studenthousing.util.SyncManager syncManager = com.example.studenthousing.util.SyncManager.getInstance(this);
             syncManager.startAutoSync();
             syncManager.scheduleWorkManager();
-            com.example.studenthousing.util.AutoTransitionScheduler.schedule(this);
         } catch (Throwable ignored) {}
     }
 }

@@ -42,7 +42,6 @@
             android:layout_weight="1"
             android:text="@string/action_message"
             app:cornerRadius="12dp"
-            app:icon="@drawable/ic_chat"
             app:iconPadding="4dp"
             app:iconTint="@color/surface_card" />
     </LinearLayout>

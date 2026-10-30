@@ -35,10 +35,17 @@ public class FullScreenImageDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.item_review);
+        setContentView(R.layout.dialog_fullscreen_image);
 
         if (getWindow() != null) {
             getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        }
+
+        android.widget.ImageView ivImage = findViewById(R.id.ivFullScreenImage);
+        if (ivImage != null && !imageUrls.isEmpty()) {
+            com.bumptech.glide.Glide.with(getContext())
+                    .load(imageUrls.get(initialPosition))
+                    .into(ivImage);
         }
 
         View btnClose = findViewById(R.id.tvReviewerAvatar);

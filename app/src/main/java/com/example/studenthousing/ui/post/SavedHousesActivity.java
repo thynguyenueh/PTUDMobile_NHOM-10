@@ -10,10 +10,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.studenthousing.R;
-import com.example.studenthousing.data.model.AccommodationPost;
+import com.example.studenthousing.data.model.Post;
 import com.example.studenthousing.databinding.ActivitySavedHousesBinding;
 import com.example.studenthousing.ui.adapter.SavedHouseAdapter;
-import com.example.studenthousing.ui.chat.ChatListActivity;
+
 import com.example.studenthousing.ui.home.HomeActivity;
 import com.example.studenthousing.ui.profile.ProfileActivity;
 import com.example.studenthousing.ui.viewmodel.SavedHousesViewModel;
@@ -96,7 +96,7 @@ public class SavedHousesActivity extends AppCompatActivity implements SavedHouse
         if (viewModel != null) viewModel.loadSavedPosts();
     }
 
-    private void renderSavedPosts(UiState<List<AccommodationPost>> state) {
+    private void renderSavedPosts(UiState<List<Post>> state) {
         if (state == null) return;
         if (state.getScreenState() == UiState.ScreenState.LOADING) {
             binding.rvSavedHouses.setVisibility(android.view.View.GONE);
@@ -113,7 +113,7 @@ public class SavedHousesActivity extends AppCompatActivity implements SavedHouse
 
         retrySavedLoad = false;
         List<SavedHouseAdapter.SavedHouseItem> list = new ArrayList<>();
-        for (AccommodationPost post : state.getContent()) {
+        for (Post post : state.getContent()) {
             list.add(SavedHouseAdapter.SavedHouseItem.fromPost(this, post));
         }
         savedHouseAdapter.submitList(list);

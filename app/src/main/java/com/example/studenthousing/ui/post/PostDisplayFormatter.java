@@ -3,10 +3,10 @@ package com.example.studenthousing.ui.post;
 import android.content.Context;
 
 import com.example.studenthousing.R;
-import com.example.studenthousing.data.local.UniversityData;
-import com.example.studenthousing.data.model.AccommodationPost;
+import com.example.studenthousing.data.loader.CampusDataLoader;
+import com.example.studenthousing.data.model.Campus;
+import com.example.studenthousing.data.model.Post;
 import com.example.studenthousing.data.model.NearbyCampus;
-import com.example.studenthousing.data.model.University;
 import com.example.studenthousing.util.Constants;
 
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import java.util.Locale;
 public final class PostDisplayFormatter {
     private PostDisplayFormatter() {}
 
-    public static String getPublicArea(Context context, AccommodationPost post) {
+    public static String getPublicArea(Context context, Post post) {
         String ward = post.getWardName() == null ? "" : post.getWardName().trim();
         String city = post.getCityName() == null ? "" : post.getCityName().trim();
         if (!ward.isEmpty() && !city.isEmpty()) return ward + ", " + city;
@@ -25,7 +25,7 @@ public final class PostDisplayFormatter {
         return "Chưa có thông tin khu vực";
     }
 
-    public static int getStatusLabel(AccommodationPost post) {
+    public static int getStatusLabel(Post post) {
         if (Constants.POST_AVAILABLE.equalsIgnoreCase(post.getStatus())) {
             return R.string.status_exchanged;
         }
@@ -35,15 +35,15 @@ public final class PostDisplayFormatter {
         return 0;
     }
 
-    public static int getCompactStatusLabel(AccommodationPost post) {
+    public static int getCompactStatusLabel(Post post) {
         return getStatusLabel(post);
     }
 
-    public static boolean isAddressVerified(AccommodationPost post) {
+    public static boolean isAddressVerified(Post post) {
         return Constants.ADDR_VERIFIED.equalsIgnoreCase(post.getAddressVerificationStatus());
     }
 
-    public static String getNearestCampusSummary(Context context, AccommodationPost post) {
+    public static String getNearestCampusSummary(Context context, Post post) {
         List<NearbyCampus> campuses = post.getNearbyCampuses();
         if (campuses == null || campuses.isEmpty()) return null;
 
@@ -54,14 +54,14 @@ public final class PostDisplayFormatter {
         }
         if (nearest == null) return null;
 
-        University university = UniversityData.findByCode(nearest.getCampusId());
-        String name = university == null ? nearest.getCampusId() : university.getDisplayName();
+        Campus campusObj = CampusDataLoader.getByCode(context, nearest.getCampusId());
+        String name = campusObj == null ? nearest.getCampusId() : campusObj.getDisplayName();
         String distance = String.format(Locale.getDefault(), "%.1f km", nearest.getKm());
         if (nearest.isEstimate()) distance = "~" + distance;
         return "Cách " + name + ": " + distance;
     }
 
-    public static String getUtilitiesSummary(Context context, AccommodationPost post) {
+    public static String getUtilitiesSummary(Context context, Post post) {
         List<String> utilities = post.getUtilities();
         if (utilities == null || utilities.isEmpty()) return null;
 

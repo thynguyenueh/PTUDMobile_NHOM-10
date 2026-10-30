@@ -5,7 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.studenthousing.data.model.AccommodationPost;
+import com.example.studenthousing.data.model.Post;
 import com.example.studenthousing.data.model.NearbyCampus;
 import com.example.studenthousing.util.Constants;
 
@@ -22,7 +22,7 @@ public class PostDao {
         this.dbHelper = DatabaseHelper.getInstance(ctx);
     }
 
-    public void upsert(AccommodationPost p) {
+    public void upsert(Post p) {
         if (p == null || p.getPostId() == null) return;
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         if (!p.getPostId().startsWith("temp_") && p.getUserId() != null) {
@@ -38,7 +38,7 @@ public class PostDao {
     }
 
     /** Replaces server-owned cache rows with a successfully fetched server snapshot, preserving pending local work. */
-    public void replaceServerSnapshot(List<AccommodationPost> posts) {
+    public void replaceServerSnapshot(List<Post> posts) {
         if (posts == null) return;
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.beginTransaction();
@@ -53,7 +53,7 @@ public class PostDao {
                 }
             }
 
-            for (AccommodationPost p : posts) {
+            for (Post p : posts) {
                 if (p.getPostId() != null && pendingIds.contains(p.getPostId())) continue;
                 p.setSyncStatus(Constants.SYNC_SYNCED);
                 ContentValues v = toValues(p);
@@ -65,11 +65,11 @@ public class PostDao {
         }
     }
 
-    public List<AccommodationPost> getAll() {
+    public List<Post> getAll() {
         return getAll(0);
     }
 
-    public List<AccommodationPost> getAll(int limit) {
+    public List<Post> getAll(int limit) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor c = db.query(DatabaseHelper.TBL_POSTS, null,
                 "(" + DatabaseHelper.COL_SYNC_STATUS + " IS NULL OR " + DatabaseHelper.COL_SYNC_STATUS + " != '" + Constants.SYNC_PENDING_DELETE + "') AND " +
@@ -80,13 +80,13 @@ public class PostDao {
         return cursorToList(c);
     }
 
-    public AccommodationPost getById(String postId) {
+    public Post getById(String postId) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor c = db.query(DatabaseHelper.TBL_POSTS, null,
                 DatabaseHelper.COL_POST_ID + "=?",
                 new String[]{postId}, null, null, null);
         if (c.moveToFirst()) {
-            AccommodationPost p = cursorToPost(c);
+            Post p = cursorToPost(c);
             c.close();
             return p;
         }
@@ -94,7 +94,7 @@ public class PostDao {
         return null;
     }
 
-    public AccommodationPost getByFingerprint(String fingerprint) {
+    public Post getByFingerprint(String fingerprint) {
         if (fingerprint == null || fingerprint.trim().isEmpty()) return null;
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         try (Cursor c = db.query(DatabaseHelper.TBL_POSTS, null,
@@ -120,11 +120,11 @@ public class PostDao {
         }
     }
 
-    public List<AccommodationPost> getByUserId(String userId) {
+    public List<Post> getByUserId(String userId) {
         return getByUserId(userId, 0);
     }
 
-    public List<AccommodationPost> getByUserId(String userId, int limit) {
+    public List<Post> getByUserId(String userId, int limit) {
         if (userId == null) return new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor c = db.query(DatabaseHelper.TBL_POSTS, null,
@@ -163,8 +163,8 @@ public class PostDao {
                 new String[]{userId, postId});
     }
 
-    public List<AccommodationPost> getSavedPosts(String userId) {
-        List<AccommodationPost> list = new ArrayList<>();
+    public List<Post> getSavedPosts(String userId) {
+        List<Post> list = new ArrayList<>();
         if (userId == null) return list;
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         String sql = "SELECT p.* FROM " + DatabaseHelper.TBL_POSTS + " p " +
@@ -179,7 +179,7 @@ public class PostDao {
         return list;
     }
 
-    private ContentValues toValues(AccommodationPost p) {
+    private ContentValues toValues(Post p) {
         ContentValues v = new ContentValues();
         v.put(DatabaseHelper.COL_POST_ID, p.getPostId());
         v.put(DatabaseHelper.COL_USER_ID, p.getUserId());
@@ -206,8 +206,8 @@ public class PostDao {
         return v;
     }
 
-    private List<AccommodationPost> cursorToList(Cursor c) {
-        List<AccommodationPost> list = new ArrayList<>();
+    private List<Post> cursorToList(Cursor c) {
+        List<Post> list = new ArrayList<>();
         if (c == null) return list;
         try {
             int idxPostId = c.getColumnIndex(DatabaseHelper.COL_POST_ID);
@@ -233,7 +233,7 @@ public class PostDao {
             int idxSync = c.getColumnIndex(DatabaseHelper.COL_SYNC_STATUS);
 
             while (c.moveToNext()) {
-                AccommodationPost p = new AccommodationPost();
+                Post p = new Post();
                 if (idxPostId != -1 && !c.isNull(idxPostId)) p.setPostId(c.getString(idxPostId));
                 if (idxUserId != -1 && !c.isNull(idxUserId)) p.setUserId(c.getString(idxUserId));
                 if (idxFamilyName != -1 && !c.isNull(idxFamilyName)) p.setFamilyName(c.getString(idxFamilyName));
@@ -263,9 +263,9 @@ public class PostDao {
         return list;
     }
 
-    private AccommodationPost cursorToPost(Cursor c) {
+    private Post cursorToPost(Cursor c) {
         if (c == null) return null;
-        AccommodationPost p = new AccommodationPost();
+        Post p = new Post();
         p.setPostId(getStringOrNull(c, DatabaseHelper.COL_POST_ID));
         p.setUserId(getStringOrNull(c, DatabaseHelper.COL_USER_ID));
         p.setFamilyName(getStringOrNull(c, DatabaseHelper.COL_FAMILY_NAME));

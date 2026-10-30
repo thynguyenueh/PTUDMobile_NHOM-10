@@ -17,15 +17,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
 import com.example.studenthousing.R;
-import com.example.studenthousing.data.model.AccommodationPost;
-import com.example.studenthousing.data.model.ChatRoom;
-import com.example.studenthousing.data.model.ExchangeRequest;
-import com.example.studenthousing.data.model.MatchSuggestion;
+import com.example.studenthousing.data.model.Post;
 import com.example.studenthousing.data.model.User;
 import com.example.studenthousing.databinding.ActivityHomeBinding;
-import com.example.studenthousing.domain.FilterCriteria;
+import com.example.studenthousing.data.model.FilterCriteria;
 import com.example.studenthousing.ui.adapter.PostAdapter;
-import com.example.studenthousing.ui.chat.ChatListActivity;
 import com.example.studenthousing.ui.post.CreatePostActivity;
 import com.example.studenthousing.ui.post.DetailActivity;
 import com.example.studenthousing.ui.post.MyPostsActivity;
@@ -33,8 +29,6 @@ import com.example.studenthousing.ui.post.SavedHousesActivity;
 import com.example.studenthousing.ui.profile.NotificationsActivity;
 import com.example.studenthousing.ui.profile.ProfileActivity;
 import com.example.studenthousing.ui.viewmodel.HomeViewModel;
-import com.example.studenthousing.util.AppCallback;
-import com.example.studenthousing.util.Constants;
 import com.example.studenthousing.util.SessionManager;
 import com.example.studenthousing.util.UiState;
 
@@ -52,10 +46,9 @@ public class HomeActivity extends AppCompatActivity {
     private SessionManager session;
     private boolean userVerified;
 
-    private List<AccommodationPost> allPosts = new ArrayList<>();
+    private List<Post> allPosts = new ArrayList<>();
     private FilterCriteria currentFilter = new FilterCriteria();
     private boolean filterActive = false;
-    private boolean isSuggestionsTab = false;
     private Runnable emptyAction;
 
     private final ActivityResultLauncher<Intent> filterLauncher = registerForActivityResult(
@@ -88,22 +81,10 @@ public class HomeActivity extends AppCompatActivity {
         setupBottomNavigation();
         setupListeners();
 
-        com.google.android.material.chip.ChipGroup chipGroupHomeTabs = findViewById(R.id.chipGroupHomeTabs);
-        if (chipGroupHomeTabs != null) {
-            chipGroupHomeTabs.setOnCheckedStateChangeListener((group, checkedIds) -> {
-                if (!checkedIds.isEmpty()) {
-                    int checkedId = checkedIds.get(0);
-                    isSuggestionsTab = (checkedId == R.id.chipTabSuggestions);
-                    applyFilter();
-                }
-            });
-        }
-
         binding.swipeRefreshHome.setOnRefreshListener(() -> {
             binding.swipeRefreshHome.setRefreshing(true);
             viewModel.refreshPosts();
             viewModel.refreshProfile(session.getUserId());
-            loadMatchRequests(session.getUserId());
         });
         binding.swipeRefreshHome.setColorSchemeResources(R.color.primary);
     }
@@ -115,7 +96,6 @@ public class HomeActivity extends AppCompatActivity {
         // ✅ Dùng refresh* để buộc load lại từ SQLite + Firestore mỗi lần quay về Home
         viewModel.refreshProfile(session.getUserId());
         viewModel.refreshPosts();
-        loadMatchRequests(session.getUserId());
         updateMessagesBadge();
         try {
             com.google.android.material.bottomnavigation.BottomNavigationView nav = findViewById(R.id.bottomNav);
@@ -139,7 +119,6 @@ public class HomeActivity extends AppCompatActivity {
             }
             allPosts = state.getContent() == null ? new ArrayList<>() : state.getContent();
             applyFilter();
-            updateMatchCard();
         });
         viewModel.getProfile().observe(this, state -> {
             if (state == null) return;
@@ -191,40 +170,10 @@ public class HomeActivity extends AppCompatActivity {
     private void applyFilter() {
         filterActive = currentFilter.isActive();
 
-        String userUni = "";
-        try {
-            com.example.studenthousing.data.local.UserDao userDao = new com.example.studenthousing.data.local.UserDao(this);
-            User u = userDao.getById(session.getUserId());
-            if (u != null && u.getUniversityName() != null) userUni = u.getUniversityName().toLowerCase();
-        } catch (Exception ignored) {}
-
-        List<AccommodationPost> filtered = new ArrayList<>();
-        for (AccommodationPost post : allPosts) {
+        List<Post> filtered = new ArrayList<>();
+        for (Post post : allPosts) {
             if (!currentFilter.matches(post)) continue;
-
-            if (isSuggestionsTab) {
-                boolean matchesUni = true;
-                if (!userUni.isEmpty()) {
-                    String pAddr = post.getAddress() != null ? post.getAddress().toLowerCase() : "";
-                    String pTitle = post.getTitle() != null ? post.getTitle().toLowerCase() : "";
-                    String pDesc = post.getDescription() != null ? post.getDescription().toLowerCase() : "";
-                    String pWard = post.getWardName() != null ? post.getWardName().toLowerCase() : "";
-
-                    matchesUni = pAddr.contains(userUni) || pTitle.contains(userUni) || pDesc.contains(userUni) || pWard.contains(userUni);
-                    if (!matchesUni) {
-                        if (userUni.contains("ueh") || userUni.contains("kinh tế")) {
-                            matchesUni = pAddr.contains("quận 1") || pAddr.contains("quận 3") || pAddr.contains("quận 10") || pAddr.contains("phú nhuận");
-                        } else if (userUni.contains("bách khoa") || userUni.contains("hcmut") || userUni.contains("đhqg")) {
-                            matchesUni = pAddr.contains("thủ đức") || pAddr.contains("linh trung") || pAddr.contains("dĩ an") || pAddr.contains("quận 10");
-                        } else {
-                            matchesUni = true;
-                        }
-                    }
-                }
-                if (matchesUni) filtered.add(post);
-            } else {
-                filtered.add(post);
-            }
+            filtered.add(post);
         }
 
         // Sort posts from newest to oldest (createdAt descending)
@@ -265,98 +214,6 @@ public class HomeActivity extends AppCompatActivity {
         binding.tvEmptyDesc.setText(desc);
         binding.btnEmptyAction.setText(action);
         emptyAction = onAction;
-    }
-
-    private final List<MatchSuggestion> currentSuggestions = new ArrayList<>();
-    private final java.util.Set<String> activePartnerPostIds = new java.util.HashSet<>();
-    private final java.util.Set<String> settledMyPostIds = new java.util.HashSet<>();
-    private boolean matchRequestsLoaded = false;
-
-    private void loadMatchRequests(String userId) {
-        matchRequestsLoaded = false;
-        activePartnerPostIds.clear();
-        settledMyPostIds.clear();
-        if (userId == null || userId.isEmpty()) {
-            matchRequestsLoaded = true;
-            updateMatchCard();
-            return;
-        }
-        new com.example.studenthousing.data.repository.ExchangeRepository(this).getAllForUser(userId,
-                new AppCallback<>() {
-                    @Override public void onSuccess(List<ExchangeRequest> requests) {
-                        activePartnerPostIds.clear();
-                        settledMyPostIds.clear();
-                        if (requests != null) for (ExchangeRequest req : requests) {
-                            String status = req.getStatus();
-                            boolean isSettled = Constants.REQ_EXCHANGING.equalsIgnoreCase(status)
-                                    || Constants.REQ_COMPLETED.equalsIgnoreCase(status);
-                            boolean isActive = isSettled || "PENDING".equalsIgnoreCase(status);
-
-                            if (userId.equals(req.getSenderId())) {
-                                if (isActive && req.getReceiverPostId() != null) activePartnerPostIds.add(req.getReceiverPostId());
-                                if (isSettled && req.getSenderPostId() != null) settledMyPostIds.add(req.getSenderPostId());
-                            } else if (userId.equals(req.getReceiverId())) {
-                                if (isActive && req.getSenderPostId() != null) activePartnerPostIds.add(req.getSenderPostId());
-                                if (isSettled && req.getReceiverPostId() != null) settledMyPostIds.add(req.getReceiverPostId());
-                            }
-                        }
-                        matchRequestsLoaded = true;
-                        runOnUiThread(HomeActivity.this::updateMatchCard);
-                    }
-                    @Override public void onError(Exception e) {
-                        matchRequestsLoaded = false;
-                        currentSuggestions.clear();
-                        runOnUiThread(() -> binding.cardMatchSuggestion.setVisibility(View.GONE));
-                    }
-                });
-    }
-
-    private void updateMatchCard() {
-        String uid = session == null ? null : session.getUserId();
-        if (uid == null || uid.isEmpty()) {
-            binding.cardMatchSuggestion.setVisibility(View.GONE);
-            return;
-        }
-
-        AccommodationPost mine = null;
-        if (allPosts != null) {
-            for (AccommodationPost p : allPosts) {
-                if (p != null && uid.equals(p.getUserId()) && isAvailable(p)
-                        && (!matchRequestsLoaded || !settledMyPostIds.contains(p.getPostId()))) {
-                    mine = p;
-                    break;
-                }
-            }
-        }
-
-        currentSuggestions.clear();
-        if (mine != null && matchRequestsLoaded && allPosts != null) {
-            // ✅ Đã bỏ điều kiện `uid == null` vì nếu mine != null thì uid chắc chắn != null
-            for (AccommodationPost p : allPosts) {
-                if (p == null || uid.equals(p.getUserId()) || !isAvailable(p)
-                        || (p.getPostId() != null && activePartnerPostIds.contains(p.getPostId()))) continue;
-                currentSuggestions.add(new MatchSuggestion(mine, p));
-            }
-        }
-
-        if (binding == null) return;
-        if (mine == null || currentSuggestions.isEmpty()) {
-            binding.cardMatchSuggestion.setVisibility(View.GONE);
-            return;
-        }
-
-        binding.cardMatchSuggestion.setVisibility(View.VISIBLE);
-        binding.tvMatchSummary.setText("Có " + currentSuggestions.size() + " gợi ý đổi nhà");
-
-        binding.cardMatchSuggestion.setOnClickListener(v -> {
-            SuggestionsHolder.setSuggestions(HomeActivity.this, currentSuggestions);
-            Intent intent = new Intent(HomeActivity.this, SuggestionsActivity.class);
-            startActivity(intent);
-        });
-    }
-
-    private static boolean isAvailable(AccommodationPost post) {
-        return post != null && "AVAILABLE".equalsIgnoreCase(post.getStatus());
     }
 
     private void setupHouseList() {
@@ -414,7 +271,7 @@ public class HomeActivity extends AppCompatActivity {
         binding.efabCreatePostHome.setOnClickListener(v -> startActivity(new Intent(this, CreatePostActivity.class)));
     }
 
-    private void openHouseDetail(@NonNull AccommodationPost post) {
+    private void openHouseDetail(@NonNull Post post) {
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra("post_id", post.getPostId());
         intent.putExtra("POST_ID", post.getPostId());
