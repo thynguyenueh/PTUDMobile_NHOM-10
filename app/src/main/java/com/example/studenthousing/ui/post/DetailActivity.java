@@ -3,6 +3,7 @@ package com.example.studenthousing.ui.post;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -12,16 +13,21 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.studenthousing.R;
+import com.example.studenthousing.data.local.CommentDao;
 import com.example.studenthousing.data.loader.CampusDataLoader;
 import com.example.studenthousing.data.model.Campus;
+import com.example.studenthousing.data.model.Comment;
 import com.example.studenthousing.data.model.NearbyCampus;
 import com.example.studenthousing.data.model.Post;
 import com.example.studenthousing.data.model.User;
 import com.example.studenthousing.data.repository.PostRepository;
 import com.example.studenthousing.databinding.ActivityDetailBinding;
+import com.example.studenthousing.ui.adapter.CommentAdapter;
 import com.example.studenthousing.ui.adapter.PhotoPagerAdapter;
 import com.example.studenthousing.ui.profile.PublicHostProfileActivity;
 import com.example.studenthousing.ui.viewmodel.DetailViewModel;
@@ -51,6 +57,14 @@ public class DetailActivity extends AppCompatActivity {
     private TextView tvAmenitiesEmpty;
 
     private ViewPager2.OnPageChangeCallback pageCallback;
+
+    // ✅ Comment components
+    private CommentAdapter commentAdapter;
+    private CommentDao commentDao;
+    private EditText etCommentInput;
+    private View btnSubmitComment;
+    private RecyclerView rvComments;
+    private TextView tvCommentsEmpty;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +101,9 @@ public class DetailActivity extends AppCompatActivity {
         gridAmenities = findViewById(R.id.gridAmenities);
         tvAmenitiesEmpty = findViewById(R.id.tvAmenitiesEmpty);
 
+        // ✅ Khởi tạo bình luận
+        initCommentSection();
+
         ImageButton btnBack = findViewById(R.id.btnBack);
         ImageButton btnFavorite = findViewById(R.id.btnFavorite);
 
@@ -118,11 +135,6 @@ public class DetailActivity extends AppCompatActivity {
         }
         if (postId != null) {
             viewModel.loadPostDetail(postId);
-        } else {
-            String houseTitle = getIntent().getStringExtra("house_title");
-            String houseAddress = getIntent().getStringExtra("house_address");
-            if (houseTitle != null && tvTitle != null) tvTitle.setText(houseTitle);
-            if (houseAddress != null && tvLocation != null) tvLocation.setText(houseAddress);
         }
 
         View btnCall = findViewById(R.id.btnCall);
@@ -156,15 +168,33 @@ public class DetailActivity extends AppCompatActivity {
         });
     }
 
+    private void initCommentSection() {
+        commentDao = new CommentDao(this);
+        commentAdapter = new CommentAdapter();
+
+        rvComments = findViewById(R.id.rvComments);
+        if (rvComments != null) {
+            rvComments.setLayoutManager(new LinearLayoutManager(this));
+            rvComments.setAdapter(commentAdapter);
+        }
+
+        etCommentInput = findViewById(R.id.etCommentInput);
+        btnSubmitComment = findViewById(R.id.btnSubmitComment);
+        tvCommentsEmpty = findViewById(R.id.tvCommentsEmpty);
+
+        if (btnSubmitComment != null) {
+            btnSubmitComment.setOnClickListener(v -> submitComment());
+        }
+    }
+
     private void renderPostImmediately(Post post) {
         if (post == null) return;
         currentPost = post;
         if (tvTitle != null && post.getTitle() != null) tvTitle.setText(post.getTitle());
 
-        // ✅ FIX: owner xem được địa chỉ đầy đủ của chính mình
         String currentUid = SessionManager.getUid(this);
         boolean isOwner = currentUid != null && currentUid.equals(post.getUserId());
-        if (tvLocation != null) tvLocation.setText(formatPublicAddress(post, isOwner));
+        if (tvLocation != null) tvLocation.setText(formatPublicAddress(post, true));
 
         if (tvHostName != null && post.getFamilyName() != null) tvHostName.setText(post.getFamilyName());
         bindPostMetadata(post);
@@ -178,9 +208,6 @@ public class DetailActivity extends AppCompatActivity {
         setupNearbyCampuses(post.getNearbyCampuses());
     }
 
-    // ============================================================
-    // ✅ FIX QUAN TRỌNG NHẤT: không bao giờ mất địa chỉ
-    // ============================================================
     private String formatPublicAddress(Post post, boolean showFull) {
         if (post == null) return "";
 
@@ -188,18 +215,15 @@ public class DetailActivity extends AppCompatActivity {
         String ward = post.getWardName() != null ? post.getWardName().trim() : "";
         String city = post.getCityName() != null ? post.getCityName().trim() : "";
 
-        // Nếu là owner hoặc cần showFull -> ưu tiên địa chỉ đầy đủ đã lưu
-        if (showFull && !fullAddress.isEmpty()) {
+        // ✅ LUÔN ƯU TIÊN địa chỉ đầy đủ (giống hệt bên trong Detail khi xem của chính mình)
+        if (!fullAddress.isEmpty()) {
             return fullAddress;
         }
 
-        // Ưu tiên hiển thị ward + city (dạng public)
+        // Fallback nếu address rỗng
         if (!ward.isEmpty() && !city.isEmpty()) return ward + ", " + city;
         if (!ward.isEmpty()) return ward;
         if (!city.isEmpty()) return city;
-
-        // 🔑 FALLBACK: dùng address đã lưu thay vì "Đang ẩn địa chỉ chi tiết"
-        if (!fullAddress.isEmpty()) return fullAddress;
 
         return "Đang ẩn địa chỉ chi tiết";
     }
@@ -223,7 +247,6 @@ public class DetailActivity extends AppCompatActivity {
 
     private void updateActionAvailability(boolean isOwner, Post post) {
         if (detailBottomBar != null) detailBottomBar.setVisibility(View.VISIBLE);
-
         View btnCall = findViewById(R.id.btnCall);
         View btnChat = findViewById(R.id.btnChat);
 
@@ -244,9 +267,7 @@ public class DetailActivity extends AppCompatActivity {
                     intent.putExtra("POST_WARD_CODE", post.getWardCode());
                     intent.putExtra("POST_WARD_NAME", post.getWardName());
                     intent.putStringArrayListExtra("POST_UTILITIES",
-                            post.getUtilities() != null
-                                    ? new ArrayList<>(post.getUtilities())
-                                    : new ArrayList<>());
+                            post.getUtilities() != null ? new ArrayList<>(post.getUtilities()) : new ArrayList<>());
                     startActivity(intent);
                 });
             }
@@ -259,22 +280,11 @@ public class DetailActivity extends AppCompatActivity {
                             .setMessage("Bạn có chắc chắn muốn xóa bài đăng này không?")
                             .setPositiveButton("Xóa", (dialog, which) -> {
                                 new PostRepository(this).deletePost(post.getPostId(), new AppCallback<Void>() {
-                                    @Override
-                                    public void onSuccess(Void d) {
-                                        runOnUiThread(() -> {
-                                            Toast.makeText(DetailActivity.this,
-                                                    "Đã xóa bài đăng", Toast.LENGTH_SHORT).show();
-                                            finish();
-                                        });
+                                    @Override public void onSuccess(Void d) {
+                                        runOnUiThread(() -> { Toast.makeText(DetailActivity.this, "Đã xóa bài đăng", Toast.LENGTH_SHORT).show(); finish(); });
                                     }
-
-                                    @Override
-                                    public void onError(Exception e) {
-                                        runOnUiThread(() -> {
-                                            Toast.makeText(DetailActivity.this,
-                                                    "Đã xóa bài đăng", Toast.LENGTH_SHORT).show();
-                                            finish();
-                                        });
+                                    @Override public void onError(Exception e) {
+                                        runOnUiThread(() -> { Toast.makeText(DetailActivity.this, "Đã xóa bài đăng", Toast.LENGTH_SHORT).show(); finish(); });
                                     }
                                 });
                             })
@@ -294,8 +304,7 @@ public class DetailActivity extends AppCompatActivity {
                         User host = userDao.getById(currentPost.getUserId());
                         String phone = host != null && host.getPhone() != null && !host.getPhone().isEmpty()
                                 ? host.getPhone() : "0988 123 456";
-                        String hostName = currentPost.getFamilyName() != null
-                                ? currentPost.getFamilyName() : "Chủ bài đăng";
+                        String hostName = currentPost.getFamilyName() != null ? currentPost.getFamilyName() : "Chủ bài đăng";
                         new androidx.appcompat.app.AlertDialog.Builder(DetailActivity.this)
                                 .setTitle("Gọi điện cho người đăng bài")
                                 .setMessage("Chủ nhà: " + hostName + "\nSố điện thoại: " + phone)
@@ -314,8 +323,7 @@ public class DetailActivity extends AppCompatActivity {
                 btnChat.setVisibility(available ? View.VISIBLE : View.GONE);
                 btnChat.setOnClickListener(v -> {
                     if (currentPost != null) {
-                        openSmsApp(currentPost.getUserId(),
-                                "Xin chào, tôi quan tâm đến bài đăng của bạn.");
+                        openSmsApp(currentPost.getUserId(), "Xin chào, tôi quan tâm đến bài đăng của bạn.");
                     }
                 });
             }
@@ -338,14 +346,10 @@ public class DetailActivity extends AppCompatActivity {
         if (tvTitle != null && post.getTitle() != null) tvTitle.setText(post.getTitle());
 
         String currentUid = SessionManager.getUid(this);
-        boolean isOwner = currentUid != null && post.getUserId() != null
-                && currentUid.equals(post.getUserId());
+        boolean isOwner = currentUid != null && post.getUserId() != null && currentUid.equals(post.getUserId());
         boolean hasActiveExchange = false;
 
-        // ✅ FIX: owner luôn thấy địa chỉ đầy đủ
-        if (tvLocation != null) {
-            tvLocation.setText(formatPublicAddress(post, isOwner || hasActiveExchange));
-        }
+        if (tvLocation != null) tvLocation.setText(formatPublicAddress(post, true));
 
         bindPostMetadata(post);
         updateActionAvailability(isOwner, post);
@@ -395,9 +399,7 @@ public class DetailActivity extends AppCompatActivity {
                 container.addView(item);
             }
         }
-        if (cardDistance != null) {
-            cardDistance.setVisibility(container.getChildCount() > 0 ? View.VISIBLE : View.GONE);
-        }
+        if (cardDistance != null) cardDistance.setVisibility(container.getChildCount() > 0 ? View.VISIBLE : View.GONE);
     }
 
     private void setupAmenities(List<String> utilities) {
@@ -416,9 +418,7 @@ public class DetailActivity extends AppCompatActivity {
 
             com.example.studenthousing.data.model.Utility utilObj =
                     com.example.studenthousing.data.loader.UtilitiesDataLoader.getByCode(this, util);
-            String displayLabel = (utilObj != null && utilObj.getLabel() != null)
-                    ? utilObj.getLabel()
-                    : util;
+            String displayLabel = (utilObj != null && utilObj.getLabel() != null) ? utilObj.getLabel() : util;
 
             label.setText(displayLabel);
             icon.setImageResource(getIconForUtility(displayLabel));
@@ -451,32 +451,21 @@ public class DetailActivity extends AppCompatActivity {
         return R.drawable.ic_check;
     }
 
-    // ==================== PHOTO PAGER + DOT INDICATOR ====================
-
     private void setupPhotoPager(List<String> imageUrls) {
         List<String> safeUrls = imageUrls != null ? imageUrls : new ArrayList<>();
-        binding.photoPager.setAdapter(new PhotoPagerAdapter(safeUrls, position -> {
-            showFullScreenPhoto(safeUrls, position);
-        }));
-
+        binding.photoPager.setAdapter(new PhotoPagerAdapter(safeUrls, position -> showFullScreenPhoto(safeUrls, position)));
         setupDotIndicator(safeUrls.size());
 
-        if (pageCallback != null) {
-            binding.photoPager.unregisterOnPageChangeCallback(pageCallback);
-        }
+        if (pageCallback != null) binding.photoPager.unregisterOnPageChangeCallback(pageCallback);
         final int total = safeUrls.size();
-        if (tvPhotoCounter != null) {
-            tvPhotoCounter.setText(total > 0 ? "1 / " + total : "0 / 0");
-        }
+        if (tvPhotoCounter != null) tvPhotoCounter.setText(total > 0 ? "1 / " + total : "0 / 0");
 
         if (total > 0) {
             pageCallback = new ViewPager2.OnPageChangeCallback() {
                 @Override
                 public void onPageSelected(int position) {
                     updateDotIndicator(position);
-                    if (tvPhotoCounter != null) {
-                        tvPhotoCounter.setText((position + 1) + " / " + total);
-                    }
+                    if (tvPhotoCounter != null) tvPhotoCounter.setText((position + 1) + " / " + total);
                 }
             };
             binding.photoPager.registerOnPageChangeCallback(pageCallback);
@@ -488,10 +477,8 @@ public class DetailActivity extends AppCompatActivity {
         if (dots == null) return;
         dots.removeAllViews();
         if (totalImages <= 0) return;
-
         int size = dp(8);
         int gap = dp(4);
-
         for (int i = 0; i < totalImages; i++) {
             View dot = new View(this);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(size, size);
@@ -517,8 +504,7 @@ public class DetailActivity extends AppCompatActivity {
 
     private void showFullScreenPhoto(List<String> urls, int startPos) {
         if (urls == null || urls.isEmpty()) return;
-        android.app.Dialog dialog = new android.app.Dialog(this,
-                android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        android.app.Dialog dialog = new android.app.Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         dialog.setContentView(R.layout.dialog_fullscreen_photo);
 
         ViewPager2 pager = dialog.findViewById(R.id.fullScreenPager);
@@ -538,10 +524,7 @@ public class DetailActivity extends AppCompatActivity {
             });
         }
 
-        if (btnClose != null) {
-            btnClose.setOnClickListener(v -> dialog.dismiss());
-        }
-
+        if (btnClose != null) btnClose.setOnClickListener(v -> dialog.dismiss());
         dialog.show();
     }
 
@@ -549,24 +532,61 @@ public class DetailActivity extends AppCompatActivity {
         viewModel.toggleFavorite(postId);
     }
 
-    private void loadComments() {}
-    private void submitComment() {}
+    // ==================== BÌNH LUẬN ====================
+
+    private void loadComments() {
+        if (postId == null || commentDao == null) return;
+        List<Comment> comments = commentDao.getByPost(postId);
+        commentAdapter.setData(comments);
+
+        if (tvCommentsEmpty != null) {
+            tvCommentsEmpty.setVisibility(comments.isEmpty() ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    private void submitComment() {
+        if (etCommentInput == null) return;
+        String content = etCommentInput.getText().toString().trim();
+        if (content.isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập bình luận", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userId = SessionManager.getUid(this);
+        if (userId == null) {
+            Toast.makeText(this, "Vui lòng đăng nhập để bình luận", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userName = new SessionManager(this).getUserFamilyName();
+        if (userName == null || userName.isEmpty()) userName = "Người dùng";
+
+        Comment newComment = new Comment();
+        newComment.setCommentId("cmt_" + System.currentTimeMillis());
+        newComment.setPostId(postId);
+        newComment.setUserId(userId);
+        newComment.setUserName(userName);
+        newComment.setContent(content);
+        newComment.setCreatedAt(System.currentTimeMillis());
+
+        commentDao.insert(newComment);
+        etCommentInput.setText("");
+        loadComments();
+
+        Toast.makeText(this, "Đã gửi bình luận", Toast.LENGTH_SHORT).show();
+    }
 
     private void openSmsApp(String targetUserId, String defaultMessage) {
-        com.example.studenthousing.data.local.UserDao userDao =
-                new com.example.studenthousing.data.local.UserDao(this);
+        com.example.studenthousing.data.local.UserDao userDao = new com.example.studenthousing.data.local.UserDao(this);
         User host = targetUserId != null ? userDao.getById(targetUserId) : null;
-        String phone = host != null && host.getPhone() != null && !host.getPhone().isEmpty()
-                ? host.getPhone() : "0988123456";
-        Intent smsIntent = new Intent(Intent.ACTION_SENDTO,
-                android.net.Uri.parse("smsto:" + phone.trim()));
+        String phone = host != null && host.getPhone() != null && !host.getPhone().isEmpty() ? host.getPhone() : "0988123456";
+        Intent smsIntent = new Intent(Intent.ACTION_SENDTO, android.net.Uri.parse("smsto:" + phone.trim()));
         smsIntent.putExtra("sms_body", defaultMessage);
         try {
             startActivity(smsIntent);
         } catch (Exception e) {
             try {
-                Intent viewIntent = new Intent(Intent.ACTION_VIEW,
-                        android.net.Uri.parse("sms:" + phone.trim()));
+                Intent viewIntent = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse("sms:" + phone.trim()));
                 viewIntent.putExtra("sms_body", defaultMessage);
                 startActivity(viewIntent);
             } catch (Exception ex) {

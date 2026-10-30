@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "studenthousing.db";
-    private static final int DB_VERSION = 3; // ✅ Tăng version để trigger onUpgrade
+    private static final int DB_VERSION = 4; // ✅ Tăng lên 4 để trigger onUpgrade tạo bảng comments
 
     // Table: posts_cache
     public static final String TBL_POSTS = "posts_cache";
@@ -78,11 +78,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_UNIVERSITY_CODE = "university_code";
     public static final String COL_UNIVERSITY_NAME = "university_name";
     public static final String COL_CITIZEN_ID_HASH = "citizen_id_hash";
-    // ✅ THÊM 3 CỘT MỚI
     public static final String COL_CITIZEN_ID_FRONT_URL = "citizen_id_front_url";
     public static final String COL_CITIZEN_ID_BACK_URL = "citizen_id_back_url";
     public static final String COL_STUDENT_CARD_URL = "student_card_url";
-
     public static final String COL_RESIDENCE_VERIFIED = "residence_verified";
     public static final String COL_RESIDENCE_VERIFIED_AT = "residence_verified_at";
     public static final String COL_FULLY_VERIFIED = "fully_verified";
@@ -99,6 +97,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TBL_CHAT_ROOM_PARTICIPANTS = "chat_room_participants";
     public static final String COL_LAST_MESSAGE = "last_message";
     public static final String COL_LAST_MESSAGE_AT = "last_message_at";
+
+    // ✅ Table: comments (MỚI)
+    public static final String TBL_COMMENTS = "comments";
+    public static final String COL_COMMENT_ID = "comment_id";
+    public static final String COL_COMMENT_POST_ID = "post_id";
+    public static final String COL_COMMENT_USER_ID = "user_id";
+    public static final String COL_COMMENT_USER_NAME = "user_name";
+    public static final String COL_COMMENT_USER_AVATAR = "user_avatar";
+    public static final String COL_COMMENT_CONTENT = "content";
+    public static final String COL_COMMENT_CREATED_AT = "created_at";
 
     private static DatabaseHelper instance;
 
@@ -127,7 +135,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COL_UNIVERSITY_CODE + " TEXT, " +
                 COL_UNIVERSITY_NAME + " TEXT, " +
                 COL_CITIZEN_ID_HASH + " TEXT, " +
-                // ✅ THÊM 3 CỘT MỚI
                 COL_CITIZEN_ID_FRONT_URL + " TEXT, " +
                 COL_CITIZEN_ID_BACK_URL + " TEXT, " +
                 COL_STUDENT_CARD_URL + " TEXT, " +
@@ -236,11 +243,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COL_SAVED_AT + " INTEGER, " +
                 "PRIMARY KEY (" + COL_USER_ID + ", " + COL_POST_ID + ")" +
                 ")");
+
+        // ✅ TẠO BẢNG COMMENTS (MỚI)
+        db.execSQL("CREATE TABLE " + TBL_COMMENTS + " (" +
+                COL_COMMENT_ID + " TEXT PRIMARY KEY, " +
+                COL_COMMENT_POST_ID + " TEXT, " +
+                COL_COMMENT_USER_ID + " TEXT, " +
+                COL_COMMENT_USER_NAME + " TEXT, " +
+                COL_COMMENT_USER_AVATAR + " TEXT, " +
+                COL_COMMENT_CONTENT + " TEXT, " +
+                COL_COMMENT_CREATED_AT + " INTEGER" +
+                ")");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // ✅ Sửa: Chỉ Alter Table để thêm cột, KHÔNG gọi onCreate() để tránh lỗi "table already exists"
+        // ✅ Tạo bảng comments nếu chưa có (dành cho user đã cài app từ trước)
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + TBL_COMMENTS + " (" +
+                COL_COMMENT_ID + " TEXT PRIMARY KEY, " +
+                COL_COMMENT_POST_ID + " TEXT, " +
+                COL_COMMENT_USER_ID + " TEXT, " +
+                COL_COMMENT_USER_NAME + " TEXT, " +
+                COL_COMMENT_USER_AVATAR + " TEXT, " +
+                COL_COMMENT_CONTENT + " TEXT, " +
+                COL_COMMENT_CREATED_AT + " INTEGER" +
+                ")");
+
         if (oldVersion < 3) {
             try {
                 db.execSQL("ALTER TABLE " + TBL_USERS + " ADD COLUMN " + COL_CITIZEN_ID_FRONT_URL + " TEXT");
@@ -251,6 +279,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         }
     }
+
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         dropAllLocalTables(db);
@@ -266,5 +295,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TBL_VERIFICATION_TICKETS);
         db.execSQL("DROP TABLE IF EXISTS " + TBL_VERIFIED_ADDRESSES);
         db.execSQL("DROP TABLE IF EXISTS " + TBL_USERS);
+        db.execSQL("DROP TABLE IF EXISTS " + TBL_COMMENTS); // ✅ Thêm dòng này
     }
 }

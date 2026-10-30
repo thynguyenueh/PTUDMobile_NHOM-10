@@ -61,11 +61,9 @@ public class MyPostAdapter extends RecyclerView.Adapter<MyPostAdapter.MyPostView
 
         private final TextView tvTitle;
         private final TextView tvAddress;
-        private final TextView tvStatus;
         private final TextView btnViewPost;
         private final TextView btnEditPost;
         private final TextView btnDeletePost;
-        private final MaterialButton btnToggleStatus;
 
         private final OnPostActionListener listener;
 
@@ -75,12 +73,10 @@ public class MyPostAdapter extends RecyclerView.Adapter<MyPostAdapter.MyPostView
 
             tvTitle = itemView.findViewById(R.id.tvPostTitle);
             tvAddress = itemView.findViewById(R.id.tvPostAddress);
-            tvStatus = itemView.findViewById(R.id.tvPostStatus);
 
             btnViewPost = itemView.findViewById(R.id.btnViewPost);
             btnEditPost = itemView.findViewById(R.id.btnEditPost);
             btnDeletePost = itemView.findViewById(R.id.btnDeletePost);
-            btnToggleStatus = itemView.findViewById(R.id.btnTogglePostStatus);
         }
 
         void bind(@NonNull Post post) {
@@ -95,22 +91,6 @@ public class MyPostAdapter extends RecyclerView.Adapter<MyPostAdapter.MyPostView
 
             tvTitle.setText(title);
             tvAddress.setText(address);
-
-            if (isExchanged) {
-                tvStatus.setText("Đã đổi nhà");
-                tvStatus.setTextColor(ContextCompat.getColor(context, R.color.status_info));
-            } else if (isAvailable) {
-                tvStatus.setText("Đang hiển thị");
-                tvStatus.setTextColor(ContextCompat.getColor(context, R.color.olive_primary_dark));
-            } else {
-                tvStatus.setText("Khác");
-                tvStatus.setTextColor(ContextCompat.getColor(context, R.color.text_sub));
-            }
-            if (btnToggleStatus != null) {
-                btnToggleStatus.setVisibility(View.VISIBLE);
-                btnToggleStatus.setText(isAvailable ? "Đánh dấu đã đổi" : "Mở lại bài đăng");
-                btnToggleStatus.setOnClickListener(v -> listener.onToggleStatus(post));
-            }
 
             if (btnViewPost != null) {
                 btnViewPost.setOnClickListener(v -> listener.onViewPost(post));

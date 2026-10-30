@@ -184,7 +184,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             tvTitle = itemView.findViewById(R.id.tvHouseTitle);
             tvAddress = itemView.findViewById(R.id.tvHouseAddress);
             tvDistance = itemView.findViewById(R.id.tvHouseDistance);
-            tvStatus = itemView.findViewById(R.id.tvPostStatus);
             tvUtilities = itemView.findViewById(R.id.tvHouseUtilities);
             tvTime = itemView.findViewById(R.id.tvHouseTime);
             ivVerified = itemView.findViewById(R.id.ivHouseVerified);
