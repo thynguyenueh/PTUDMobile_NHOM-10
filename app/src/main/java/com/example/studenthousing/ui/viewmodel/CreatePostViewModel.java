@@ -170,6 +170,12 @@ public class CreatePostViewModel extends AndroidViewModel {
         return submitState;
     }
 
+    public void createPost(List<Uri> selectedImageUris, String title, String address, String desc,
+                           List<String> utilities, int cityCode, int wardCode, String wardName,
+                           String houseNumber, String streetName) {
+        submitPost(selectedImageUris, title, address, desc, utilities, cityCode, wardCode, wardName, 2, "", houseNumber, streetName);
+    }
+
     public void submitPost(List<Uri> selectedImageUris, String title, String address, String desc, List<String> utilities) {
         submitPost(selectedImageUris, title, address, desc, utilities, 79, 27256, "", 2, "", "", "");
     }

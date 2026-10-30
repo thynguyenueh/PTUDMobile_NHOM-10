@@ -15,7 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.bumptech.glide.Glide;
+import com.example.studenthousing.data.local.VerifiedAddressDao;
+import com.example.studenthousing.data.model.VerifiedAddress;
 import com.example.studenthousing.databinding.ActivityResidenceVerificationBinding;
 import com.example.studenthousing.ui.viewmodel.ResidenceVerificationViewModel;
 import com.example.studenthousing.util.SessionManager;
@@ -25,6 +26,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -33,6 +35,7 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
     public static final String PREFS_NAME = "residence_prefs";
     public static final String KEY_FILE_PATH = "file_";
     public static final String KEY_FILE_NAME = "filename_";
+    public static final String KEY_ADDRESS = "address_";
     public static final String KEY_STATUS = "status_";
 
     private ResidenceVerificationViewModel viewModel;
@@ -73,7 +76,6 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
 
         loadSavedInputs();
         restoreFromState(savedInstanceState);
-        updatePreview();
         loadStatus();
     }
 
@@ -87,6 +89,9 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
             if (f.exists()) {
                 selectedFilePath = path;
                 selectedFileName = name != null ? name : f.getName();
+                if (binding.tvUploadText != null) {
+                    binding.tvUploadText.setText("Đã chọn: " + selectedFileName);
+                }
             }
         }
     }
@@ -99,50 +104,37 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
     }
 
     private void loadSavedInputs() {
+        String savedAddress = prefs.getString(KEY_ADDRESS + userId, null);
         String savedPath = prefs.getString(KEY_FILE_PATH + userId, null);
         String savedName = prefs.getString(KEY_FILE_NAME + userId, null);
 
+        if (savedAddress != null && binding.etDetailedAddress != null) {
+            binding.etDetailedAddress.setText(savedAddress);
+        }
         if (savedPath != null) {
             File f = new File(savedPath);
             if (f.exists()) {
                 selectedFilePath = savedPath;
                 selectedFileName = savedName;
+                if (binding.tvUploadText != null) {
+                    binding.tvUploadText.setText("Đã chọn: " + (selectedFileName != null ? selectedFileName : f.getName()));
+                }
             }
         }
     }
 
     private void setupListeners() {
-        binding.btnBack.setOnClickListener(v -> finish());
-        binding.layoutUploadBox.setOnClickListener(v -> pickFile.launch("*/*"));
-        binding.btnSubmitVerification.setOnClickListener(v -> submit());
-        binding.btnRemovePreview.setOnClickListener(v -> {
-            selectedFilePath = null;
-            selectedFileName = null;
-            if (prefs != null && userId != null) {
-                prefs.edit().remove(KEY_FILE_PATH + userId).remove(KEY_FILE_NAME + userId).apply();
-            }
-            updatePreview();
-        });
-    }
+        if (binding.btnBack != null) binding.btnBack.setOnClickListener(v -> finish());
 
-    private void updatePreview() {
-        if (selectedFilePath != null) {
-            File f = new File(selectedFilePath);
-            if (f.exists()) {
-                binding.cardPreview.setVisibility(View.VISIBLE);
-                String name = selectedFileName != null ? selectedFileName : f.getName();
-                binding.tvPreviewFileName.setText(name);
-                binding.tvUploadText.setText("Đổi tệp khác (" + name + ")");
-
-                Glide.with(this)
-                        .load(f)
-                        .centerCrop()
-                        .into(binding.ivPreview);
-                return;
-            }
+        if (binding.layoutUploadBox != null) {
+            binding.layoutUploadBox.setOnClickListener(v -> pickFile.launch("*/*"));
         }
-        binding.cardPreview.setVisibility(View.GONE);
-        binding.tvUploadText.setText("Bấm để chọn ảnh hoặc tệp");
+
+        if (binding.btnSubmitVerification != null) {
+            binding.btnSubmitVerification.setOnClickListener(v -> {
+                submit();
+            });
+        }
     }
 
     private void loadStatus() {
@@ -151,49 +143,72 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
         }
     }
 
+    private VerifiedAddressAdapter addressAdapter;
+
     private void renderStatusState(UiState<ResidenceVerificationViewModel.ResidenceStatusData> state) {
         if (state == null || state.getContent() == null) return;
-        ResidenceVerificationViewModel.ResidenceStatusData data = state.getContent();
 
-        if (data.isVerified) {
-            binding.tvBannerText.setText("Tài khoản của bạn đã được xác thực cư trú");
-            binding.btnSubmitVerification.setText("Đã xác thực cư trú");
-            binding.btnSubmitVerification.setEnabled(true);
-            if (prefs != null && userId != null) {
-                prefs.edit().putString(KEY_STATUS + userId, "APPROVED").apply();
-            }
-        } else {
-            binding.tvBannerText.setText("Tải lên giấy tờ cư trú để tự động duyệt xác thực");
-            binding.btnSubmitVerification.setText("Xác thực cư trú ngay");
-            binding.btnSubmitVerification.setEnabled(true);
+        if (addressAdapter == null) {
+            addressAdapter = new VerifiedAddressAdapter();
+            addressAdapter.setOnDeleteListener(addr -> {
+                new androidx.appcompat.app.AlertDialog.Builder(this)
+                        .setTitle("Xóa địa chỉ")
+                        .setMessage("Bạn có chắc chắn muốn xóa địa chỉ này?")
+                        .setPositiveButton("Xóa", (dialog, which) -> {
+                            VerifiedAddressDao dao = new VerifiedAddressDao(this);
+                            dao.delete(addr.getAddressId());
+                            Toast.makeText(this, "Đã xóa địa chỉ", Toast.LENGTH_SHORT).show();
+                            renderStatusState(viewModel.getStatusState().getValue());
+                        })
+                        .setNegativeButton("Hủy", null)
+                        .show();
+            });
+            binding.rvVerifiedAddresses.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this));
+            binding.rvVerifiedAddresses.setAdapter(addressAdapter);
         }
+
+        VerifiedAddressDao dao = new VerifiedAddressDao(this);
+        List<VerifiedAddress> verifiedList = dao.getByOwner(userId);
+
+        if (verifiedList != null && !verifiedList.isEmpty()) {
+            addressAdapter.submitList(verifiedList);
+            binding.tvVerifiedAddressesHeader.setVisibility(View.VISIBLE);
+            binding.rvVerifiedAddresses.setVisibility(View.VISIBLE);
+        } else {
+            binding.tvVerifiedAddressesHeader.setVisibility(View.GONE);
+            binding.rvVerifiedAddresses.setVisibility(View.GONE);
+        }
+
+        binding.btnSubmitVerification.setEnabled(true);
+        binding.btnSubmitVerification.setText("Gửi xác thực địa chỉ này");
+        if (binding.etDetailedAddress != null) binding.etDetailedAddress.setEnabled(true);
+        if (binding.layoutUploadBox != null) binding.layoutUploadBox.setEnabled(true);
     }
 
     private void renderSubmitState(UiState<String> state) {
         if (state == null) return;
         if (state.getScreenState() == UiState.ScreenState.LOADING) {
             binding.btnSubmitVerification.setEnabled(false);
-            binding.btnSubmitVerification.setText("Đang xử lý & duyệt tự động...");
+            binding.btnSubmitVerification.setText("Đang kiểm tra tọa độ & gửi hồ sơ...");
             return;
         }
 
         binding.btnSubmitVerification.setEnabled(true);
+        binding.btnSubmitVerification.setText("Gửi xác thực địa chỉ này");
 
         if (state.getScreenState() == UiState.ScreenState.ERROR) {
-            binding.btnSubmitVerification.setText("Xác thực cư trú ngay");
             Toast.makeText(this, state.getErrorMessage() != null ? state.getErrorMessage() : "Lỗi gửi hồ sơ", Toast.LENGTH_LONG).show();
             return;
         }
 
         if (state.getContent() != null) {
             Toast.makeText(this, state.getContent(), Toast.LENGTH_SHORT).show();
-            if (prefs != null && userId != null) {
-                prefs.edit().putString(KEY_STATUS + userId, "APPROVED").apply();
-            }
             selectedFilePath = null;
             selectedFileName = null;
-            updatePreview();
-            loadStatus();
+            binding.tvUploadText.setText("Bấm để chọn ảnh hoặc tệp");
+            if (binding.etDetailedAddress != null) binding.etDetailedAddress.setText("");
+            // Refresh verified addresses list
+            renderStatusState(viewModel.getStatusState().getValue());
         }
     }
 
@@ -215,7 +230,11 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
                 }
                 selectedFilePath = out.getAbsolutePath();
                 selectedFileName = name;
-                runOnUiThread(this::updatePreview);
+                runOnUiThread(() -> {
+                    if (binding.tvUploadText != null) {
+                        binding.tvUploadText.setText("Đã chọn: " + selectedFileName);
+                    }
+                });
             } catch (Exception e) {
                 runOnUiThread(() -> Toast.makeText(this,
                         "Không thể chọn tệp: " + e.getMessage(), Toast.LENGTH_LONG).show());
@@ -235,12 +254,19 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
     }
 
     private void submit() {
-        viewModel.submitVerification(userId, selectedFilePath);
+        String address = "";
+        if (binding != null && binding.etDetailedAddress != null && binding.etDetailedAddress.getText() != null) {
+            address = binding.etDetailedAddress.getText().toString().trim();
+        }
+        viewModel.submitVerification(userId, selectedFilePath, address);
     }
 
     private void persistInputs() {
         if (prefs == null || userId == null) return;
         SharedPreferences.Editor editor = prefs.edit();
+        String address = binding.etDetailedAddress != null && binding.etDetailedAddress.getText() != null
+                ? binding.etDetailedAddress.getText().toString().trim() : "";
+        if (!address.isEmpty()) editor.putString(KEY_ADDRESS + userId, address);
         if (selectedFilePath != null) editor.putString(KEY_FILE_PATH + userId, selectedFilePath);
         if (selectedFileName != null) editor.putString(KEY_FILE_NAME + userId, selectedFileName);
         editor.apply();

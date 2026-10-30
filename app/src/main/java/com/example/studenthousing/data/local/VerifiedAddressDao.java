@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import com.example.studenthousing.data.model.VerifiedAddress;
 import com.example.studenthousing.util.Constants;
 
+import java.util.List;
+
 public class VerifiedAddressDao {
     private final DatabaseHelper dbHelper;
 
@@ -48,6 +50,21 @@ public class VerifiedAddressDao {
             }
         }
         return list;
+    }
+
+    public VerifiedAddress getByAddressAndUser(String userId, String fullAddress) {
+        if (userId == null || fullAddress == null) return null;
+        List<VerifiedAddress> list = getByOwner(userId);
+        for (VerifiedAddress va : list) {
+            if (va.getFullAddress() != null && va.getFullAddress().equalsIgnoreCase(fullAddress.trim())) {
+                return va;
+            }
+        }
+        return null;
+    }
+
+    public List<VerifiedAddress> getByUserId(String userId) {
+        return getByOwner(userId);
     }
 
     public void delete(String addressId) {

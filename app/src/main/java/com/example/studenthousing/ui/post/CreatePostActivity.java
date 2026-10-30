@@ -1,5 +1,6 @@
 package com.example.studenthousing.ui.post;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.example.studenthousing.ui.adapter.SelectedPhotoAdapter;
 import com.example.studenthousing.ui.viewmodel.CreatePostViewModel;
 import com.example.studenthousing.util.AddressFingerprintUtil;
 import com.example.studenthousing.util.AppCallback;
+import com.example.studenthousing.util.SessionManager;
 import com.example.studenthousing.util.UiState;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
@@ -107,6 +109,25 @@ public class CreatePostActivity extends AppCompatActivity {
         }
         if (etAdminAddress != null) {
             etAdminAddress.setOnClickListener(v -> openAddressPicker());
+        }
+        TextView tvVerifyAddressPrompt = findViewById(R.id.tvVerifyAddressPrompt);
+        if (tvVerifyAddressPrompt != null) {
+            String userId = SessionManager.getUid(this);
+            com.example.studenthousing.data.local.VerifiedAddressDao dao = new com.example.studenthousing.data.local.VerifiedAddressDao(this);
+            List<com.example.studenthousing.data.model.VerifiedAddress> verifiedList = dao.getByOwner(userId);
+            boolean hasVerified = false;
+            if (verifiedList != null) {
+                for (com.example.studenthousing.data.model.VerifiedAddress va : verifiedList) {
+                    if (va.getStatus() == null || "VERIFIED".equalsIgnoreCase(va.getStatus())) {
+                        hasVerified = true;
+                        break;
+                    }
+                }
+            }
+            tvVerifyAddressPrompt.setVisibility(hasVerified ? View.GONE : View.VISIBLE);
+            tvVerifyAddressPrompt.setOnClickListener(v -> {
+                startActivity(new Intent(this, com.example.studenthousing.ui.verify.ResidenceVerificationActivity.class));
+            });
         }
         etDescription = findViewById(R.id.etDescription);
         etCustomUtility = findViewById(R.id.etCustomUtility);
@@ -374,27 +395,59 @@ public class CreatePostActivity extends AppCompatActivity {
     }
 
     private void openAddressPicker() {
-        com.example.studenthousing.util.ProvincePickerHelper.showPicker(this, (province, ward) -> {
-            if (province != null) {
-                selectedCityCode = 79;
-                selectedWardCode = ward != null ? ward.getCode() : 0;
-                selectedWardName = ward != null ? ward.getName() : "";
-
-                String wardName = selectedWardName;
-                String provName = province.getName();
-
-                StringBuilder sb = new StringBuilder();
-                if (!wardName.isEmpty()) sb.append(wardName).append(", ");
-                sb.append(provName);
-
-                if (etAdminAddress != null) {
-                    etAdminAddress.setText(sb.toString());
-                }
-                if (tilAdminAddress != null) {
-                    tilAdminAddress.setError(null);
+        String userId = SessionManager.getUid(this);
+        com.example.studenthousing.data.local.VerifiedAddressDao dao = new com.example.studenthousing.data.local.VerifiedAddressDao(this);
+        List<com.example.studenthousing.data.model.VerifiedAddress> verifiedList = dao.getByOwner(userId);
+        List<com.example.studenthousing.data.model.VerifiedAddress> validAddresses = new ArrayList<>();
+        if (verifiedList != null) {
+            for (com.example.studenthousing.data.model.VerifiedAddress va : verifiedList) {
+                if (va.getFullAddress() != null && !va.getFullAddress().isEmpty()) {
+                    if (va.getStatus() == null || "VERIFIED".equalsIgnoreCase(va.getStatus())) {
+                        validAddresses.add(va);
+                    }
                 }
             }
-        });
+        }
+
+        if (validAddresses.isEmpty()) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Chưa có địa chỉ đã xác thực")
+                    .setMessage("Bạn cần xác thực địa chỉ cư trú trước khi tạo bài đăng mới.")
+                    .setPositiveButton("Xác thực ngay", (dialog, which) -> {
+                        startActivity(new Intent(this, com.example.studenthousing.ui.verify.ResidenceVerificationActivity.class));
+                    })
+                    .setNegativeButton("Đóng", null)
+                    .show();
+            return;
+        }
+
+        String[] addressTitles = new String[validAddresses.size()];
+        for (int i = 0; i < validAddresses.size(); i++) {
+            addressTitles[i] = validAddresses.get(i).getFullAddress();
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Chọn địa chỉ đã xác thực")
+                .setItems(addressTitles, (dialog, which) -> {
+                    com.example.studenthousing.data.model.VerifiedAddress selected = validAddresses.get(which);
+                    selectedCityCode = selected.getCityCode();
+                    selectedWardCode = selected.getWardCode();
+                    selectedWardName = "";
+                    if (etAdminAddress != null) {
+                        etAdminAddress.setText(selected.getFullAddress());
+                    }
+                    if (etHouseNumber != null && selected.getHouseNumberNorm() != null) {
+                        etHouseNumber.setText(selected.getHouseNumberNorm());
+                    }
+                    if (etStreetAddress != null && selected.getStreetNormalized() != null) {
+                        etStreetAddress.setText(selected.getStreetNormalized());
+                    }
+                    if (tilAdminAddress != null) {
+                        tilAdminAddress.setError(null);
+                    }
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 
     private void renderSubmitState(UiState<String> state) {

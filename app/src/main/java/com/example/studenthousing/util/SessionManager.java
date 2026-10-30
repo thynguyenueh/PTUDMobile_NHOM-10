@@ -70,19 +70,6 @@ public class SessionManager {
     public void logout() {
         FirebaseAuth.getInstance().signOut();
         pref.edit().clear().apply();
-        try {
-            android.database.sqlite.SQLiteDatabase db =
-                    com.example.studenthousing.data.local.DatabaseHelper.getInstance(context).getWritableDatabase();
-            String whereSynced = com.example.studenthousing.data.local.DatabaseHelper.COL_SYNC_STATUS + " IS NULL OR " +
-                    com.example.studenthousing.data.local.DatabaseHelper.COL_SYNC_STATUS + " = 'SYNCED'";
-            db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_POSTS, whereSynced, null);
-            db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_MESSAGES, whereSynced, null);
-            db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_EXCHANGE, whereSynced, null);
-            db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_REVIEWS, whereSynced, null);
-            db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_CHAT_ROOMS, null, null);
-            db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_CHAT_ROOM_PARTICIPANTS, null, null);
-            db.delete(com.example.studenthousing.data.local.DatabaseHelper.TBL_SAVED_HOUSES, null, null);
-        } catch (Exception ignored) {}
     }
 
     public static String getUid(Context ctx) {
