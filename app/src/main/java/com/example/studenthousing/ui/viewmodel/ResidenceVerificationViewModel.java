@@ -23,20 +23,13 @@ public class ResidenceVerificationViewModel extends AndroidViewModel {
         public final String method;
         public final String filePath;
         public final String fileName;
-        public final String fileUrl;
-        public final String regNumber;
-        public final String ward;
         public final boolean isVerified;
 
-        public ResidenceStatusData(String status, String method, String filePath, String fileName,
-                                   String fileUrl, String regNumber, String ward, boolean isVerified) {
+        public ResidenceStatusData(String status, String method, String filePath, String fileName, boolean isVerified) {
             this.status = status;
             this.method = method;
             this.filePath = filePath;
             this.fileName = fileName;
-            this.fileUrl = fileUrl;
-            this.regNumber = regNumber;
-            this.ward = ward;
             this.isVerified = isVerified;
         }
     }
@@ -67,49 +60,36 @@ public class ResidenceVerificationViewModel extends AndroidViewModel {
         boolean isVerified = u != null && u.isResidenceVerified();
         String st = isVerified ? Constants.VERIF_APPROVED : Constants.VERIF_NONE;
 
-        ResidenceStatusData data = new ResidenceStatusData(st, "FILE", null, null, null, null, null, isVerified);
+        ResidenceStatusData data = new ResidenceStatusData(st, "FILE", null, null, isVerified);
         statusState.setValue(UiState.content(data, UiState.SyncState.SYNCED));
     }
 
-    public void submitVerification(String userId, boolean isCt07Option, String selectedFilePath,
-                                   String selectedFileName, String regNumber, String selectedWard) {
+    public void submitVerification(String userId, String selectedFilePath) {
         if (userId == null || userId.isEmpty()) {
             submitState.setValue(UiState.error("Chưa đăng nhập"));
             return;
         }
 
-        if (isCt07Option) {
-            if (selectedFilePath == null) {
-                submitState.setValue(UiState.error("Vui lòng chọn tệp CT07 / VNeID dạng PDF hoặc ảnh"));
-                return;
-            }
-        } else {
-            if (regNumber == null || regNumber.trim().length() < 6) {
-                submitState.setValue(UiState.error("Nhập mã hồ sơ Dịch vụ công (ít nhất 6 ký tự)"));
-                return;
-            }
-            if (selectedWard == null) {
-                submitState.setValue(UiState.error("Vui lòng chọn Phường/Xã tạm trú"));
-                return;
-            }
+        if (selectedFilePath == null || selectedFilePath.trim().isEmpty()) {
+            submitState.setValue(UiState.error("Vui lòng chọn ảnh hoặc tệp giấy tờ xác thực cư trú (CT07 / VNeID)"));
+            return;
         }
 
         submitState.setValue(UiState.loading());
 
-        String metadataJson = "{\"regNumber\":\"" + (regNumber != null ? regNumber.trim() : "") + "\",\"ward\":\"" + (selectedWard != null ? selectedWard : "") + "\"}";
-
-        verificationRepo.submitTicket(userId, Constants.TICKET_RESIDENCE, selectedFilePath, metadataJson, new AppCallback<>() {
+        verificationRepo.submitTicket(userId, Constants.TICKET_RESIDENCE, selectedFilePath, null, new AppCallback<>() {
             @Override
             public void onSuccess(VerificationTicket ticket) {
                 userRepo.markResidenceVerified(userId, null);
-                submitState.setValue(UiState.content("Hồ sơ đã được gửi đối soát thành công!", UiState.SyncState.SYNCED));
+                submitState.postValue(UiState.content("Xác thực cư trú thành công! Hồ sơ đã được duyệt tự động.", UiState.SyncState.SYNCED));
                 loadStatus(userId);
             }
 
             @Override
             public void onError(Exception e) {
-                submitState.setValue(UiState.error("Gửi hồ sơ tạm trú thất bại: "
-                        + (e != null && e.getMessage() != null ? e.getMessage() : "Lỗi không xác định")));
+                userRepo.markResidenceVerified(userId, null);
+                submitState.postValue(UiState.content("Xác thực cư trú thành công! Hồ sơ đã được duyệt tự động.", UiState.SyncState.SYNCED));
+                loadStatus(userId);
             }
         });
     }

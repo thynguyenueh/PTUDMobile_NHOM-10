@@ -8,60 +8,26 @@
     android:background="@color/bg_app"
     android:orientation="vertical">
 
-    <!-- Header Bar -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:background="@color/white"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingHorizontal="16dp">
-
+    <LinearLayout style="@style/Widget.App.HeaderBar">
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:padding="10dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/cd_back"
-            android:src="@drawable/ic_arrow_back"
-            app:tint="@color/primary" />
+            style="@style/Widget.App.HeaderBackButton" />
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:text="@string/residence_verification_title"
-            android:textColor="@color/text_main"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <ImageView
-            android:id="@+id/btnHelp"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:padding="12dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/cd_help"
-            android:src="@drawable/ic_help"
-            app:tint="@color/primary" />
+            style="@style/Widget.App.HeaderTitle"
+            android:text="@string/residence_verification_title" />
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/divider_line" />
+    <View style="@style/Widget.App.Divider" />
 
-    <!-- Main Content -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:fillViewport="true"
         android:clipToPadding="false"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="16dp">
+        android:fillViewport="true"
+        android:paddingHorizontal="@dimen/space_lg"
+        android:paddingVertical="@dimen/space_lg">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -85,6 +51,7 @@
                     app:tint="@color/primary" />
 
                 <TextView
+                    android:id="@+id/tvBannerText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
@@ -94,241 +61,123 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Method Selection Section -->
+            <!-- Upload Section -->
             <TextView
+                style="@style/TextAppearance.App.SectionTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/residence_verification_method_title"
-                android:textColor="@color/text_main"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:layout_marginTop="@dimen/space_xl"
+                android:text="Tải lên giấy tờ xác thực cư trú" />
 
-            <!-- Option 1 Container -->
+            <TextView
+                style="@style/TextAppearance.App.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xxs"
+                android:layout_marginBottom="@dimen/space_md"
+                android:text="Giấy xác nhận cư trú (CT07), Hợp đồng thuê nhà hoặc QR / ảnh VNeID. Hệ thống sẽ tự động duyệt hồ sơ sau khi tải lên thành công." />
+
+            <!-- Dashed Upload Box -->
             <LinearLayout
+                android:id="@+id/layoutUploadBox"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:background="@drawable/bg_upload_dashed"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <ImageView
+                    android:layout_width="@dimen/icon_xl"
+                    android:layout_height="@dimen/icon_xl"
+                    android:contentDescription="@string/cd_camera"
+                    android:src="@drawable/ic_camera"
+                    app:tint="@color/primary" />
+
+                <TextView
+                    android:id="@+id/tvUploadText"
+                    style="@style/TextAppearance.App.SectionTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:textColor="@color/primary"
+                    android:text="Bấm để chọn ảnh hoặc tệp" />
+            </LinearLayout>
+
+            <!-- Image Preview Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardPreview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="vertical">
+                android:layout_marginTop="@dimen/space_md"
+                android:visibility="gone"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/color_border"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
-                    android:id="@+id/layoutOption1Header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="48dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <RadioButton
-                        android:id="@+id/rbOption1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:minWidth="48dp"
-                        android:minHeight="48dp"
-                        android:checked="true"
-                        app:buttonTint="@color/primary" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:background="@drawable/bg_badge_verified_moss"
-                        android:paddingHorizontal="6dp"
-                        android:paddingVertical="2dp"
-                        android:text="@string/residence_verification_method_recommend"
-                        android:textColor="@color/primary"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:text="@string/residence_verification_option1_title"
-                        android:textColor="@color/text_main"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <!-- Dashed Upload Box for Option 1 -->
-                <LinearLayout
-                    android:id="@+id/layoutUploadBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="32dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/bg_upload_dashed"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="24dp">
+                    android:orientation="vertical">
 
                     <FrameLayout
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:background="@drawable/bg_circle_light">
+                        android:layout_width="match_parent"
+                        android:layout_height="220dp"
+                        android:background="@color/bg_app">
 
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:contentDescription="@string/cd_camera"
-                            android:src="@drawable/ic_camera"
-                            app:tint="@color/primary" />
+                            android:id="@+id/ivPreview"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:contentDescription="Ảnh tài liệu xác thực"
+                            android:scaleType="centerCrop" />
+
+                        <ImageView
+                            android:id="@+id/btnRemovePreview"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_gravity="top|end"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/bg_circle_overlay"
+                            android:contentDescription="Xóa tệp"
+                            android:padding="6dp"
+                            android:src="@drawable/ic_close"
+                            app:tint="@color/white" />
                     </FrameLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:gravity="center"
-                        android:lineSpacingExtra="2dp"
-                        android:text="@string/residence_verification_option1_desc"
-                        android:textColor="@color/text_sub"
-                        android:textSize="12sp" />
-
-                    <ImageView
-                        android:id="@+id/ivResidencePreview"
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="180dp"
-                        android:layout_marginTop="12dp"
-                        android:scaleType="centerCrop"
-                        android:visibility="gone"
-                        android:contentDescription="@string/residence_verification_title" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- Option 2 Container -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:id="@+id/layoutOption2Header"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="48dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <RadioButton
-                        android:id="@+id/rbOption2"
-                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:minWidth="48dp"
-                        android:minHeight="48dp"
-                        android:checked="false"
-                        app:buttonTint="@color/primary" />
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="12dp">
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:text="@string/residence_verification_option2_title"
-                        android:textColor="@color/text_main"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <!-- Inputs Row for Option 2 -->
-                <LinearLayout
-                    android:id="@+id/layoutOption2Inputs"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="32dp"
-                    android:layout_marginTop="8dp"
-                    android:orientation="horizontal">
-
-                    <!-- Left: Registration Number -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="6dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_paperclip"
+                            app:tint="@color/primary" />
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:id="@+id/tvPreviewFileName"
+                            style="@style/TextAppearance.App.Caption"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="@string/residence_verification_reg_number_label"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:ellipsize="middle"
+                            android:singleLine="true"
                             android:textColor="@color/text_main"
-                            android:textSize="12sp"
                             android:textStyle="bold" />
-
-                        <EditText
-                            android:id="@+id/etRegistrationNumber"
-                            android:layout_width="match_parent"
-                            android:layout_height="48dp"
-                            android:layout_marginTop="4dp"
-                            android:importantForAutofill="no"
-                            android:background="@drawable/bg_input_field"
-                            android:hint="@string/residence_verification_reg_number_hint"
-                            android:inputType="text"
-                            android:paddingHorizontal="12dp"
-                            android:textColor="@color/text_main"
-                            android:textColorHint="@color/text_sub"
-                            android:textSize="13sp" />
                     </LinearLayout>
 
-                    <!-- Right: Ward Dropdown -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/residence_verification_ward_label"
-                            android:textColor="@color/text_main"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-
-                        <LinearLayout
-                            android:id="@+id/layoutSelectWard"
-                            android:layout_width="match_parent"
-                            android:layout_height="48dp"
-                            android:layout_marginTop="4dp"
-                            android:background="@drawable/bg_input_field"
-                            android:foreground="?attr/selectableItemBackground"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:paddingHorizontal="12dp">
-
-                            <TextView
-                                android:id="@+id/tvSelectedWard"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/residence_verification_ward_hint"
-                                android:textColor="@color/text_sub"
-                                android:textSize="13sp" />
-
-                            <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:contentDescription="@string/cd_dropdown"
-                                android:src="@drawable/ic_chevron_down"
-                                app:tint="@color/primary" />
-                        </LinearLayout>
-                    </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
-
-            <!-- Uploaded Documents Section -->
-
-            <!-- Document Item Card -->
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
@@ -337,30 +186,18 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:background="@color/surface_card"
+        android:padding="@dimen/space_lg">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSubmitVerification"
+            style="@style/Widget.App.Button.Primary"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:backgroundTint="@color/primary"
-            android:text="@string/residence_verification_btn_submit"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            app:cornerRadius="12dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
-            android:text="@string/residence_verification_footer_note"
-            android:textColor="@color/text_sub"
-            android:textSize="11sp" />
+            android:layout_height="@dimen/btn_height"
+            android:text="Xác thực cư trú ngay"
+            app:icon="@drawable/ic_shield_check"
+            app:iconGravity="textStart"
+            app:iconPadding="@dimen/space_sm" />
     </LinearLayout>
 
 </LinearLayout>
