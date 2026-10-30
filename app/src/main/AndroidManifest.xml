@@ -82,12 +82,6 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.profile.NotificationsActivity"
-            android:exported="false" />
-
-
-
-        <activity
             android:name=".ui.post.CreatePostActivity"
             android:exported="false" />
 

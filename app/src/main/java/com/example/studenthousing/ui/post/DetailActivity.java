@@ -404,8 +404,15 @@ public class DetailActivity extends AppCompatActivity {
             ImageView icon = item.findViewById(R.id.ivAmenityIcon);
             TextView label = item.findViewById(R.id.tvAmenityLabel);
 
-            label.setText(util);
-            icon.setImageResource(getIconForUtility(util));
+            // Resolve code → label (hỗ trợ cả dữ liệu cũ lưu theo code lẫn mới lưu theo label)
+            com.example.studenthousing.data.model.Utility utilObj =
+                    com.example.studenthousing.data.loader.UtilitiesDataLoader.getByCode(this, util);
+            String displayLabel = (utilObj != null && utilObj.getLabel() != null)
+                    ? utilObj.getLabel()
+                    : util;
+
+            label.setText(displayLabel);
+            icon.setImageResource(getIconForUtility(displayLabel));
 
             GridLayout.LayoutParams params = new GridLayout.LayoutParams(
                     GridLayout.spec(GridLayout.UNDEFINED, 1f),
@@ -421,16 +428,18 @@ public class DetailActivity extends AppCompatActivity {
     private int getIconForUtility(String u) {
         if (u == null) return R.drawable.ic_star;
         String key = u.toLowerCase();
-        if (key.contains("wifi")) return R.drawable.ic_wifi;
-        if (key.contains("điều hòa") || key.contains("máy lạnh")) return R.drawable.ic_air_conditioner;
+        // Match theo label tiếng Việt từ utilities.json
+        if (key.contains("wi-fi") || key.contains("wifi")) return R.drawable.ic_wifi;
+        if (key.contains("chỗ để xe") || key.contains("parking") || key.contains("đỗ xe") || key.contains("gửi xe")) return R.drawable.ic_parking_car;
+        if (key.contains("máy lạnh") || key.contains("điều hòa") || key.contains("air")) return R.drawable.ic_air_conditioner;
+        if (key.contains("máy giặt") || key.contains("washer")) return R.drawable.ic_verified;
+        if (key.contains("tủ lạnh") || key.contains("fridge")) return R.drawable.ic_kitchen;
+        if (key.contains("vệ sinh riêng") || key.contains("bathroom") || key.contains("wc")) return R.drawable.ic_check;
+        if (key.contains("an ninh") || key.contains("bảo vệ") || key.contains("camera") || key.contains("security")) return R.drawable.ic_shield_check;
+        if (key.contains("thang máy") || key.contains("elevator")) return R.drawable.ic_chevron_right;
+        if (key.contains("thú cưng") || key.contains("pet")) return R.drawable.ic_star;
         if (key.contains("bếp")) return R.drawable.ic_kitchen;
-        if (key.contains("đỗ xe") || key.contains("gửi xe")) return R.drawable.ic_parking_car;
-        if (key.contains("nóng lạnh") || key.contains("máy giặt")) return R.drawable.ic_verified;
         if (key.contains("ban công")) return R.drawable.ic_location;
-        if (key.contains("bảo vệ") || key.contains("an ninh") || key.contains("camera")) return R.drawable.ic_shield_check;
-        if (key.contains("thang máy")) return R.drawable.ic_chevron_right;
-        if (key.contains("tủ lạnh")) return R.drawable.ic_kitchen;
-        if (key.contains("gác") || key.contains("wc") || key.contains("giờ giấc")) return R.drawable.ic_check;
         return R.drawable.ic_check;
     }
 

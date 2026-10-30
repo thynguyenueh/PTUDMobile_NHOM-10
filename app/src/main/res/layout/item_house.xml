@@ -28,19 +28,6 @@
                 android:scaleType="centerCrop"
                 tools:src="@drawable/bg_image_placeholder" />
 
-            <TextView
-                android:id="@+id/tvHouseStatus"
-                style="@style/Widget.App.Badge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top|start"
-                android:layout_margin="@dimen/space_md"
-                android:background="@drawable/bg_badge_verified"
-                android:textColor="@color/olive_primary_dark"
-                android:visibility="gone"
-                tools:text="@string/post_status_available"
-                tools:visibility="visible" />
-
             <ImageView
                 android:id="@+id/ivHouseVerified"
                 android:layout_width="@dimen/icon_lg"
