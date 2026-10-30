@@ -72,22 +72,47 @@ public class DemoDataSeeder {
 
     private static void syncToFirestore(List<User> users, List<VerifiedAddress> addresses,
                                         List<Post> posts) {
+        com.google.firebase.auth.FirebaseAuth mAuth =
+                com.google.firebase.auth.FirebaseAuth.getInstance();
+
+        if (mAuth.getCurrentUser() != null) {
+            doWriteToFirestore(users, addresses, posts);
+        } else {
+            mAuth.signInAnonymously().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    doWriteToFirestore(users, addresses, posts);
+                } else {
+                    Log.e(TAG, "signInAnonymously failed — cannot seed Firestore: "
+                            + (task.getException() != null ? task.getException().getMessage() : "unknown"));
+                }
+            });
+        }
+    }
+
+    private static void doWriteToFirestore(List<User> users, List<VerifiedAddress> addresses,
+                                           List<Post> posts) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         for (User u : users) {
             if (u.getUserId() != null) {
-                db.collection("users").document(u.getUserId()).set(u);
+                db.collection("users").document(u.getUserId()).set(u)
+                        .addOnSuccessListener(v -> Log.d(TAG, "Firestore user synced: " + u.getUserId()))
+                        .addOnFailureListener(e -> Log.e(TAG, "Firestore user failed " + u.getUserId() + ": " + e.getMessage()));
             }
         }
         for (VerifiedAddress a : addresses) {
             if (a.getAddressId() != null) {
-                db.collection("verified_addresses").document(a.getAddressId()).set(a);
+                db.collection("verified_addresses").document(a.getAddressId()).set(a)
+                        .addOnSuccessListener(v -> Log.d(TAG, "Firestore address synced: " + a.getAddressId()))
+                        .addOnFailureListener(e -> Log.e(TAG, "Firestore address failed " + a.getAddressId() + ": " + e.getMessage()));
             }
         }
         for (Post p : posts) {
             if (p.getPostId() != null) {
                 db.collection("accommodation_posts").document(p.getPostId())
-                        .set(PostRemote.toPublicPostData(p));
+                        .set(PostRemote.toPublicPostData(p))
+                        .addOnSuccessListener(v -> Log.d(TAG, "Firestore post synced: " + p.getPostId()))
+                        .addOnFailureListener(e -> Log.e(TAG, "Firestore post failed " + p.getPostId() + ": " + e.getMessage()));
             }
         }
     }

@@ -103,36 +103,6 @@
                         </LinearLayout>
                     </LinearLayout>
 
-                    <FrameLayout
-                        android:id="@+id/btnNotifications"
-                        android:layout_width="@dimen/icon_btn_size"
-                        android:layout_height="@dimen/icon_btn_size"
-                        android:background="@drawable/bg_circle_light"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackgroundBorderless">
-
-                        <ImageView
-                            android:layout_width="@dimen/icon_md"
-                            android:layout_height="@dimen/icon_md"
-                            android:layout_gravity="center"
-                            android:contentDescription="@string/cd_notifications"
-                            android:src="@drawable/ic_notifications"
-                            app:tint="@color/primary" />
-
-                        <TextView
-                            android:id="@+id/tvNotifBadgeCount"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_gravity="top|end"
-                            android:background="@drawable/bg_pill_red"
-                            android:gravity="center"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/text_caption"
-                            android:textStyle="bold"
-                            android:visibility="gone"
-                            tools:text="1" />
-                    </FrameLayout>
                 </LinearLayout>
 
                 <!-- Search bar -->

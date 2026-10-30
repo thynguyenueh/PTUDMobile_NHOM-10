@@ -48,7 +48,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         bind(R.id.btnSettings, SettingsActivity.class);
 
-        bindInHeader(R.id.btnStatPosts, MyPostsActivity.class);
+        bind(R.id.btnStatPosts, MyPostsActivity.class);
 
         bind(R.id.btnKyc, KycActivity.class);
         bind(R.id.btnResidenceAuth, ResidenceVerificationActivity.class);
@@ -80,11 +80,8 @@ public class ProfileActivity extends AppCompatActivity {
         String uni = user != null && user.getUniversityName() != null && !user.getUniversityName().trim().isEmpty()
                 ? user.getUniversityName()
                 : "Chưa cập nhật";
-        View headerRoot = binding.includeProfileHeader.getRoot();
-        if (headerRoot != null) {
-            bindProfileHeader(headerRoot, familyName, uni, avatarUrl,
-                    user != null && user.isResidenceVerified(), data.postCount, data.reviewCount, data.exchangeCount);
-        }
+        bindProfileHeader(binding.getRoot(), familyName, uni, avatarUrl,
+                user != null && user.isResidenceVerified(), data.postCount, data.reviewCount, data.exchangeCount);
 
         String userId = user != null ? user.getUserId() : session.getUserId();
         String savedResidenceStatus = getSharedPreferences(ResidenceVerificationActivity.PREFS_NAME, MODE_PRIVATE)
@@ -160,16 +157,6 @@ public class ProfileActivity extends AppCompatActivity {
         View v = findViewById(viewId);
         if (v != null) {
             v.setOnClickListener(x -> startActivity(new Intent(ProfileActivity.this, target)));
-        }
-    }
-
-    private void bindInHeader(int viewId, Class<?> target) {
-        View header = findViewById(R.id.includeProfileHeader);
-        if (header != null) {
-            View v = header.findViewById(viewId);
-            if (v != null) {
-                v.setOnClickListener(x -> startActivity(new Intent(ProfileActivity.this, target)));
-            }
         }
     }
 

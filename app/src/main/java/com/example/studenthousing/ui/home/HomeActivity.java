@@ -26,7 +26,6 @@ import com.example.studenthousing.ui.post.CreatePostActivity;
 import com.example.studenthousing.ui.post.DetailActivity;
 import com.example.studenthousing.ui.post.MyPostsActivity;
 import com.example.studenthousing.ui.post.SavedHousesActivity;
-import com.example.studenthousing.ui.profile.NotificationsActivity;
 import com.example.studenthousing.ui.profile.ProfileActivity;
 import com.example.studenthousing.ui.viewmodel.HomeViewModel;
 import com.example.studenthousing.util.SessionManager;
@@ -158,9 +157,6 @@ public class HomeActivity extends AppCompatActivity {
         binding.tvHomeAvatar.setVisibility(View.VISIBLE);
         binding.tvHomeAvatar.setText("B");
         binding.tvKycBadge.setVisibility(View.GONE);
-
-        TextView tvNotifBadgeCount = binding.getRoot().findViewById(R.id.tvNotifBadgeCount);
-        if (tvNotifBadgeCount != null) tvNotifBadgeCount.setVisibility(View.GONE);
     }
 
     private void loadPosts() {
@@ -259,9 +255,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        binding.btnNotifications.setOnClickListener(v ->
-                startActivity(new Intent(this, NotificationsActivity.class)));
-
         binding.btnSearch.setOnClickListener(v -> startActivity(new Intent(this, SearchFilterActivity.class)));
         binding.btnFilter.setOnClickListener(v -> openFilterScreen());
 
