@@ -1,0 +1,38 @@
+[
+  {
+    "code": "WIFI",
+    "label": "Wi-Fi miễn phí"
+  },
+  {
+    "code": "PARKING",
+    "label": "Chỗ để xe"
+  },
+  {
+    "code": "AIR_CONDITIONER",
+    "label": "Máy lạnh"
+  },
+  {
+    "code": "WASHER",
+    "label": "Máy giặt"
+  },
+  {
+    "code": "FRIDGE",
+    "label": "Tủ lạnh"
+  },
+  {
+    "code": "PRIVATE_BATHROOM",
+    "label": "Vệ sinh riêng"
+  },
+  {
+    "code": "SECURITY",
+    "label": "An ninh 24/7"
+  },
+  {
+    "code": "ELEVATOR",
+    "label": "Thang máy"
+  },
+  {
+    "code": "PET_ALLOWED",
+    "label": "Cho phép nuôi thú cưng"
+  }
+]

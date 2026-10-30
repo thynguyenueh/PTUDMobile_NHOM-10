@@ -136,10 +136,8 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etAdminAddress"
                     style="@style/Widget.App.FormInput"
-                    android:clickable="true"
-                    android:focusable="false"
-                    android:hint="Bấm để chọn địa chỉ đã xác thực"
-                    android:inputType="none" />
+                    android:hint="Nhập địa chỉ hoặc chọn từ danh sách đã xác thực"
+                    android:inputType="textCapWords" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView

@@ -18,6 +18,7 @@ import com.example.studenthousing.data.model.University;
 import com.example.studenthousing.databinding.ActivityFilterBinding;
 import com.example.studenthousing.domain.FilterCriteria;
 import com.example.studenthousing.ui.dialog.SearchListDialog;
+import com.example.studenthousing.util.UtilityLoader;
 import com.google.android.material.chip.Chip;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class SearchFilterActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setupListeners();
+        populateFilterUtilities();
 
         FilterCriteria criteria = IntentCompat.getSerializableExtra(
                 getIntent(),
@@ -177,6 +179,19 @@ public class SearchFilterActivity extends AppCompatActivity {
             int finalCount = count;
             runOnUiThread(() -> binding.btnApplyFilter.setText(getString(R.string.filter_btn_apply, finalCount)));
         }).start();
+    }
+
+    private void populateFilterUtilities() {
+        if (binding.chipGroupFilterUtilities == null) return;
+        binding.chipGroupFilterUtilities.removeAllViews();
+        List<String> utils = UtilityLoader.loadUtilities(this);
+        for (String util : utils) {
+            Chip chip = new Chip(new android.view.ContextThemeWrapper(this, R.style.Widget_App_Chip), null, 0);
+            chip.setText(util);
+            chip.setCheckable(true);
+            chip.setOnCheckedChangeListener((buttonView, isChecked) -> updateResultButtonCount());
+            binding.chipGroupFilterUtilities.addView(chip);
+        }
     }
 
     private void resetFiltersWithoutToast() {

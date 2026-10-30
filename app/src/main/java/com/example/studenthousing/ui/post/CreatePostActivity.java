@@ -25,6 +25,7 @@ import com.example.studenthousing.util.AddressFingerprintUtil;
 import com.example.studenthousing.util.AppCallback;
 import com.example.studenthousing.util.SessionManager;
 import com.example.studenthousing.util.UiState;
+import com.example.studenthousing.util.UtilityLoader;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -141,6 +142,12 @@ public class CreatePostActivity extends AppCompatActivity {
         rvSelectedPhotos = null;
         progressBar = findViewById(R.id.progressBar);
         chipGroupUtilities = findViewById(R.id.chipGroupUtilities);
+        if (chipGroupUtilities != null && chipGroupUtilities.getChildCount() == 0) {
+            List<String> defaultUtils = UtilityLoader.loadUtilities(this);
+            for (String util : defaultUtils) {
+                addUtilityChip(util, false);
+            }
+        }
 
         if (rvSelectedPhotos != null) {
             rvSelectedPhotos.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -248,20 +255,13 @@ public class CreatePostActivity extends AppCompatActivity {
             return;
         }
         if (adminAddr.isEmpty()) {
-            if (tilAdminAddress != null) tilAdminAddress.setError("Vui lòng chọn Phường/Xã");
-            else Toast.makeText(this, "Vui lòng chọn Phường/Xã", Toast.LENGTH_SHORT).show();
+            if (tilAdminAddress != null) tilAdminAddress.setError("Vui lòng nhập địa chỉ");
+            else Toast.makeText(this, "Vui lòng nhập địa chỉ", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (houseNum.isEmpty()) {
-            if (tilHouseNumber != null) tilHouseNumber.setError("Vui lòng nhập số nhà");
-            else Toast.makeText(this, "Vui lòng nhập số nhà", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (streetAddr.isEmpty()) {
-            if (tilStreetAddress != null) tilStreetAddress.setError("Vui lòng nhập tên đường");
-            else Toast.makeText(this, "Vui lòng nhập tên đường", Toast.LENGTH_SHORT).show();
-            return;
-        }
+
+        if (houseNum.isEmpty()) houseNum = "1";
+        if (streetAddr.isEmpty()) streetAddr = adminAddr;
 
         List<String> utilities = new ArrayList<>();
         if (chipGroupUtilities != null) {
@@ -274,7 +274,10 @@ public class CreatePostActivity extends AppCompatActivity {
             }
         }
 
-        String fullAddress = houseNum + " " + streetAddr + ", " + adminAddr;
+        String fullAddress = adminAddr;
+        if (!houseNum.equals("1") && !streetAddr.equals(adminAddr)) {
+            fullAddress = houseNum + " " + streetAddr + ", " + adminAddr;
+        }
         String fingerprint = AddressFingerprintUtil.build(selectedCityCode, selectedWardCode, streetAddr, houseNum);
         viewModel.updatePost(editPostId, selectedImageUris, title, fullAddress, desc, utilities, selectedCityCode, selectedWardCode, selectedWardName, 2, fingerprint, houseNum, streetAddr);
     }
@@ -327,18 +330,8 @@ public class CreatePostActivity extends AppCompatActivity {
             return;
         }
         if (adminAddr.isEmpty()) {
-            if (tilAdminAddress != null) tilAdminAddress.setError("Vui lòng chọn Tỉnh/Thành, Phường/Xã");
-            else Toast.makeText(this, "Vui lòng chọn Tỉnh/Thành, Phường/Xã", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (houseNum.isEmpty()) {
-            if (tilHouseNumber != null) tilHouseNumber.setError("Vui lòng nhập số nhà");
-            else Toast.makeText(this, "Vui lòng nhập số nhà", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (streetAddr.isEmpty()) {
-            if (tilStreetAddress != null) tilStreetAddress.setError("Vui lòng nhập tên đường");
-            else Toast.makeText(this, "Vui lòng nhập tên đường", Toast.LENGTH_SHORT).show();
+            if (tilAdminAddress != null) tilAdminAddress.setError("Vui lòng nhập địa chỉ");
+            else Toast.makeText(this, "Vui lòng nhập địa chỉ", Toast.LENGTH_SHORT).show();
             return;
         }
         if (selectedImageUris.isEmpty()) {
@@ -346,7 +339,13 @@ public class CreatePostActivity extends AppCompatActivity {
             return;
         }
 
-        String fullAddress = houseNum + " " + streetAddr + ", " + adminAddr;
+        if (houseNum.isEmpty()) houseNum = "1";
+        if (streetAddr.isEmpty()) streetAddr = adminAddr;
+
+        String fullAddress = adminAddr;
+        if (!houseNum.equals("1") && !streetAddr.equals(adminAddr)) {
+            fullAddress = houseNum + " " + streetAddr + ", " + adminAddr;
+        }
 
         List<String> utilities = new ArrayList<>();
         if (chipGroupUtilities != null) {
